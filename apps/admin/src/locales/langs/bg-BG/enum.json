@@ -1,0 +1,192 @@
+{
+  "status": {
+    "ON": "Активен",
+    "OFF": "Деактивиран"
+  },
+  "enable": {
+    "true": "Включено",
+    "false": "Изключено"
+  },
+  "gender": {
+    "SECRET": "Скрит",
+    "MALE": "Мъж",
+    "FEMALE": "Жена"
+  },
+  "successStatus": {
+    "success": "Успех",
+    "failed": "Неуспех"
+  },
+  "user": {
+    "status": {
+      "DISABLED": "Деактивиран",
+      "NORMAL": "Активен",
+      "PENDING": "Очаква активиране",
+      "LOCKED": "Заключен",
+      "EXPIRED": "Изтекъл",
+      "CLOSED": "Затворен"
+    }
+  },
+  "menu": {
+    "type": {
+      "CATALOG": "Каталог",
+      "MENU": "Меню",
+      "BUTTON": "Бутон",
+      "EMBEDDED": "Вграден",
+      "LINK": "Връзка"
+    }
+  },
+  "task": {
+    "type": {
+      "Periodic": "Периодична",
+      "Delay": "Отложена",
+      "WaitResult": "Изчакване на резултат"
+    }
+  },
+  "loginPolicy": {
+    "type": {
+      "BLACKLIST": "Черен списък",
+      "WHITELIST": "Бял списък"
+    },
+    "method": {
+      "IP": "Ограничение по IP адрес",
+      "MAC": "Ограничение по MAC адрес",
+      "REGION": "Ограничение по регион",
+      "TIME": "Ограничение по време",
+      "DEVICE": "Ограничение по устройство"
+    }
+  },
+  "orgUnit": {
+    "type": {
+      "DEPARTMENT": "Отдел",
+      "TEAM": "Екип",
+      "COMPANY": "Компания",
+      "DIVISION": "Дивизия",
+      "PROJECT": "Проект",
+      "COMMITTEE": "Комитет",
+      "REGION": "Регион",
+      "SUBSIDIARY": "Дъщерно дружество",
+      "BRANCH": "Клон",
+      "OTHER": "Друго"
+    },
+    "status": {
+      "ON": "Активен",
+      "OFF": "Деактивиран"
+    }
+  },
+  "tenant": {
+    "status": {
+      "ON": "Активен",
+      "OFF": "Деактивиран",
+      "EXPIRED": "Изтекъл",
+      "FREEZE": "Замразен"
+    },
+    "type": {
+      "TRIAL": "Пробен",
+      "PAID": "Платен",
+      "INTERNAL": "Вътрешен",
+      "PARTNER": "Партньор",
+      "CUSTOM": "Персонализиран"
+    },
+    "auditStatus": {
+      "PENDING": "Изчакващ",
+      "APPROVED": "Одобрен",
+      "REJECTED": "Отхвърлен"
+    }
+  },
+  "role": {
+    "type": {
+      "SYSTEM": "Системна роля",
+      "CUSTOM": "Персонализирана роля"
+    },
+    "dataScope": {
+      "ALL": "Всички",
+      "SELECTED_UNITS": "Персонализирано",
+      "UNIT_AND_CHILD": "Отдел и подотдели",
+      "UNIT_ONLY": "Само отдел",
+      "SELF": "Само собствени"
+    }
+  },
+  "membershipPosition": {
+    "status": {
+      "PROBATION": "Изпитателен срок",
+      "ACTIVE": "Активен",
+      "LEAVE": "В отпуск",
+      "RESIGNED": "Напуснал",
+      "TERMINATED": "Прекратен",
+      "EXPIRED": "Изтекъл"
+    }
+  },
+  "position": {
+    "type": {
+      "REGULAR": "Редовен",
+      "LEADER": "Ръководител",
+      "MANAGER": "Мениджър",
+      "INTERN": "Стажант",
+      "CONTRACT": "По договор",
+      "OTHER": "Друго"
+    }
+  },
+  "permission": {
+    "type": {
+      "CATALOG": "Право за каталог",
+      "MENU": "Право за меню",
+      "PAGE": "Право за страница",
+      "BUTTON": "Право за бутон",
+      "API": "Право за API",
+      "DATA": "Право за данни"
+    }
+  },
+  "loginAuditLog": {
+    "status": {
+      "SUCCESS": "Успех",
+      "FAILED": "Неуспех",
+      "PARTIAL": "Частичен успех"
+    },
+    "actionType": {
+      "LOGIN": "Влизане",
+      "LOGOUT": "Излизане",
+      "SESSION_EXPIRED": "Изтекла сесия"
+    },
+    "riskLevel": {
+      "LOW": "Нисък риск",
+      "MEDIUM": "Среден риск",
+      "HIGH": "Висок риск"
+    }
+  },
+  "internalMessage": {
+    "status": {
+      "DRAFT": "Чернова",
+      "PUBLISHED": "Публикувано",
+      "SCHEDULED": "Планирано",
+      "REVOKED": "Оттеглено",
+      "ARCHIVED": "Архивирано",
+      "DELETED": "Изтрито"
+    },
+    "type": {
+      "NOTIFICATION": "Известие",
+      "PRIVATE": "Лично съобщение",
+      "GROUP": "Групово съобщение"
+    }
+  },
+  "internalMessageRecipient": {
+    "status": {
+      "SENT": "Изпратено",
+      "RECEIVED": "Получено",
+      "READ": "Прочетено",
+      "REVOKED": "Оттеглено",
+      "DELETED": "Изтрито"
+    }
+  },
+  "ossProvider": {
+    "LOCAL": "Локално хранилище",
+    "MINIO": "MinIO",
+    "ALIYUN": "Aliyun OSS",
+    "QINIU": "Qiniu облачно хранилище",
+    "TENCENT": "Tencent Cloud COS",
+    "BAIDU": "Baidu Cloud BOS",
+    "HUAWEI": "Huawei Cloud OBS",
+    "AWS": "Amazon S3",
+    "AZURE": "Microsoft Azure Blob",
+    "GOOGLE": "Google Cloud Storage"
+  }
+}

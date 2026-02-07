@@ -1,0 +1,44 @@
+{
+  "dashboard": {
+    "index": "Data Center",
+    "dashboard": "Dashboard",
+    "analysis": "Analysis",
+    "workbench": "workbench",
+    "about": "About"
+  },
+  "permission": {
+    "moduleName": "Permission Management",
+    "role": "Role Management",
+    "permission": "Permission Management",
+    "menu": "Menu Management",
+    "api": "API Management"
+  },
+  "opm": {
+    "moduleName": "Organizational Personnel Management",
+    "position": "Position Management",
+    "user": "User Management",
+    "userDetail": "User Detail",
+    "orgUnit": "Organization Unit Management"
+  },
+  "tenant": {
+    "moduleName": "Tenant Management",
+    "member": "Tenant List"
+  },
+  "system": {
+    "moduleName": "System Management",
+    "dict": "Dictionary Management",
+    "task": "Task Scheduler",
+    "file": "File Management",
+    "loginPolicy": "Login Policy"
+  },
+  "log": {
+    "moduleName": "Log Audit",
+    "loginAuditLog": "Login Log",
+    "apiAuditLog": "API Log"
+  },
+  "internalMessage": {
+    "moduleName": "Internal Message",
+    "internalMessage": "Message Management",
+    "internalMessageCategory": "Message Category"
+  }
+}

@@ -1,0 +1,192 @@
+{
+  "status": {
+    "ON": "Active",
+    "OFF": "Disabled"
+  },
+  "enable": {
+    "true": "Enable",
+    "false": "Disable"
+  },
+  "gender": {
+    "SECRET": "Secret",
+    "MALE": "Male",
+    "FEMALE": "Female"
+  },
+  "successStatus": {
+    "success": "Success",
+    "failed": "Failed"
+  },
+  "user": {
+    "status": {
+      "DISABLED": "Disabled",
+      "NORMAL": "Active",
+      "PENDING": "Pending Activation",
+      "LOCKED": "Locked",
+      "EXPIRED": "Expired",
+      "CLOSED": "Closed"
+    }
+  },
+  "menu": {
+    "type": {
+      "CATALOG": "Catalog",
+      "MENU": "Menu",
+      "BUTTON": "Button",
+      "EMBEDDED": "Embedded",
+      "LINK": "Link"
+    }
+  },
+  "task": {
+    "type": {
+      "Periodic": "Periodic",
+      "Delay": "Delay",
+      "WaitResult": "Wait Result"
+    }
+  },
+  "loginPolicy": {
+    "type": {
+      "BLACKLIST": "Blacklist",
+      "WHITELIST": "Whitelist"
+    },
+    "method": {
+      "IP": "IP Address Restriction",
+      "MAC": "MAC Address Restriction",
+      "REGION": "Region Restriction",
+      "TIME": "Time Restriction",
+      "DEVICE": "Device Restriction"
+    }
+  },
+  "orgUnit": {
+    "type": {
+      "DEPARTMENT": "Department",
+      "TEAM": "Team",
+      "COMPANY": "Company",
+      "DIVISION": "Division",
+      "PROJECT": "Project",
+      "COMMITTEE": "Committee",
+      "REGION": "Region",
+      "SUBSIDIARY": "Subsidiary",
+      "BRANCH": "Branch",
+      "OTHER": "Other"
+    },
+    "status": {
+      "ON": "Active",
+      "OFF": "Disabled"
+    }
+  },
+  "tenant": {
+    "status": {
+      "ON": "Active",
+      "OFF": "Disabled",
+      "EXPIRED": "Expired",
+      "FREEZE": "Frozen"
+    },
+    "type": {
+      "TRIAL": "Trial",
+      "PAID": "Paid",
+      "INTERNAL": "Internal",
+      "PARTNER": "Partner",
+      "CUSTOM": "Custom"
+    },
+    "auditStatus": {
+      "PENDING": "Pending",
+      "APPROVED": "Approved",
+      "REJECTED": "Rejected"
+    }
+  },
+  "role": {
+    "type": {
+      "SYSTEM": "System Role",
+      "CUSTOM": "Custom Role"
+    },
+    "dataScope": {
+      "ALL": "All",
+      "SELECTED_UNITS": "Custom",
+      "UNIT_AND_CHILD": "Department and Sub-departments",
+      "UNIT_ONLY": "Department Only",
+      "SELF": "Self Only"
+    }
+  },
+  "membershipPosition": {
+    "status": {
+      "PROBATION": "Probation",
+      "ACTIVE": "Active",
+      "LEAVE": "On Leave",
+      "RESIGNED": "Resigned",
+      "TERMINATED": "Terminated",
+      "EXPIRED": "Expired"
+    }
+  },
+  "position": {
+    "type": {
+      "REGULAR": "Regular",
+      "LEADER": "Leader",
+      "MANAGER": "Manager",
+      "INTERN": "Intern",
+      "CONTRACT": "Contract",
+      "OTHER": "Other"
+    }
+  },
+  "permission": {
+    "type": {
+      "CATALOG": "Catalog Permission",
+      "MENU": "Menu Permission",
+      "PAGE": "Page Permission",
+      "BUTTON": "Button Permission",
+      "API": "API Permission",
+      "DATA": "Data Permission"
+    }
+  },
+  "loginAuditLog": {
+    "status": {
+      "SUCCESS": "Success",
+      "FAILED": "Failed",
+      "PARTIAL": "Partial Success"
+    },
+    "actionType": {
+      "LOGIN": "Login",
+      "LOGOUT": "Logout",
+      "SESSION_EXPIRED": "Session Expired"
+    },
+    "riskLevel": {
+      "LOW": "Low Risk",
+      "MEDIUM": "Medium Risk",
+      "HIGH": "High Risk"
+    }
+  },
+  "internalMessage": {
+    "status": {
+      "DRAFT": "Draft",
+      "PUBLISHED": "Published",
+      "SCHEDULED": "Scheduled",
+      "REVOKED": "Revoked",
+      "ARCHIVED": "Archived",
+      "DELETED": "Deleted"
+    },
+    "type": {
+      "NOTIFICATION": "Notification",
+      "PRIVATE": "Private Message",
+      "GROUP": "Group Message"
+    }
+  },
+  "internalMessageRecipient": {
+    "status": {
+      "SENT": "Sent",
+      "RECEIVED": "Received",
+      "READ": "Read",
+      "REVOKED": "Revoked",
+      "DELETED": "Deleted"
+    }
+  },
+  "ossProvider": {
+    "LOCAL": "Local Storage",
+    "MINIO": "MinIO",
+    "ALIYUN": "Aliyun OSS",
+    "QINIU": "Qiniu Cloud Storage",
+    "TENCENT": "Tencent Cloud COS",
+    "BAIDU": "Baidu Cloud BOS",
+    "HUAWEI": "Huawei Cloud OBS",
+    "AWS": "Amazon S3",
+    "AZURE": "Microsoft Azure Blob",
+    "GOOGLE": "Google Cloud Storage"
+  }
+}

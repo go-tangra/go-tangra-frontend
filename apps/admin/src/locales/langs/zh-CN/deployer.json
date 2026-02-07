@@ -1,0 +1,304 @@
+{
+  "menu": {
+    "moduleName": "证书部署",
+    "target": "部署目标",
+    "configuration": "目标配置",
+    "job": "部署任务"
+  },
+  "page": {
+    "target": {
+      "moduleName": "部署目标",
+      "id": "目标ID",
+      "name": "名称",
+      "description": "描述",
+      "configurationCount": "配置数量",
+      "autoDeployOnRenewal": "自动部署",
+      "configurations": "关联配置",
+      "addConfiguration": "添加配置",
+      "removeConfiguration": "移除配置",
+      "selectConfigurations": "选择配置",
+      "noConfigurations": "暂无关联配置",
+      "autoDeployOnRenewalHint": "证书续期时自动部署",
+      "certificateFilters": "证书过滤器",
+      "certificateFiltersHint": "定义过滤器以自动匹配证书进行部署。同一过滤器内的所有字段使用AND逻辑。只要有一个过滤器匹配，证书就会被部署。",
+      "addFilter": "添加过滤器",
+      "lastDeploymentAt": "最后部署时间",
+      "config": "配置",
+      "credentials": "凭证",
+      "tenant": "租户",
+      "createTime": "创建时间",
+      "updateTime": "更新时间",
+      "details": "目标详情",
+      "create": "创建目标",
+      "edit": "编辑目标",
+      "delete": "删除目标",
+      "confirmDelete": "确定要删除此目标吗？",
+      "createSuccess": "目标创建成功",
+      "updateSuccess": "目标更新成功",
+      "deleteSuccess": "目标删除成功",
+      "validateCredentials": "验证凭证",
+      "validateSuccess": "凭证验证成功",
+      "validateFailed": "凭证验证失败",
+      "filter": {
+        "title": "过滤器 #{index}",
+        "issuerName": "签发者名称",
+        "issuerNamePlaceholder": "例如：Let's Encrypt Authority X3",
+        "commonNamePattern": "通用名称模式",
+        "commonNamePatternPlaceholder": "正则表达式，例如：.*\\.example\\.com",
+        "sanPattern": "SAN模式",
+        "sanPatternPlaceholder": "正则表达式，例如：.*\\.example\\.com",
+        "subjectOrganization": "主题组织",
+        "subjectOrganizationPlaceholder": "例如：我的公司",
+        "subjectOrgUnit": "主题组织单位",
+        "subjectOrgUnitPlaceholder": "例如：IT部门",
+        "subjectCountry": "主题国家",
+        "subjectCountryPlaceholder": "例如：CN",
+        "domainPattern": "域名模式（已弃用）",
+        "labels": "标签"
+      },
+      "error": {
+        "nameRequired": "名称不能为空",
+        "providerRequired": "提供商类型不能为空",
+        "credentialsRequired": "凭证不能为空"
+      }
+    },
+    "configuration": {
+      "moduleName": "目标配置",
+      "id": "配置ID",
+      "name": "名称",
+      "description": "描述",
+      "providerType": "提供商类型",
+      "status": "状态",
+      "statusMessage": "状态消息",
+      "lastDeploymentAt": "最后部署时间",
+      "config": "配置",
+      "credentials": "凭证",
+      "tenant": "租户",
+      "basicInfo": "基本信息",
+      "createTime": "创建时间",
+      "updateTime": "更新时间",
+      "details": "配置详情",
+      "create": "创建配置",
+      "edit": "编辑配置",
+      "delete": "删除配置",
+      "confirmDelete": "确定要删除此配置吗？",
+      "createSuccess": "配置创建成功",
+      "updateSuccess": "配置更新成功",
+      "deleteSuccess": "配置删除成功",
+      "validateCredentials": "验证凭证",
+      "validateSuccess": "凭证验证成功",
+      "validateFailed": "凭证验证失败",
+      "error": {
+        "nameRequired": "名称不能为空",
+        "providerRequired": "提供商类型不能为空",
+        "credentialsRequired": "凭证不能为空"
+      }
+    },
+    "job": {
+      "moduleName": "部署任务",
+      "id": "任务ID",
+      "targetId": "目标ID",
+      "targetName": "目标名称",
+      "certificateId": "证书ID",
+      "certificateSerial": "证书序列号",
+      "status": "状态",
+      "statusMessage": "状态消息",
+      "progress": "进度",
+      "retryCount": "重试次数",
+      "maxRetries": "最大重试次数",
+      "triggeredBy": "触发方式",
+      "result": "结果",
+      "startedAt": "开始时间",
+      "completedAt": "完成时间",
+      "nextRetryAt": "下次重试时间",
+      "tenant": "租户",
+      "createTime": "创建时间",
+      "updateTime": "更新时间",
+      "history": "历史记录",
+      "details": "任务详情",
+      "create": "创建任务",
+      "cancel": "取消任务",
+      "retry": "重试任务",
+      "confirmCancel": "确定要取消此任务吗？",
+      "confirmRetry": "确定要重试此任务吗？",
+      "createSuccess": "任务创建成功",
+      "cancelSuccess": "任务取消成功",
+      "retrySuccess": "任务重试已启动",
+      "historyEntry": {
+        "action": "操作",
+        "result": "结果",
+        "message": "消息",
+        "durationMs": "耗时(毫秒)",
+        "details": "详情",
+        "createTime": "时间"
+      },
+      "deploy": {
+        "title": "部署证书",
+        "targetId": "目标",
+        "certificateId": "证书ID",
+        "waitForCompletion": "等待完成",
+        "timeoutSeconds": "超时时间(秒)",
+        "submit": "部署",
+        "success": "部署已启动"
+      },
+      "deployToTargets": {
+        "title": "部署到多个目标",
+        "targetIds": "目标",
+        "certificateId": "证书ID",
+        "submit": "部署",
+        "success": "批量部署已启动"
+      },
+      "verify": {
+        "title": "验证部署",
+        "submit": "验证",
+        "success": "验证完成"
+      },
+      "rollback": {
+        "title": "回滚部署",
+        "previousCertificateId": "之前的证书ID",
+        "submit": "回滚",
+        "success": "回滚已启动"
+      },
+      "error": {
+        "targetRequired": "目标不能为空",
+        "certificateRequired": "证书ID不能为空"
+      }
+    },
+    "provider": {
+      "moduleName": "提供商",
+      "type": "类型",
+      "displayName": "显示名称",
+      "description": "描述",
+      "supportsVerification": "支持验证",
+      "supportsRollback": "支持回滚",
+      "requiredConfigFields": "必需配置字段",
+      "requiredCredentialFields": "必需凭证字段"
+    }
+  },
+  "providers": {
+    "cloudflare": {
+      "name": "Cloudflare",
+      "description": "部署证书到Cloudflare自定义SSL",
+      "fields": {
+        "api_token": "API令牌",
+        "api_token_placeholder": "具有Zone:SSL权限的Cloudflare API令牌",
+        "zone_id": "区域ID",
+        "zone_id_placeholder": "Cloudflare区域ID"
+      }
+    },
+    "bigip": {
+      "name": "F5 BIG-IP",
+      "description": "部署证书到F5 BIG-IP负载均衡器",
+      "fields": {
+        "host": "BIG-IP主机",
+        "host_placeholder": "例如：bigip.example.com 或 192.168.1.100",
+        "username": "用户名",
+        "username_placeholder": "BIG-IP管理员用户名",
+        "password": "密码",
+        "password_placeholder": "BIG-IP管理员密码",
+        "partition": "分区",
+        "partition_placeholder": "例如：Common",
+        "ssl_profile": "SSL配置文件（可选）",
+        "ssl_profile_placeholder": "例如：my-ssl-profile"
+      }
+    },
+    "aws_acm": {
+      "name": "AWS ACM",
+      "description": "部署证书到AWS证书管理器",
+      "fields": {
+        "access_key_id": "访问密钥ID",
+        "access_key_id_placeholder": "AWS访问密钥ID",
+        "secret_access_key": "秘密访问密钥",
+        "secret_access_key_placeholder": "AWS秘密访问密钥",
+        "region": "区域",
+        "region_placeholder": "例如：us-east-1"
+      }
+    },
+    "dummy": {
+      "name": "Dummy（测试用）",
+      "description": "用于测试目的的虚拟提供商",
+      "fields": {}
+    },
+    "fortigate": {
+      "name": "FortiGate",
+      "description": "部署证书到FortiGate防火墙",
+      "fields": {
+        "host": "FortiGate主机",
+        "host_placeholder": "例如：fortigate.example.com 或 192.168.1.1",
+        "api_token": "API令牌",
+        "api_token_placeholder": "FortiGate REST API令牌",
+        "vdom": "VDOM",
+        "vdom_placeholder": "例如：root"
+      }
+    },
+    "webhook": {
+      "name": "Webhook",
+      "description": "通过HTTP Webhook部署证书",
+      "fields": {
+        "url": "Webhook URL",
+        "url_placeholder": "https://your-server.com/api/deploy-certificate",
+        "authorization": "Authorization请求头",
+        "authorization_placeholder": "Bearer your-token 或 Basic base64凭证",
+        "api_key": "API密钥（可选）",
+        "api_key_placeholder": "作为X-API-Key请求头发送",
+        "secret": "Webhook密钥（可选）",
+        "secret_placeholder": "作为X-Webhook-Secret请求头发送",
+        "token": "Bearer令牌（可选）",
+        "token_placeholder": "用于Bearer认证的令牌",
+        "verify_url": "验证URL（可选）",
+        "verify_url_placeholder": "验证请求的URL（默认使用主URL）",
+        "rollback_url": "回滚URL（可选）",
+        "rollback_url_placeholder": "回滚请求的URL（默认使用主URL）",
+        "skip_tls_verify": "跳过TLS验证",
+        "skip_tls_verify_placeholder": "true 或 false",
+        "timeout_seconds": "超时时间（秒）",
+        "timeout_seconds_placeholder": "请求超时时间（默认：60秒）"
+      }
+    }
+  },
+  "enum": {
+    "targetStatus": {
+      "unspecified": "未指定",
+      "active": "活动",
+      "inactive": "停用",
+      "error": "错误"
+    },
+    "configStatus": {
+      "unspecified": "未指定",
+      "active": "活动",
+      "inactive": "停用",
+      "error": "错误"
+    },
+    "jobType": {
+      "unspecified": "未指定",
+      "parent": "父任务",
+      "child": "子任务",
+      "direct": "直接"
+    },
+    "jobStatus": {
+      "unspecified": "未指定",
+      "pending": "等待中",
+      "processing": "处理中",
+      "completed": "已完成",
+      "failed": "失败",
+      "cancelled": "已取消",
+      "retrying": "重试中"
+    },
+    "triggerType": {
+      "unspecified": "未指定",
+      "manual": "手动",
+      "event": "事件",
+      "autoRenewal": "自动续期"
+    },
+    "historyAction": {
+      "deploy": "部署",
+      "rollback": "回滚",
+      "verify": "验证"
+    },
+    "historyResult": {
+      "success": "成功",
+      "failure": "失败",
+      "partial": "部分成功"
+    }
+  }
+}

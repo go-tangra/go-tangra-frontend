@@ -1,0 +1,304 @@
+{
+  "menu": {
+    "moduleName": "Разгръщане на сертификати",
+    "target": "Цели за разгръщане",
+    "configuration": "Конфигурации на цели",
+    "job": "Задачи за разгръщане"
+  },
+  "page": {
+    "target": {
+      "moduleName": "Цел за разгръщане",
+      "id": "ИД на цел",
+      "name": "Име",
+      "description": "Описание",
+      "configurationCount": "Конфигурации",
+      "autoDeployOnRenewal": "Автоматично разгръщане",
+      "configurations": "Свързани конфигурации",
+      "addConfiguration": "Добави конфигурация",
+      "removeConfiguration": "Премахни конфигурация",
+      "selectConfigurations": "Избери конфигурации",
+      "noConfigurations": "Няма свързани конфигурации",
+      "autoDeployOnRenewalHint": "Автоматично разгръщане на сертификати при подновяване",
+      "certificateFilters": "Филтри за сертификати",
+      "certificateFiltersHint": "Дефинирайте филтри за автоматично съвпадение на сертификати за разгръщане. Всички полета в един филтър използват AND логика. Ако някой филтър съвпадне, сертификатът ще бъде разгърнат.",
+      "addFilter": "Добави филтър",
+      "lastDeploymentAt": "Последно разгръщане",
+      "config": "Конфигурация",
+      "credentials": "Удостоверения",
+      "tenant": "Наемател",
+      "createTime": "Създадена на",
+      "updateTime": "Обновена на",
+      "details": "Детайли на цел",
+      "create": "Създай цел",
+      "edit": "Редактирай цел",
+      "delete": "Изтрий цел",
+      "confirmDelete": "Сигурни ли сте, че искате да изтриете тази цел?",
+      "createSuccess": "Целта е създадена успешно",
+      "updateSuccess": "Целта е обновена успешно",
+      "deleteSuccess": "Целта е изтрита успешно",
+      "validateCredentials": "Провери удостоверения",
+      "validateSuccess": "Удостоверенията са проверени успешно",
+      "validateFailed": "Проверката на удостоверенията е неуспешна",
+      "filter": {
+        "title": "Филтър #{index}",
+        "issuerName": "Име на издател",
+        "issuerNamePlaceholder": "напр. Let's Encrypt Authority X3",
+        "commonNamePattern": "Шаблон за общо име",
+        "commonNamePatternPlaceholder": "Regex шаблон, напр. .*\\.example\\.com",
+        "sanPattern": "SAN шаблон",
+        "sanPatternPlaceholder": "Regex шаблон, напр. .*\\.example\\.com",
+        "subjectOrganization": "Организация на субект",
+        "subjectOrganizationPlaceholder": "напр. My Company Inc.",
+        "subjectOrgUnit": "Орг. единица на субект",
+        "subjectOrgUnitPlaceholder": "напр. ИТ отдел",
+        "subjectCountry": "Държава на субект",
+        "subjectCountryPlaceholder": "напр. BG",
+        "domainPattern": "Шаблон за домейн (Остарял)",
+        "labels": "Етикети"
+      },
+      "error": {
+        "nameRequired": "Името е задължително",
+        "providerRequired": "Типът доставчик е задължителен",
+        "credentialsRequired": "Удостоверенията са задължителни"
+      }
+    },
+    "configuration": {
+      "moduleName": "Конфигурация на цел",
+      "id": "ИД на конфигурация",
+      "name": "Име",
+      "description": "Описание",
+      "providerType": "Тип доставчик",
+      "status": "Статус",
+      "statusMessage": "Съобщение за статус",
+      "lastDeploymentAt": "Последно разгръщане",
+      "config": "Конфигурация",
+      "credentials": "Удостоверения",
+      "tenant": "Наемател",
+      "basicInfo": "Основна информация",
+      "createTime": "Създадена на",
+      "updateTime": "Обновена на",
+      "details": "Детайли на конфигурация",
+      "create": "Създай конфигурация",
+      "edit": "Редактирай конфигурация",
+      "delete": "Изтрий конфигурация",
+      "confirmDelete": "Сигурни ли сте, че искате да изтриете тази конфигурация?",
+      "createSuccess": "Конфигурацията е създадена успешно",
+      "updateSuccess": "Конфигурацията е обновена успешно",
+      "deleteSuccess": "Конфигурацията е изтрита успешно",
+      "validateCredentials": "Провери удостоверения",
+      "validateSuccess": "Удостоверенията са проверени успешно",
+      "validateFailed": "Проверката на удостоверенията е неуспешна",
+      "error": {
+        "nameRequired": "Името е задължително",
+        "providerRequired": "Типът доставчик е задължителен",
+        "credentialsRequired": "Удостоверенията са задължителни"
+      }
+    },
+    "job": {
+      "moduleName": "Задача за разгръщане",
+      "id": "ИД на задача",
+      "targetId": "ИД на цел",
+      "targetName": "Име на цел",
+      "certificateId": "ИД на сертификат",
+      "certificateSerial": "Сериен номер на сертификат",
+      "status": "Статус",
+      "statusMessage": "Съобщение за статус",
+      "progress": "Напредък",
+      "retryCount": "Брой опити",
+      "maxRetries": "Макс. опити",
+      "triggeredBy": "Задействано от",
+      "result": "Резултат",
+      "startedAt": "Започната на",
+      "completedAt": "Завършена на",
+      "nextRetryAt": "Следващ опит на",
+      "tenant": "Наемател",
+      "createTime": "Създадена на",
+      "updateTime": "Обновена на",
+      "history": "История",
+      "details": "Детайли на задача",
+      "create": "Създай задача",
+      "cancel": "Отмени задача",
+      "retry": "Опитай отново",
+      "confirmCancel": "Сигурни ли сте, че искате да отмените тази задача?",
+      "confirmRetry": "Сигурни ли сте, че искате да опитате отново тази задача?",
+      "createSuccess": "Задачата е създадена успешно",
+      "cancelSuccess": "Задачата е отменена успешно",
+      "retrySuccess": "Повторният опит е иницииран успешно",
+      "historyEntry": {
+        "action": "Действие",
+        "result": "Резултат",
+        "message": "Съобщение",
+        "durationMs": "Продължителност (мс)",
+        "details": "Детайли",
+        "createTime": "Време"
+      },
+      "deploy": {
+        "title": "Разгърни сертификат",
+        "targetId": "Цел",
+        "certificateId": "ИД на сертификат",
+        "waitForCompletion": "Изчакай завършване",
+        "timeoutSeconds": "Изчакване (секунди)",
+        "submit": "Разгърни",
+        "success": "Разгръщането е инициирано успешно"
+      },
+      "deployToTargets": {
+        "title": "Разгърни към множество цели",
+        "targetIds": "Цели",
+        "certificateId": "ИД на сертификат",
+        "submit": "Разгърни",
+        "success": "Разгръщането към целите е инициирано успешно"
+      },
+      "verify": {
+        "title": "Провери разгръщане",
+        "submit": "Провери",
+        "success": "Проверката е завършена"
+      },
+      "rollback": {
+        "title": "Отмени разгръщане",
+        "previousCertificateId": "ИД на предишен сертификат",
+        "submit": "Отмени",
+        "success": "Отмяната е инициирана успешно"
+      },
+      "error": {
+        "targetRequired": "Целта е задължителна",
+        "certificateRequired": "ИД на сертификат е задължително"
+      }
+    },
+    "provider": {
+      "moduleName": "Доставчик",
+      "type": "Тип",
+      "displayName": "Показвано име",
+      "description": "Описание",
+      "supportsVerification": "Поддържа проверка",
+      "supportsRollback": "Поддържа отмяна",
+      "requiredConfigFields": "Задължителни полета за конфигурация",
+      "requiredCredentialFields": "Задължителни полета за удостоверения"
+    }
+  },
+  "providers": {
+    "cloudflare": {
+      "name": "Cloudflare",
+      "description": "Разгръщане на сертификати към Cloudflare Custom SSL",
+      "fields": {
+        "api_token": "API токен",
+        "api_token_placeholder": "Cloudflare API токен с права Zone:SSL",
+        "zone_id": "Zone ID",
+        "zone_id_placeholder": "Cloudflare Zone ID"
+      }
+    },
+    "bigip": {
+      "name": "F5 BIG-IP",
+      "description": "Разгръщане на сертификати към F5 BIG-IP load balancer-и",
+      "fields": {
+        "host": "BIG-IP хост",
+        "host_placeholder": "напр. bigip.example.com или 192.168.1.100",
+        "username": "Потребителско име",
+        "username_placeholder": "BIG-IP админ потребителско име",
+        "password": "Парола",
+        "password_placeholder": "BIG-IP админ парола",
+        "partition": "Partition",
+        "partition_placeholder": "напр. Common",
+        "ssl_profile": "SSL профил (незадължително)",
+        "ssl_profile_placeholder": "напр. my-ssl-profile"
+      }
+    },
+    "aws_acm": {
+      "name": "AWS ACM",
+      "description": "Разгръщане на сертификати към AWS Certificate Manager",
+      "fields": {
+        "access_key_id": "Access Key ID",
+        "access_key_id_placeholder": "AWS Access Key ID",
+        "secret_access_key": "Secret Access Key",
+        "secret_access_key_placeholder": "AWS Secret Access Key",
+        "region": "Регион",
+        "region_placeholder": "напр. us-east-1"
+      }
+    },
+    "dummy": {
+      "name": "Dummy (Тестов)",
+      "description": "Dummy доставчик за тестови цели",
+      "fields": {}
+    },
+    "fortigate": {
+      "name": "FortiGate",
+      "description": "Разгръщане на сертификати към FortiGate защитни стени",
+      "fields": {
+        "host": "FortiGate хост",
+        "host_placeholder": "напр. fortigate.example.com или 192.168.1.1",
+        "api_token": "API токен",
+        "api_token_placeholder": "FortiGate REST API токен",
+        "vdom": "VDOM",
+        "vdom_placeholder": "напр. root"
+      }
+    },
+    "webhook": {
+      "name": "Webhook",
+      "description": "Разгръщане на сертификати чрез HTTP webhook",
+      "fields": {
+        "url": "Webhook URL",
+        "url_placeholder": "https://your-server.com/api/deploy-certificate",
+        "authorization": "Authorization хедър",
+        "authorization_placeholder": "Bearer your-token или Basic base64-credentials",
+        "api_key": "API ключ (незадължително)",
+        "api_key_placeholder": "Изпраща се като X-API-Key хедър",
+        "secret": "Webhook тайна (незадължително)",
+        "secret_placeholder": "Изпраща се като X-Webhook-Secret хедър",
+        "token": "Bearer токен (незадължително)",
+        "token_placeholder": "Токен за Bearer удостоверяване",
+        "verify_url": "Verify URL (незадължително)",
+        "verify_url_placeholder": "URL за заявки за проверка (по подразбиране основния URL)",
+        "rollback_url": "Rollback URL (незадължително)",
+        "rollback_url_placeholder": "URL за заявки за отмяна (по подразбиране основния URL)",
+        "skip_tls_verify": "Пропусни TLS проверка",
+        "skip_tls_verify_placeholder": "true или false",
+        "timeout_seconds": "Изчакване (секунди)",
+        "timeout_seconds_placeholder": "Изчакване на заявка в секунди (по подразбиране: 60)"
+      }
+    }
+  },
+  "enum": {
+    "targetStatus": {
+      "unspecified": "Неопределен",
+      "active": "Активен",
+      "inactive": "Неактивен",
+      "error": "Грешка"
+    },
+    "configStatus": {
+      "unspecified": "Неопределен",
+      "active": "Активен",
+      "inactive": "Неактивен",
+      "error": "Грешка"
+    },
+    "jobType": {
+      "unspecified": "Неопределен",
+      "parent": "Родителска",
+      "child": "Дъщерна",
+      "direct": "Директна"
+    },
+    "jobStatus": {
+      "unspecified": "Неопределен",
+      "pending": "Изчакваща",
+      "processing": "Обработва се",
+      "completed": "Завършена",
+      "failed": "Неуспешна",
+      "cancelled": "Отменена",
+      "retrying": "Повторен опит"
+    },
+    "triggerType": {
+      "unspecified": "Неопределен",
+      "manual": "Ръчно",
+      "event": "Събитие",
+      "autoRenewal": "Автоматично подновяване"
+    },
+    "historyAction": {
+      "deploy": "Разгръщане",
+      "rollback": "Отмяна",
+      "verify": "Проверка"
+    },
+    "historyResult": {
+      "success": "Успех",
+      "failure": "Неуспех",
+      "partial": "Частичен"
+    }
+  }
+}

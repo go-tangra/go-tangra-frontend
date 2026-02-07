@@ -1,0 +1,76 @@
+{
+  "input-search": {
+    "placeholder": "Търсене"
+  },
+  "tree": {
+    "select_all": "Избери всички",
+    "unselect_all": "Отмени избора",
+    "expand_all": "Разгъни всички",
+    "collapse_all": "Свий всички",
+    "hierarchical_association": "Йерархична връзка",
+    "hierarchical_independence": "Йерархична независимост"
+  },
+  "table": {
+    "seq": "№",
+    "id": "ИД",
+    "createdAt": "Създадено на",
+    "updatedAt": "Обновено на",
+    "deletedAt": "Изтрито на",
+    "status": "Статус",
+    "action": "Действие",
+    "sortOrder": "Подредба",
+    "remark": "Забележка",
+    "description": "Описание",
+    "timestamps": "Времеви данни"
+  },
+  "switch": {
+    "on": "ВКЛ",
+    "off": "ИЗКЛ",
+    "active": "Активен",
+    "inactive": "Неактивен",
+    "enable": "Включи",
+    "disable": "Изключи"
+  },
+  "button": {
+    "ok": "ОК",
+    "cancel": "Отказ",
+    "create": "Създай {moduleName}",
+    "update": "Обнови {moduleName}",
+    "delete": "Изтрий {moduleName}",
+    "view": "Преглед",
+    "edit": "Редактирай",
+    "remove": "Премахни",
+    "save": "Запази"
+  },
+  "modal": {
+    "create": "Създаване на {moduleName}",
+    "update": "Обновяване на {moduleName}",
+    "delete": "Изтриване на {moduleName}"
+  },
+  "notification": {
+    "create_success": "Успешно създадено",
+    "create_failed": "Неуспешно създаване",
+    "update_success": "Успешно обновено",
+    "update_failed": "Неуспешно обновяване",
+    "delete_success": "Успешно изтрито",
+    "delete_failed": "Неуспешно изтриване",
+    "update_status_success": "Статусът е обновен успешно",
+    "update_status_failed": "Неуспешно обновяване на статуса",
+    "sync_success": "Успешна синхронизация",
+    "sync_failed": "Неуспешна синхронизация",
+    "operation_success": "Операцията е успешна",
+    "operation_failed": "Операцията е неуспешна",
+    "upload_success": "Успешно качване",
+    "upload_failed": "Неуспешно качване",
+    "download_success": "Успешно изтегляне",
+    "download_failed": "Неуспешно изтегляне",
+    "password_mismatch": "Паролите не съвпадат",
+    "success": "Успех",
+    "failed": "Неуспех"
+  },
+  "text": {
+    "do_you_want_delete": "Искате ли да изтриете {moduleName}?",
+    "do_you_want_sync_permissions": "Искате ли да синхронизирате API? Това ще възстанови данните в базата данни. Ако има много API ресурси, може да отнеме известно време, моля изчакайте.",
+    "do_you_want_disable": "Искате ли да деактивирате {moduleName}?"
+  }
+}
