@@ -1,46 +1,97 @@
-# 中后台管理系统前端
+# go-tangra-frontend
 
-## 安装使用
+Vue 3 admin dashboard and management UI for the Go-Tangra platform. Built as a monorepo with shared packages and a single admin application.
 
-- 启用Corepack
+## Features
+
+- **Multi-Module Dashboard** — Unified interface for all platform services
+- **Real-time Updates** — Server-Sent Events (SSE) for live data
+- **Multi-Tenant** — Tenant switching and isolation
+- **Role-Based Access** — Permission-based UI rendering and route guards
+- **Internationalization** — Multi-language support via Vue I18n
+- **Theme Support** — Light/dark modes with Ant Design theming
+
+## Managed Modules
+
+| Module | Functionality |
+|--------|--------------|
+| **System** | Users, roles, permissions, login policies, tasks, dictionaries |
+| **LCM** | Certificates, issuers, permissions, audit logs |
+| **Deployer** | Configurations, jobs, deployment targets |
+| **IPAM** | Subnets, IP addresses, devices, VLANs, locations, host groups |
+| **Warden** | Secrets, folders, permissions |
+| **Paperless** | Documents, categories, permissions |
+| **Logs** | API audit, login audit, operation logs |
+
+## Tech Stack
+
+- **Framework**: Vue 3.5, Vue Router 4, Pinia
+- **UI**: Ant Design Vue 4, Tailwind CSS 3, shadcn/ui
+- **Build**: Vite 6, Turbo (monorepo), pnpm
+- **Charts**: ECharts 5
+- **Tables**: VXE Table 4
+- **Language**: TypeScript 5.6
+
+## Quick Start
 
 ```bash
-corepack enable
-```
-
-- 安装依赖
-
-```bash
+# Install dependencies (requires pnpm >= 9.12.0, Node.js >= 20.10.0)
 pnpm install
-```
 
-- 调试运行
-
-```bash
+# Start development server
 pnpm dev
-```
 
-- 构建打包
-
-```bash
+# Production build
 pnpm build
+
+# Type checking
+pnpm check:type
+
+# Lint and format
+pnpm lint
+pnpm format
 ```
 
-- 查看ESlint
+## Project Structure
+
+```
+apps/
+└── admin/                 # Main admin dashboard (@vben/web-antd)
+    ├── src/views/         # Feature pages (116 components)
+    ├── src/stores/        # Pinia state stores (52+ stores)
+    ├── src/router/        # Route configuration
+    └── src/generated/     # Auto-generated API types
+packages/
+├── types/                 # Shared TypeScript types
+├── constants/             # Enums and constants
+├── stores/                # Global Pinia stores
+├── styles/                # SCSS/Tailwind styles
+├── effects/               # Composables, hooks, plugins
+│   ├── request/           # HTTP client (Axios)
+│   ├── hooks/             # Vue composables
+│   ├── common-ui/         # Shared UI components
+│   ├── layouts/           # Layout system
+│   └── access/            # Permission directives
+└── @core/                 # Core framework
+    ├── composables/       # Core Vue composables
+    └── ui-kit/            # Form, popup, menu, tabs components
+```
+
+## Docker
 
 ```bash
-npx eslint --inspect-config
+# Build image
+docker build -t go-tangra-frontend .
+
+# Run
+docker run -p 8080:8080 go-tangra-frontend
 ```
 
-## API文档
+Multi-stage build: Node.js builder + Nginx production image. Runs as non-root user (UID 1000) with GZIP compression and API proxying.
 
-- 本地文档（内嵌在服务端）： <http://localhost:7788/docs/>
-- 远端文档： <https://apifox.com/apidoc/shared-fd4db0fc-f515-4423-85e5-59ad9aaa6a1a>
+## API Integration
 
-## Mock
-
-https://apifoxmock.com/m1/5619700-5299226-default/admin/v1
-
-## WebStorm相关
-
-1. `Ctrl+Alt+L`的格式化快捷键需要手动绑定到ESlint fix。
+- REST API via Axios with interceptors
+- SSE for real-time updates
+- Auto-generated types from backend OpenAPI specs
+- Development proxy to `http://localhost:5320/api`
