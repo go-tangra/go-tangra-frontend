@@ -30,6 +30,7 @@ export * from './user.state';
 export * from './lcm-audit-log.state';
 export * from './lcm-certificate.state';
 export * from './lcm-certificate-job.state';
+export * from './lcm-issued-certificate.state';
 export * from './lcm-certificate-permission.state';
 export * from './lcm-issuer.state';
 export * from './lcm-mtls-certificate-request.state';

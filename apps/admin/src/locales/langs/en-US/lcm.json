@@ -8,6 +8,7 @@
     "certificatePermission": "Certificate Permissions",
     "issuer": "Issuers",
     "tenantSecret": "Tenant Secrets",
+    "issuedCertificate": "Issued Certificates",
     "auditLog": "Audit Logs"
   },
   "page": {
@@ -238,6 +239,20 @@
         "rotate": "Rotate Secret"
       }
     },
+    "issuedCertificate": {
+      "moduleName": "Issued Certificate",
+      "commonName": "Common Name",
+      "domains": "Domains",
+      "issuerName": "Issuer",
+      "issuerType": "Issuer Type",
+      "expiresAt": "Expires At",
+      "autoRenew": "Auto Renew",
+      "autoRenewDays": "Renew Before (days)",
+      "keyType": "Key Type",
+      "keySize": "Key Size",
+      "errorMessage": "Error Message",
+      "details": "Certificate Details"
+    },
     "auditLog": {
       "moduleName": "LCM Audit Log",
       "auditId": "Audit ID",
@@ -269,6 +284,15 @@
       "completed": "Completed",
       "failed": "Failed",
       "cancelled": "Cancelled"
+    },
+    "issuedCertStatus": {
+      "issued": "Issued",
+      "pending": "Pending",
+      "processing": "Processing",
+      "failed": "Failed",
+      "expired": "Expired",
+      "revoked": "Revoked",
+      "renewed": "Renewed"
     },
     "issuerStatus": {
       "active": "Active",

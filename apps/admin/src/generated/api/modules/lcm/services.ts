@@ -289,6 +289,56 @@ export const StatisticsService = {
   },
 };
 
+// ==================== Issued Certificate Service ====================
+
+export interface IssuedCertificateInfo {
+  id?: string;
+  commonName?: string;
+  domains?: string[];
+  issuerName?: string;
+  issuerType?: string;
+  status?: string;
+  expiresAt?: string;
+  autoRenewEnabled?: boolean;
+  autoRenewDaysBeforeExpiry?: number;
+  keyType?: string;
+  keySize?: number;
+  errorMessage?: string;
+  createdAt?: string;
+  updatedAt?: string;
+}
+
+export interface ListIssuedCertificatesResponse {
+  certificates?: IssuedCertificateInfo[];
+  total?: number;
+}
+
+export interface GetIssuedCertificateResponse {
+  certificate?: IssuedCertificateInfo;
+}
+
+export const IssuedCertificateService = {
+  list: async (
+    params?: {
+      status?: string;
+      issuerName?: string;
+      autoRenewEnabled?: boolean;
+      page?: number;
+      pageSize?: number;
+    },
+    options?: RequestOptions
+  ): Promise<ListIssuedCertificatesResponse> => {
+    return lcmApi.get<ListIssuedCertificatesResponse>(
+      `/issued-certificates${buildQuery(params || {})}`,
+      options
+    );
+  },
+
+  get: async (id: string, options?: RequestOptions): Promise<GetIssuedCertificateResponse> => {
+    return lcmApi.get<GetIssuedCertificateResponse>(`/issued-certificates/${id}`, options);
+  },
+};
+
 // ==================== System Service ====================
 
 export const SystemService = {

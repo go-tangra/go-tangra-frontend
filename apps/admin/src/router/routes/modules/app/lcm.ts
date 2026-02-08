@@ -49,6 +49,17 @@ const lcm: RouteRecordRaw[] = [
           import('#/views/app/lcm/mtls-certificate-request/index.vue'),
       },
       {
+        path: 'issued-certificates',
+        name: 'IssuedCertificateManagement',
+        meta: {
+          icon: 'lucide:award',
+          title: $t('lcm.menu.issuedCertificate'),
+          authority: ['platform:admin'],
+        },
+        component: () =>
+          import('#/views/app/lcm/issued-certificate/index.vue'),
+      },
+      {
         path: 'certificate-jobs',
         name: 'CertificateJobManagement',
         meta: {
