@@ -59,17 +59,21 @@ COPY nginx.conf /etc/nginx/nginx.conf
 COPY docker-entrypoint.sh /docker-entrypoint.sh
 RUN chmod +x /docker-entrypoint.sh
 
-# Create non-root user
+# Remove default nginx site config (entrypoint generates it dynamically)
+RUN rm -f /etc/nginx/conf.d/default.conf
+
+# Create non-root user and ensure conf.d is writable for entrypoint
 RUN addgroup -g 1000 frontend && \
     adduser -D -u 1000 -G frontend frontend && \
     chown -R frontend:frontend /usr/share/nginx/html && \
     chown -R frontend:frontend /var/cache/nginx && \
     chown -R frontend:frontend /var/log/nginx && \
+    chown -R frontend:frontend /etc/nginx/conf.d && \
     touch /var/run/nginx.pid && \
     chown -R frontend:frontend /var/run/nginx.pid
 
-# Expose port
-EXPOSE 8080
+# Expose ports (8080 for HTTP dev, 80/443 for production SSL)
+EXPOSE 8080 80 443
 
 # Set default environment variables
 ENV VITE_GLOB_API_URL=http://localhost:8080
