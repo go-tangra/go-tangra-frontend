@@ -94,6 +94,18 @@ LOCATIONS
             chunked_transfer_encoding off;
         }
 
+        # Public sharing endpoint (no auth, proxied to sharing-service HTTP)
+        location /public/v1/sharing/ {
+LOCATIONS
+    echo "            proxy_pass http://${SHARING_HTTP_HOST:-sharing-service}:${SHARING_HTTP_PORT:-9601}/api/v1/;"
+    cat << 'LOCATIONS'
+            proxy_http_version 1.1;
+            proxy_set_header Host $host;
+            proxy_set_header X-Real-IP $remote_addr;
+            proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+            proxy_set_header X-Forwarded-Proto $scheme;
+        }
+
         # Health check endpoint
         location /health {
             access_log off;

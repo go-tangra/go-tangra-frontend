@@ -54,6 +54,8 @@ export * from './ipam-host-group.state';
 export * from './paperless-category.state';
 export * from './paperless-document.state';
 export * from './paperless-permission.state';
+export * from './sharing-share.state';
+export * from './sharing-template.state';
 
 export const enableList = computed(() => [
   { value: 'true', label: $t('enum.enable.true') },

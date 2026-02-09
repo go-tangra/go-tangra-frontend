@@ -30,6 +30,17 @@ const coreRoutes: RouteRecordRaw[] = [
     redirect: DEFAULT_HOME_PATH,
   },
   {
+    meta: {
+      hideInMenu: true,
+      hideInTab: true,
+      hideInBreadcrumb: true,
+      title: 'Shared Content',
+    },
+    name: 'SharedContent',
+    path: '/shared/:token',
+    component: () => import('#/views/app/sharing/shared/view-shared.vue'),
+  },
+  {
     component: AuthPageLayout,
     meta: {
       hideInTab: true,

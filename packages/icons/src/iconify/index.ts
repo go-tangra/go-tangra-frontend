@@ -95,3 +95,10 @@ export const LucideFolderPlus = createIconifyIcon('lucide:folder-plus');
 export const LucideFolderTree = createIconifyIcon('lucide:folder-tree');
 export const LucideSearch = createIconifyIcon('lucide:search');
 
+// Sharing icons
+export const LucideShare2 = createIconifyIcon('lucide:share-2');
+export const LucideMailPlus = createIconifyIcon('lucide:mail-plus');
+export const LucideMail = createIconifyIcon('lucide:mail');
+export const LucideLink = createIconifyIcon('lucide:link');
+export const LucideBan = createIconifyIcon('lucide:ban');
+

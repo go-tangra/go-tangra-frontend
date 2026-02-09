@@ -16,6 +16,7 @@ import {
   LucideKey,
   LucideUpload,
   LucideDownload,
+  LucideShare2,
 } from '@vben/icons';
 
 import {
@@ -37,7 +38,7 @@ import {
   type ExportToBitwardenResponse,
 } from '#/generated/api/modules/warden';
 import { $t } from '#/locales';
-import { useWardenFolderStore, useWardenSecretStore } from '#/stores';
+import { useWardenFolderStore, useWardenSecretStore, useSharingShareStore } from '#/stores';
 
 import FolderDrawer from './folder-drawer.vue';
 import SecretDrawer from '../secret/secret-drawer.vue';
@@ -47,6 +48,7 @@ import BitwardenImportModal from '../secret/bitwarden-import-modal.vue';
 
 const folderStore = useWardenFolderStore();
 const secretStore = useWardenSecretStore();
+const sharingStore = useSharingShareStore();
 
 // Folder tree state
 const folderTree = ref<FolderTreeNode[]>([]);
@@ -288,6 +290,39 @@ function handleViewPermissions(row: Secret) {
     resourceName: row.name,
   });
   permissionDrawerApi.open();
+}
+
+// Share secret
+const shareModalVisible = ref(false);
+const shareSecretRow = ref<Secret | null>(null);
+const shareEmail = ref('');
+const shareMessage = ref('');
+const shareLoading = ref(false);
+
+function handleShareSecret(row: Secret) {
+  shareSecretRow.value = row;
+  shareEmail.value = '';
+  shareMessage.value = '';
+  shareModalVisible.value = true;
+}
+
+async function handleShareSubmit() {
+  if (!shareSecretRow.value?.id || !shareEmail.value) return;
+  shareLoading.value = true;
+  try {
+    await sharingStore.createShare({
+      resourceType: 'RESOURCE_TYPE_SECRET',
+      resourceId: shareSecretRow.value.id,
+      recipientEmail: shareEmail.value,
+      message: shareMessage.value || undefined,
+    });
+    notification.success({ message: 'Share link created and email sent' });
+    shareModalVisible.value = false;
+  } catch {
+    notification.error({ message: 'Failed to create share' });
+  } finally {
+    shareLoading.value = false;
+  }
 }
 
 // Folder operations
@@ -548,6 +583,13 @@ const selectedFolderName = computed(() => {
               <Button
                 type="link"
                 size="small"
+                :icon="h(LucideShare2)"
+                title="Share"
+                @click.stop="handleShareSecret(row)"
+              />
+              <Button
+                type="link"
+                size="small"
                 :icon="h(LucideKey)"
                 :title="$t('warden.page.permission.title')"
                 @click.stop="handleViewPermissions(row)"
@@ -581,5 +623,33 @@ const selectedFolderName = computed(() => {
       :folder-id="selectedFolderId"
       @success="handleImportSuccess"
     />
+
+    <!-- Share Secret Modal -->
+    <Modal
+      v-model:open="shareModalVisible"
+      title="Share Secret"
+      :confirm-loading="shareLoading"
+      @ok="handleShareSubmit"
+    >
+      <div v-if="shareSecretRow" style="margin-bottom: 16px">
+        Sharing: <strong>{{ shareSecretRow.name }}</strong>
+      </div>
+      <div style="margin-bottom: 12px">
+        <label style="display: block; margin-bottom: 4px; font-weight: 500">Recipient Email *</label>
+        <a-input
+          v-model:value="shareEmail"
+          placeholder="Enter recipient email"
+          type="email"
+        />
+      </div>
+      <div>
+        <label style="display: block; margin-bottom: 4px; font-weight: 500">Message (optional)</label>
+        <a-textarea
+          v-model:value="shareMessage"
+          :rows="3"
+          placeholder="Optional message to include in the email"
+        />
+      </div>
+    </Modal>
   </Page>
 </template>
