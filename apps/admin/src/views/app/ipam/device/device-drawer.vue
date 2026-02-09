@@ -271,9 +271,9 @@ async function handleSubmit() {
         message: $t('ipam.page.device.createSuccess'),
       });
     } else if (isEditMode.value && data.value?.row?.id) {
-      const updateMask = ['name', 'description', 'device_type', 'status', 'location_id', 'serial_number', 'manufacturer', 'model'];
+      const updateMask = ['name', 'description', 'deviceType', 'status', 'locationId', 'serialNumber', 'manufacturer', 'model'];
       if (isRackLocation.value) {
-        updateMask.push('rack_id', 'rack_position', 'device_height_u');
+        updateMask.push('rackId', 'rackPosition', 'deviceHeightU');
       }
       await deviceStore.updateDevice(
         data.value.row.id,

@@ -142,9 +142,9 @@ async function handleSubmit() {
         message: $t('ipam.page.location.createSuccess'),
       });
     } else if (isEditMode.value && data.value?.row?.id) {
-      const updateMask = ['name', 'description', 'location_type', 'address', 'parent_id'];
+      const updateMask = ['name', 'description', 'locationType', 'address', 'parentId'];
       if (isRackType.value) {
-        updateMask.push('rack_size_u');
+        updateMask.push('rackSizeU');
       }
       await locationStore.updateLocation(
         data.value.row.id,

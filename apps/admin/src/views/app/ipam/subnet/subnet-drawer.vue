@@ -496,7 +496,7 @@ async function handleSubmit() {
           vlanId: formState.value.vlanId,
           locationId: formState.value.locationId,
         },
-        ['name', 'gateway', 'dns_servers', 'description', 'vlan_id', 'location_id'],
+        ['name', 'gateway', 'dnsServers', 'description', 'vlanId', 'locationId'],
       );
       notification.success({
         message: $t('ipam.page.subnet.updateSuccess'),
