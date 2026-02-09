@@ -39,10 +39,10 @@ export const useLcmIssuedCertificateStore = defineStore('lcm-issued-certificate'
   }
 
   /**
-   * Get a single issued certificate
+   * Get a single issued certificate (with optional PEM data)
    */
-  async function getCertificate(id: string): Promise<GetIssuedCertificateResponse> {
-    return await IssuedCertificateService.get(id);
+  async function getCertificate(id: string, includePrivateKey?: boolean): Promise<GetIssuedCertificateResponse> {
+    return await IssuedCertificateService.get(id, { includePrivateKey });
   }
 
   function $reset() {}

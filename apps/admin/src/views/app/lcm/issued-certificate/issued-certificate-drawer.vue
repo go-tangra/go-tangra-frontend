@@ -3,18 +3,22 @@ import { ref, computed } from 'vue';
 
 import { useVbenDrawer } from '@vben/common-ui';
 
-import { Descriptions, DescriptionsItem, Tag, Divider, Typography, Spin } from 'ant-design-vue';
+import { Descriptions, DescriptionsItem, Tag, Divider, Typography, Spin, Button } from 'ant-design-vue';
 
-import { type IssuedCertificateInfo } from '#/generated/api/modules/lcm';
+import {
+  type IssuedCertificateInfo,
+  type GetIssuedCertificateResponse,
+} from '#/generated/api/modules/lcm';
 import { $t } from '#/locales';
 import { useLcmIssuedCertificateStore } from '#/stores';
+import { downloadFile } from '#/utils';
 
-const { Text } = Typography;
+const { Paragraph, Text } = Typography;
 
 const issuedCertStore = useLcmIssuedCertificateStore();
 
 const data = ref<{ row: IssuedCertificateInfo }>();
-const certDetails = ref<IssuedCertificateInfo | null>(null);
+const certResponse = ref<GetIssuedCertificateResponse | null>(null);
 const loading = ref(false);
 
 function statusToColor(status: string | undefined) {
@@ -71,8 +75,8 @@ function formatDateTime(value: string | undefined) {
 async function loadCertificateDetails(id: string) {
   loading.value = true;
   try {
-    const resp = await issuedCertStore.getCertificate(id);
-    certDetails.value = resp.certificate ?? null;
+    const resp = await issuedCertStore.getCertificate(id, true);
+    certResponse.value = resp;
   } catch (error) {
     console.error('Failed to load certificate details:', error);
   } finally {
@@ -92,7 +96,7 @@ const [Drawer, drawerApi] = useVbenDrawer({
   onOpenChange(isOpen) {
     if (isOpen) {
       data.value = drawerApi.getData() as typeof data.value;
-      certDetails.value = null;
+      certResponse.value = null;
 
       if (data.value?.row?.id) {
         loadCertificateDetails(data.value.row.id);
@@ -101,7 +105,28 @@ const [Drawer, drawerApi] = useVbenDrawer({
   },
 });
 
-const cert = computed(() => certDetails.value ?? data.value?.row);
+const cert = computed(() => certResponse.value?.certificate ?? data.value?.row);
+
+function handleDownloadCert() {
+  if (certResponse.value?.certificatePem) {
+    const cn = cert.value?.commonName ?? 'certificate';
+    downloadFile(certResponse.value.certificatePem, `${cn}.pem`);
+  }
+}
+
+function handleDownloadCaCert() {
+  if (certResponse.value?.caCertificatePem) {
+    const cn = cert.value?.commonName ?? 'ca';
+    downloadFile(certResponse.value.caCertificatePem, `${cn}_ca.pem`);
+  }
+}
+
+function handleDownloadKey() {
+  if (certResponse.value?.privateKeyPem) {
+    const cn = cert.value?.commonName ?? 'private';
+    downloadFile(certResponse.value.privateKeyPem, `${cn}_key.pem`);
+  }
+}
 </script>
 
 <template>
@@ -168,6 +193,56 @@ const cert = computed(() => certDetails.value ?? data.value?.row);
             {{ formatDateTime(cert.createdAt) }}
           </DescriptionsItem>
         </Descriptions>
+
+        <!-- Certificate PEM data -->
+        <template v-if="certResponse?.certificatePem">
+          <Divider>{{ $t('lcm.page.issuedCertificate.certificatePem') }}</Divider>
+          <div style="margin-bottom: 8px;">
+            <Button size="small" type="primary" @click="handleDownloadCert">
+              {{ $t('lcm.page.issuedCertificate.downloadCert') }}
+            </Button>
+            <Button v-if="certResponse?.caCertificatePem" size="small" style="margin-left: 8px;" @click="handleDownloadCaCert">
+              {{ $t('lcm.page.issuedCertificate.downloadCaCert') }}
+            </Button>
+          </div>
+          <Paragraph
+            :copyable="{ text: certResponse.certificatePem }"
+            style="margin-bottom: 0; font-family: monospace; font-size: 11px; max-height: 200px; overflow: auto;"
+          >
+            <pre style="margin: 0; white-space: pre-wrap; word-break: break-all;">{{ certResponse.certificatePem }}</pre>
+          </Paragraph>
+        </template>
+
+        <!-- CA Certificate PEM -->
+        <template v-if="certResponse?.caCertificatePem">
+          <Divider>{{ $t('lcm.page.issuedCertificate.caCertificatePem') }}</Divider>
+          <Paragraph
+            :copyable="{ text: certResponse.caCertificatePem }"
+            style="margin-bottom: 0; font-family: monospace; font-size: 11px; max-height: 150px; overflow: auto;"
+          >
+            <pre style="margin: 0; white-space: pre-wrap; word-break: break-all;">{{ certResponse.caCertificatePem }}</pre>
+          </Paragraph>
+        </template>
+
+        <!-- Private Key PEM -->
+        <template v-if="certResponse?.privateKeyPem">
+          <Divider>{{ $t('lcm.page.issuedCertificate.privateKeyPem') }}</Divider>
+          <div style="margin-bottom: 8px;">
+            <Button size="small" type="primary" @click="handleDownloadKey">
+              {{ $t('lcm.page.issuedCertificate.downloadKey') }}
+            </Button>
+          </div>
+          <Paragraph
+            :copyable="{ text: certResponse.privateKeyPem }"
+            style="margin-bottom: 0; font-family: monospace; font-size: 11px; max-height: 150px; overflow: auto; background: #fff7e6;"
+          >
+            <pre style="margin: 0; white-space: pre-wrap; word-break: break-all;">{{ certResponse.privateKeyPem }}</pre>
+          </Paragraph>
+        </template>
+        <template v-else-if="certResponse && !certResponse.serverGeneratedKey">
+          <Divider>{{ $t('lcm.page.issuedCertificate.privateKeyPem') }}</Divider>
+          <Text type="secondary">{{ $t('lcm.page.issuedCertificate.keyNotAvailable') }}</Text>
+        </template>
 
         <template v-if="cert.errorMessage">
           <Divider>{{ $t('lcm.page.issuedCertificate.errorMessage') }}</Divider>

@@ -315,6 +315,10 @@ export interface ListIssuedCertificatesResponse {
 
 export interface GetIssuedCertificateResponse {
   certificate?: IssuedCertificateInfo;
+  certificatePem?: string;
+  caCertificatePem?: string;
+  privateKeyPem?: string;
+  serverGeneratedKey?: boolean;
 }
 
 export const IssuedCertificateService = {
@@ -334,8 +338,15 @@ export const IssuedCertificateService = {
     );
   },
 
-  get: async (id: string, options?: RequestOptions): Promise<GetIssuedCertificateResponse> => {
-    return lcmApi.get<GetIssuedCertificateResponse>(`/issued-certificates/${id}`, options);
+  get: async (
+    id: string,
+    params?: { includePrivateKey?: boolean },
+    options?: RequestOptions
+  ): Promise<GetIssuedCertificateResponse> => {
+    return lcmApi.get<GetIssuedCertificateResponse>(
+      `/issued-certificates/${id}${buildQuery(params || {})}`,
+      options
+    );
   },
 };
 

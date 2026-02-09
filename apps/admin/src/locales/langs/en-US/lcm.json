@@ -251,7 +251,18 @@
       "keyType": "Key Type",
       "keySize": "Key Size",
       "errorMessage": "Error Message",
-      "details": "Certificate Details"
+      "details": "Certificate Details",
+      "certificatePem": "Certificate PEM",
+      "caCertificatePem": "CA Certificate PEM",
+      "privateKeyPem": "Private Key PEM",
+      "downloadCert": "Download Certificate",
+      "downloadCaCert": "Download CA Certificate",
+      "downloadKey": "Download Private Key",
+      "downloadSuccess": "Downloaded successfully",
+      "downloadFailed": "Download failed",
+      "noCertificate": "No certificate available",
+      "noPrivateKey": "No private key available",
+      "keyNotAvailable": "Private key not available (key was not server-generated)"
     },
     "auditLog": {
       "moduleName": "LCM Audit Log",

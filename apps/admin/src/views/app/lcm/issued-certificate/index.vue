@@ -4,12 +4,15 @@ import type { VxeGridProps } from '#/adapter/vxe-table';
 import { h, computed, ref } from 'vue';
 
 import { Page, useVbenDrawer, type VbenFormProps } from '@vben/common-ui';
-import { LucideEye } from '@vben/icons';
+import { LucideEye, LucideDownload, LucideKeyRound } from '@vben/icons';
+
+import { notification } from 'ant-design-vue';
 
 import { useVbenVxeGrid } from '#/adapter/vxe-table';
 import { type IssuedCertificateInfo } from '#/generated/api/modules/lcm';
 import { $t } from '#/locales';
 import { useLcmIssuedCertificateStore, useLcmIssuerStore } from '#/stores';
+import { downloadFile } from '#/utils';
 
 import IssuedCertificateDrawer from './issued-certificate-drawer.vue';
 
@@ -70,6 +73,12 @@ function statusToColor(status: string | undefined) {
 function statusToName(status: string | undefined) {
   const item = statusList.value.find((s) => s.value === status);
   return item?.label ?? status ?? '';
+}
+
+function isIssued(row: IssuedCertificateInfo) {
+  return row.status === 'ISSUED_CERTIFICATE_STATUS_ISSUED' ||
+         row.status === 'ISSUED_CERTIFICATE_STATUS_RENEWED' ||
+         row.status === 'ISSUED_CERTIFICATE_STATUS_EXPIRED';
 }
 
 const formOptions: VbenFormProps = {
@@ -184,7 +193,7 @@ const gridOptions: VxeGridProps<IssuedCertificateInfo> = {
       field: 'action',
       fixed: 'right',
       slots: { default: 'action' },
-      width: 80,
+      width: 160,
     },
   ],
 };
@@ -204,6 +213,36 @@ const [Drawer, drawerApi] = useVbenDrawer({
 function handleView(row: IssuedCertificateInfo) {
   drawerApi.setData({ row });
   drawerApi.open();
+}
+
+async function handleDownloadCert(row: IssuedCertificateInfo) {
+  if (!row.id) return;
+  try {
+    const resp = await issuedCertStore.getCertificate(row.id);
+    if (!resp.certificatePem) {
+      notification.error({ message: $t('lcm.page.issuedCertificate.noCertificate') });
+      return;
+    }
+    downloadFile(resp.certificatePem, `${row.commonName ?? 'certificate'}.pem`);
+    notification.success({ message: $t('lcm.page.issuedCertificate.downloadSuccess') });
+  } catch {
+    notification.error({ message: $t('lcm.page.issuedCertificate.downloadFailed') });
+  }
+}
+
+async function handleDownloadKey(row: IssuedCertificateInfo) {
+  if (!row.id) return;
+  try {
+    const resp = await issuedCertStore.getCertificate(row.id, true);
+    if (!resp.privateKeyPem) {
+      notification.error({ message: $t('lcm.page.issuedCertificate.noPrivateKey') });
+      return;
+    }
+    downloadFile(resp.privateKeyPem, `${row.commonName ?? 'private'}_key.pem`);
+    notification.success({ message: $t('lcm.page.issuedCertificate.downloadSuccess') });
+  } catch {
+    notification.error({ message: $t('lcm.page.issuedCertificate.downloadFailed') });
+  }
 }
 </script>
 
@@ -229,6 +268,20 @@ function handleView(row: IssuedCertificateInfo) {
           :icon="h(LucideEye)"
           :title="$t('ui.button.view')"
           @click.stop="handleView(row)"
+        />
+        <a-button
+          v-if="isIssued(row)"
+          type="link"
+          :icon="h(LucideDownload)"
+          :title="$t('lcm.page.issuedCertificate.downloadCert')"
+          @click.stop="handleDownloadCert(row)"
+        />
+        <a-button
+          v-if="isIssued(row)"
+          type="link"
+          :icon="h(LucideKeyRound)"
+          :title="$t('lcm.page.issuedCertificate.downloadKey')"
+          @click.stop="handleDownloadKey(row)"
         />
       </template>
     </Grid>
