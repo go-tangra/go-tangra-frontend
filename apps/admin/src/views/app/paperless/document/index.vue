@@ -14,6 +14,9 @@ import {
   LucideFolderOpen,
   LucideKey,
   LucideUpload,
+  LucideShare2,
+  LucidePlus,
+  LucideX,
 } from '@vben/icons';
 
 import {
@@ -26,6 +29,9 @@ import {
   Button,
   Modal,
   Tag,
+  Select,
+  SelectOption,
+  Divider,
 } from 'ant-design-vue';
 import type { Key } from 'ant-design-vue/es/_util/type';
 
@@ -34,7 +40,8 @@ import {
   type paperlessservicev1_Document,
 } from '#/generated/api/admin/service/v1';
 import { $t } from '#/locales';
-import { usePaperlessCategoryStore, usePaperlessDocumentStore } from '#/stores';
+import type { CreateSharePolicyInput, SharePolicyType, SharePolicyMethod } from '#/generated/api/modules/sharing/services';
+import { usePaperlessCategoryStore, usePaperlessDocumentStore, useSharingShareStore } from '#/stores';
 
 import DocumentDrawer from './document-drawer.vue';
 import DocumentPreviewModal from './document-preview-modal.vue';
@@ -43,6 +50,7 @@ import CategoryDrawer from '../category/category-drawer.vue';
 
 const categoryStore = usePaperlessCategoryStore();
 const documentStore = usePaperlessDocumentStore();
+const sharingStore = useSharingShareStore();
 
 // Category tree node interface (matches store return type)
 interface CategoryTreeNode {
@@ -219,7 +227,7 @@ const gridOptions: VxeGridProps<paperlessservicev1_Document> = {
       field: 'action',
       fixed: 'right',
       slots: { default: 'action' },
-      width: 180,
+      width: 220,
     },
   ],
 };
@@ -459,6 +467,86 @@ function getStatusLabel(status: string | undefined): string {
       return '-';
   }
 }
+
+// Share document
+const shareModalVisible = ref(false);
+const shareDocumentRow = ref<paperlessservicev1_Document | null>(null);
+const shareEmail = ref('');
+const shareMessage = ref('');
+const shareLoading = ref(false);
+const sharePolicies = ref<CreateSharePolicyInput[]>([]);
+const showPolicyForm = ref(false);
+const policyType = ref<SharePolicyType>('SHARE_POLICY_TYPE_WHITELIST');
+const policyMethod = ref<SharePolicyMethod>('SHARE_POLICY_METHOD_IP');
+const policyValue = ref('');
+const policyReason = ref('');
+
+const policyMethodOptions: { value: SharePolicyMethod; label: string; placeholder: string }[] = [
+  { value: 'SHARE_POLICY_METHOD_IP', label: 'IP Address', placeholder: 'e.g. 192.168.1.1' },
+  { value: 'SHARE_POLICY_METHOD_NETWORK', label: 'Network (CIDR)', placeholder: 'e.g. 10.1.111.0/24' },
+  { value: 'SHARE_POLICY_METHOD_MAC', label: 'MAC Address', placeholder: 'e.g. AA:BB:CC:DD:EE:FF' },
+  { value: 'SHARE_POLICY_METHOD_REGION', label: 'Region', placeholder: 'e.g. US, DE, BG' },
+  { value: 'SHARE_POLICY_METHOD_TIME', label: 'Time Window', placeholder: 'e.g. 09:00-17:00' },
+  { value: 'SHARE_POLICY_METHOD_DEVICE', label: 'Device', placeholder: 'e.g. mobile, desktop' },
+];
+
+const currentPlaceholder = computed(() => {
+  return policyMethodOptions.find(o => o.value === policyMethod.value)?.placeholder || '';
+});
+
+function handleShareDocument(row: paperlessservicev1_Document) {
+  shareDocumentRow.value = row;
+  shareEmail.value = '';
+  shareMessage.value = '';
+  sharePolicies.value = [];
+  showPolicyForm.value = false;
+  shareModalVisible.value = true;
+}
+
+function handleAddPolicy() {
+  if (!policyValue.value) return;
+  sharePolicies.value.push({
+    type: policyType.value,
+    method: policyMethod.value,
+    value: policyValue.value,
+    reason: policyReason.value || undefined,
+  });
+  policyValue.value = '';
+  policyReason.value = '';
+  showPolicyForm.value = false;
+}
+
+function handleRemovePolicy(index: number) {
+  sharePolicies.value.splice(index, 1);
+}
+
+function getPolicyTypeLabel(type: SharePolicyType) {
+  return type === 'SHARE_POLICY_TYPE_WHITELIST' ? 'Allow' : 'Deny';
+}
+
+function getPolicyMethodLabel(method: SharePolicyMethod) {
+  return policyMethodOptions.find(o => o.value === method)?.label || method;
+}
+
+async function handleShareSubmit() {
+  if (!shareDocumentRow.value?.id || !shareEmail.value) return;
+  shareLoading.value = true;
+  try {
+    await sharingStore.createShare({
+      resourceType: 'RESOURCE_TYPE_DOCUMENT',
+      resourceId: shareDocumentRow.value.id,
+      recipientEmail: shareEmail.value,
+      message: shareMessage.value || undefined,
+      policies: sharePolicies.value.length > 0 ? sharePolicies.value : undefined,
+    });
+    notification.success({ message: 'Share link created and email sent' });
+    shareModalVisible.value = false;
+  } catch {
+    notification.error({ message: 'Failed to create share' });
+  } finally {
+    shareLoading.value = false;
+  }
+}
 </script>
 
 <template>
@@ -595,6 +683,13 @@ function getStatusLabel(status: string | undefined): string {
               <Button
                 type="link"
                 size="small"
+                :icon="h(LucideShare2)"
+                title="Share"
+                @click.stop="handleShareDocument(row)"
+              />
+              <Button
+                type="link"
+                size="small"
                 :icon="h(LucideKey)"
                 :title="$t('paperless.page.permission.title')"
                 @click.stop="handleViewPermissions(row)"
@@ -626,5 +721,100 @@ function getStatusLabel(status: string | undefined): string {
       v-model:open="previewVisible"
       :document-id="previewDocumentId"
     />
+
+    <!-- Share Document Modal -->
+    <Modal
+      v-model:open="shareModalVisible"
+      title="Share Document"
+      :confirm-loading="shareLoading"
+      :width="560"
+      @ok="handleShareSubmit"
+    >
+      <div v-if="shareDocumentRow" style="margin-bottom: 16px">
+        Sharing: <strong>{{ shareDocumentRow.name }}</strong>
+      </div>
+      <div style="margin-bottom: 12px">
+        <label style="display: block; margin-bottom: 4px; font-weight: 500">Recipient Email *</label>
+        <a-input
+          v-model:value="shareEmail"
+          placeholder="Enter recipient email"
+          type="email"
+        />
+      </div>
+      <div style="margin-bottom: 12px">
+        <label style="display: block; margin-bottom: 4px; font-weight: 500">Message (optional)</label>
+        <a-textarea
+          v-model:value="shareMessage"
+          :rows="2"
+          placeholder="Optional message to include in the email"
+        />
+      </div>
+
+      <Divider style="margin: 12px 0 8px">Access Restrictions</Divider>
+
+      <!-- Existing policies list -->
+      <div v-if="sharePolicies.length > 0" style="margin-bottom: 8px">
+        <div
+          v-for="(policy, idx) in sharePolicies"
+          :key="idx"
+          style="display: flex; align-items: center; gap: 8px; padding: 6px 8px; background: #f5f5f5; border-radius: 4px; margin-bottom: 4px; font-size: 13px"
+        >
+          <a-tag :color="policy.type === 'SHARE_POLICY_TYPE_WHITELIST' ? 'green' : 'red'" style="margin: 0">
+            {{ getPolicyTypeLabel(policy.type) }}
+          </a-tag>
+          <span style="font-weight: 500">{{ getPolicyMethodLabel(policy.method) }}</span>
+          <span style="flex: 1; color: #666">{{ policy.value }}</span>
+          <span v-if="policy.reason" style="color: #999; font-size: 12px">({{ policy.reason }})</span>
+          <Button type="text" size="small" danger :icon="h(LucideX)" @click="handleRemovePolicy(idx)" />
+        </div>
+      </div>
+
+      <!-- Add policy form -->
+      <div v-if="showPolicyForm" style="border: 1px solid #d9d9d9; border-radius: 6px; padding: 12px; margin-bottom: 8px">
+        <div style="display: flex; gap: 8px; margin-bottom: 8px">
+          <Select v-model:value="policyType" style="width: 130px" size="small">
+            <SelectOption value="SHARE_POLICY_TYPE_WHITELIST">Allow</SelectOption>
+            <SelectOption value="SHARE_POLICY_TYPE_BLACKLIST">Deny</SelectOption>
+          </Select>
+          <Select v-model:value="policyMethod" style="width: 160px" size="small">
+            <SelectOption
+              v-for="opt in policyMethodOptions"
+              :key="opt.value"
+              :value="opt.value"
+            >{{ opt.label }}</SelectOption>
+          </Select>
+        </div>
+        <div style="display: flex; gap: 8px; margin-bottom: 8px">
+          <a-input
+            v-model:value="policyValue"
+            size="small"
+            :placeholder="currentPlaceholder"
+            style="flex: 1"
+            @press-enter="handleAddPolicy"
+          />
+          <a-input
+            v-model:value="policyReason"
+            size="small"
+            placeholder="Reason (optional)"
+            style="flex: 1"
+          />
+        </div>
+        <div style="display: flex; gap: 8px; justify-content: flex-end">
+          <Button size="small" @click="showPolicyForm = false">Cancel</Button>
+          <Button size="small" type="primary" :disabled="!policyValue" @click="handleAddPolicy">Add</Button>
+        </div>
+      </div>
+
+      <Button
+        v-if="!showPolicyForm"
+        type="dashed"
+        size="small"
+        block
+        :icon="h(LucidePlus)"
+        @click="showPolicyForm = true"
+      >
+        Add Restriction
+      </Button>
+    </Modal>
   </Page>
 </template>
