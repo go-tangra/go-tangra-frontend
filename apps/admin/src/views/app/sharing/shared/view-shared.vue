@@ -75,7 +75,7 @@ function downloadFile() {
       <Result v-else-if="error" status="error" :sub-title="error" title="Unable to Load Content" />
 
       <!-- Secret Content -->
-      <template v-else-if="content && content.resourceType === 'SECRET'">
+      <template v-else-if="content && content.resourceType === 'RESOURCE_TYPE_SECRET'">
         <Typography.Title :level="4">
           {{ content.resourceName }}
         </Typography.Title>
@@ -115,7 +115,7 @@ function downloadFile() {
       </template>
 
       <!-- Document Content -->
-      <template v-else-if="content && content.resourceType === 'DOCUMENT'">
+      <template v-else-if="content && content.resourceType === 'RESOURCE_TYPE_DOCUMENT'">
         <Typography.Title :level="4">
           {{ content.resourceName }}
         </Typography.Title>
