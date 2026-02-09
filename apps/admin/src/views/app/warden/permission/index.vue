@@ -77,24 +77,24 @@ const gridOptions: VxeGridProps<PermissionTuple> = {
     { title: $t('ui.table.seq'), type: 'seq', width: 50 },
     {
       title: $t('warden.page.permission.resourceType'),
-      field: 'resource_type',
+      field: 'resourceType',
       width: 120,
       slots: { default: 'resourceType' },
     },
     {
       title: $t('warden.page.permission.resourceId'),
-      field: 'resource_id',
+      field: 'resourceId',
       width: 200,
     },
     {
       title: $t('warden.page.permission.subjectType'),
-      field: 'subject_type',
+      field: 'subjectType',
       width: 100,
       slots: { default: 'subjectType' },
     },
     {
       title: $t('warden.page.permission.subjectId'),
-      field: 'subject_id',
+      field: 'subjectId',
       width: 150,
     },
     {
@@ -105,7 +105,7 @@ const gridOptions: VxeGridProps<PermissionTuple> = {
     },
     {
       title: $t('ui.table.createdAt'),
-      field: 'create_time',
+      field: 'createTime',
       formatter: 'formatDateTime',
       width: 160,
     },
@@ -142,8 +142,8 @@ function handleEditPermission(row: any) {
   drawerMode.value = 'edit';
   permissionDrawerApi.setData({
     mode: 'edit',
-    resourceType: row.resource_type,
-    resourceId: row.resource_id,
+    resourceType: row.resourceType,
+    resourceId: row.resourceId,
     permission: row,
   });
   permissionDrawerApi.open();
@@ -153,10 +153,10 @@ async function handleDeletePermission(row: any) {
   if (!row.id) return;
   try {
     await permissionStore.revokeAccess({
-      resourceType: row.resource_type,
-      resourceId: row.resource_id,
-      subjectType: row.subject_type,
-      subjectId: row.subject_id,
+      resourceType: row.resourceType,
+      resourceId: row.resourceId,
+      subjectType: row.subjectType,
+      subjectId: row.subjectId,
       relation: row.relation,
     });
     notification.success({ message: $t('ui.notification.delete_success') });
@@ -230,12 +230,12 @@ function getRelationColor(relation: string) {
         </Button>
       </template>
       <template #resourceType="{ row }">
-        <Tag>{{ getResourceTypeLabel(row.resource_type) }}</Tag>
+        <Tag>{{ getResourceTypeLabel(row.resourceType) }}</Tag>
       </template>
       <template #subjectType="{ row }">
         <div class="flex items-center gap-1">
           <component :is="LucideUsers" class="size-4" />
-          <span>{{ getSubjectTypeLabel(row.subject_type) }}</span>
+          <span>{{ getSubjectTypeLabel(row.subjectType) }}</span>
         </div>
       </template>
       <template #relation="{ row }">
