@@ -101,5 +101,4 @@ export const LucideMailPlus = createIconifyIcon('lucide:mail-plus');
 export const LucideMail = createIconifyIcon('lucide:mail');
 export const LucideLink = createIconifyIcon('lucide:link');
 export const LucideBan = createIconifyIcon('lucide:ban');
-export const LucideX = createIconifyIcon('lucide:x');
 
