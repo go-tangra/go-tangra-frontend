@@ -28,7 +28,12 @@ import {
   Space,
   Button,
   Modal,
+  Select,
+  SelectOption,
+  Divider,
+  Popconfirm,
 } from 'ant-design-vue';
+import { LucidePlus, LucideX } from '@vben/icons';
 import type { Key } from 'ant-design-vue/es/_util/type';
 
 import { useVbenVxeGrid } from '#/adapter/vxe-table';
@@ -38,6 +43,7 @@ import {
   type ExportToBitwardenResponse,
 } from '#/generated/api/modules/warden';
 import { $t } from '#/locales';
+import type { CreateSharePolicyInput, SharePolicyType, SharePolicyMethod } from '#/generated/api/modules/sharing/services';
 import { useWardenFolderStore, useWardenSecretStore, useSharingShareStore } from '#/stores';
 
 import FolderDrawer from './folder-drawer.vue';
@@ -298,12 +304,58 @@ const shareSecretRow = ref<Secret | null>(null);
 const shareEmail = ref('');
 const shareMessage = ref('');
 const shareLoading = ref(false);
+const sharePolicies = ref<CreateSharePolicyInput[]>([]);
+const showPolicyForm = ref(false);
+const policyType = ref<SharePolicyType>('SHARE_POLICY_TYPE_WHITELIST');
+const policyMethod = ref<SharePolicyMethod>('SHARE_POLICY_METHOD_IP');
+const policyValue = ref('');
+const policyReason = ref('');
+
+const policyMethodOptions: { value: SharePolicyMethod; label: string; placeholder: string }[] = [
+  { value: 'SHARE_POLICY_METHOD_IP', label: 'IP Address', placeholder: 'e.g. 192.168.1.1' },
+  { value: 'SHARE_POLICY_METHOD_NETWORK', label: 'Network (CIDR)', placeholder: 'e.g. 10.1.111.0/24' },
+  { value: 'SHARE_POLICY_METHOD_MAC', label: 'MAC Address', placeholder: 'e.g. AA:BB:CC:DD:EE:FF' },
+  { value: 'SHARE_POLICY_METHOD_REGION', label: 'Region', placeholder: 'e.g. US, DE, BG' },
+  { value: 'SHARE_POLICY_METHOD_TIME', label: 'Time Window', placeholder: 'e.g. 09:00-17:00' },
+  { value: 'SHARE_POLICY_METHOD_DEVICE', label: 'Device', placeholder: 'e.g. mobile, desktop' },
+];
+
+const currentPlaceholder = computed(() => {
+  return policyMethodOptions.find(o => o.value === policyMethod.value)?.placeholder || '';
+});
 
 function handleShareSecret(row: Secret) {
   shareSecretRow.value = row;
   shareEmail.value = '';
   shareMessage.value = '';
+  sharePolicies.value = [];
+  showPolicyForm.value = false;
   shareModalVisible.value = true;
+}
+
+function handleAddPolicy() {
+  if (!policyValue.value) return;
+  sharePolicies.value.push({
+    type: policyType.value,
+    method: policyMethod.value,
+    value: policyValue.value,
+    reason: policyReason.value || undefined,
+  });
+  policyValue.value = '';
+  policyReason.value = '';
+  showPolicyForm.value = false;
+}
+
+function handleRemovePolicy(index: number) {
+  sharePolicies.value.splice(index, 1);
+}
+
+function getPolicyTypeLabel(type: SharePolicyType) {
+  return type === 'SHARE_POLICY_TYPE_WHITELIST' ? 'Allow' : 'Deny';
+}
+
+function getPolicyMethodLabel(method: SharePolicyMethod) {
+  return policyMethodOptions.find(o => o.value === method)?.label || method;
 }
 
 async function handleShareSubmit() {
@@ -315,6 +367,7 @@ async function handleShareSubmit() {
       resourceId: shareSecretRow.value.id,
       recipientEmail: shareEmail.value,
       message: shareMessage.value || undefined,
+      policies: sharePolicies.value.length > 0 ? sharePolicies.value : undefined,
     });
     notification.success({ message: 'Share link created and email sent' });
     shareModalVisible.value = false;
@@ -629,6 +682,7 @@ const selectedFolderName = computed(() => {
       v-model:open="shareModalVisible"
       title="Share Secret"
       :confirm-loading="shareLoading"
+      :width="560"
       @ok="handleShareSubmit"
     >
       <div v-if="shareSecretRow" style="margin-bottom: 16px">
@@ -642,14 +696,80 @@ const selectedFolderName = computed(() => {
           type="email"
         />
       </div>
-      <div>
+      <div style="margin-bottom: 12px">
         <label style="display: block; margin-bottom: 4px; font-weight: 500">Message (optional)</label>
         <a-textarea
           v-model:value="shareMessage"
-          :rows="3"
+          :rows="2"
           placeholder="Optional message to include in the email"
         />
       </div>
+
+      <Divider style="margin: 12px 0 8px">Access Restrictions</Divider>
+
+      <!-- Existing policies list -->
+      <div v-if="sharePolicies.length > 0" style="margin-bottom: 8px">
+        <div
+          v-for="(policy, idx) in sharePolicies"
+          :key="idx"
+          style="display: flex; align-items: center; gap: 8px; padding: 6px 8px; background: #f5f5f5; border-radius: 4px; margin-bottom: 4px; font-size: 13px"
+        >
+          <a-tag :color="policy.type === 'SHARE_POLICY_TYPE_WHITELIST' ? 'green' : 'red'" style="margin: 0">
+            {{ getPolicyTypeLabel(policy.type) }}
+          </a-tag>
+          <span style="font-weight: 500">{{ getPolicyMethodLabel(policy.method) }}</span>
+          <span style="flex: 1; color: #666">{{ policy.value }}</span>
+          <span v-if="policy.reason" style="color: #999; font-size: 12px">({{ policy.reason }})</span>
+          <Button type="text" size="small" danger :icon="h(LucideX)" @click="handleRemovePolicy(idx)" />
+        </div>
+      </div>
+
+      <!-- Add policy form -->
+      <div v-if="showPolicyForm" style="border: 1px solid #d9d9d9; border-radius: 6px; padding: 12px; margin-bottom: 8px">
+        <div style="display: flex; gap: 8px; margin-bottom: 8px">
+          <Select v-model:value="policyType" style="width: 130px" size="small">
+            <SelectOption value="SHARE_POLICY_TYPE_WHITELIST">Allow</SelectOption>
+            <SelectOption value="SHARE_POLICY_TYPE_BLACKLIST">Deny</SelectOption>
+          </Select>
+          <Select v-model:value="policyMethod" style="width: 160px" size="small">
+            <SelectOption
+              v-for="opt in policyMethodOptions"
+              :key="opt.value"
+              :value="opt.value"
+            >{{ opt.label }}</SelectOption>
+          </Select>
+        </div>
+        <div style="display: flex; gap: 8px; margin-bottom: 8px">
+          <a-input
+            v-model:value="policyValue"
+            size="small"
+            :placeholder="currentPlaceholder"
+            style="flex: 1"
+            @press-enter="handleAddPolicy"
+          />
+          <a-input
+            v-model:value="policyReason"
+            size="small"
+            placeholder="Reason (optional)"
+            style="flex: 1"
+          />
+        </div>
+        <div style="display: flex; gap: 8px; justify-content: flex-end">
+          <Button size="small" @click="showPolicyForm = false">Cancel</Button>
+          <Button size="small" type="primary" :disabled="!policyValue" @click="handleAddPolicy">Add</Button>
+        </div>
+      </div>
+
+      <Button
+        v-if="!showPolicyForm"
+        type="dashed"
+        size="small"
+        block
+        :icon="h(LucidePlus)"
+        @click="showPolicyForm = true"
+      >
+        Add Restriction
+      </Button>
     </Modal>
   </Page>
 </template>
