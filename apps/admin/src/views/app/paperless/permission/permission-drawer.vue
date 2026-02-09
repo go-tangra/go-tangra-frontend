@@ -1,241 +1,236 @@
 <script lang="ts" setup>
-import type { VxeGridProps } from '#/adapter/vxe-table';
+import { ref, computed, h, watch } from 'vue';
 
-import { h, ref, computed } from 'vue';
-
-import { useVbenDrawer, type VbenFormProps, useVbenForm } from '@vben/common-ui';
+import { useVbenDrawer } from '@vben/common-ui';
 import { LucideTrash, LucidePlus } from '@vben/icons';
 
-import { notification, Button, Modal, Tag, Divider } from 'ant-design-vue';
+import {
+  Table,
+  Button,
+  notification,
+  Modal,
+  Space,
+  Tag,
+  Spin,
+  Form,
+  FormItem,
+  Select,
+  Divider,
+  DatePicker,
+} from 'ant-design-vue';
+import type { ColumnsType } from 'ant-design-vue/es/table';
 
-import { useVbenVxeGrid } from '#/adapter/vxe-table';
-import { type paperlessservicev1_PermissionTuple } from '#/generated/api/admin/service/v1';
+import {
+  type userservicev1_User,
+  type userservicev1_Role,
+} from '#/generated/api/admin/service/v1';
 import { $t } from '#/locales';
 import { usePaperlessPermissionStore, useUserListStore, useRoleStore } from '#/stores';
 
 const permissionStore = usePaperlessPermissionStore();
-const userStore = useUserListStore();
+const userListStore = useUserListStore();
 const roleStore = useRoleStore();
 
-const [Drawer, drawerApi] = useVbenDrawer({
-  onOpenChange(isOpen) {
-    if (isOpen) {
-      const data = drawerApi.getData<{
-        resourceType: string;
-        resourceId: string;
-        resourceName: string;
-      }>();
+const data = ref<{
+  resourceType: 'RESOURCE_TYPE_CATEGORY' | 'RESOURCE_TYPE_DOCUMENT';
+  resourceId: string;
+  resourceName?: string;
+}>();
+const loading = ref(false);
+const permissions = ref<any[]>([]);
+const showGrantForm = ref(false);
+const granting = ref(false);
 
-      if (data) {
-        resourceType.value = data.resourceType;
-        resourceId.value = data.resourceId;
-        resourceName.value = data.resourceName;
-      }
+// Users and roles for dropdown
+const users = ref<userservicev1_User[]>([]);
+const roles = ref<userservicev1_Role[]>([]);
+const loadingSubjects = ref(false);
 
-      loadPermissions();
-      loadUsers();
-      loadRoles();
-    }
-  },
+const grantForm = ref<{
+  subjectType: 'SUBJECT_TYPE_USER' | 'SUBJECT_TYPE_ROLE';
+  subjectId: string;
+  relation: 'RELATION_OWNER' | 'RELATION_EDITOR' | 'RELATION_VIEWER' | 'RELATION_SHARER';
+  expiresAt?: string;
+}>({
+  subjectType: 'SUBJECT_TYPE_USER',
+  subjectId: '',
+  relation: 'RELATION_VIEWER',
+  expiresAt: undefined,
 });
 
-const resourceType = ref('');
-const resourceId = ref('');
-const resourceName = ref('');
-const showGrantForm = ref(false);
-const submitting = ref(false);
+// Watch subject type changes to clear subjectId
+watch(() => grantForm.value.subjectType, () => {
+  grantForm.value.subjectId = '';
+});
 
-const users = ref<Array<{ value: string; label: string }>>([]);
-const roles = ref<Array<{ value: string; label: string }>>([]);
-
-async function loadUsers() {
-  try {
-    const resp = await userStore.listUser(undefined, { status: 'NORMAL' });
-    users.value = (resp.items ?? []).map((u: { id?: number; realname?: string; nickname?: string; username?: string }) => ({
-      value: String(u.id ?? ''),
-      label: `${u.realname || u.nickname || u.username} (${u.username})`,
+// Computed options for subject dropdown based on type
+const subjectOptions = computed(() => {
+  if (grantForm.value.subjectType === 'SUBJECT_TYPE_USER') {
+    return users.value.map((user) => ({
+      value: String(user.id),
+      label: `${user.realname || user.username} (${user.username})`,
     }));
+  } else {
+    return roles.value.map((role) => ({
+      value: String(role.id),
+      label: role.name ?? '',
+    }));
+  }
+});
+
+// Load users and roles
+async function loadSubjects() {
+  loadingSubjects.value = true;
+
+  try {
+    const usersResp = await userListStore.listUser(undefined, { status: 'NORMAL' });
+    users.value = usersResp.items ?? [];
   } catch (e) {
     console.error('Failed to load users:', e);
+    users.value = [];
   }
-}
 
-async function loadRoles() {
   try {
-    const resp = await roleStore.listRole(undefined, {});
-    roles.value = (resp.items ?? []).map((r: { id?: number; name?: string }) => ({
-      value: String(r.id ?? ''),
-      label: r.name ?? '',
-    }));
+    const rolesResp = await roleStore.listRole(undefined, {});
+    roles.value = rolesResp.items ?? [];
   } catch (e) {
     console.error('Failed to load roles:', e);
+    roles.value = [];
+  }
+
+  loadingSubjects.value = false;
+}
+
+const title = computed(() => $t('paperless.page.permission.title'));
+
+const subjectTypeOptions = computed(() => [
+  { value: 'SUBJECT_TYPE_USER', label: $t('paperless.page.permission.user') },
+  { value: 'SUBJECT_TYPE_ROLE', label: $t('paperless.page.permission.role') },
+]);
+
+const relationOptions = computed(() => [
+  { value: 'RELATION_OWNER', label: $t('paperless.page.permission.owner') },
+  { value: 'RELATION_EDITOR', label: $t('paperless.page.permission.editor') },
+  { value: 'RELATION_VIEWER', label: $t('paperless.page.permission.viewer') },
+  { value: 'RELATION_SHARER', label: $t('paperless.page.permission.sharer') },
+]);
+
+function subjectTypeToName(type: string | undefined) {
+  switch (type) {
+    case 'SUBJECT_TYPE_USER':
+      return $t('paperless.page.permission.user');
+    case 'SUBJECT_TYPE_ROLE':
+      return $t('paperless.page.permission.role');
+    case 'SUBJECT_TYPE_TENANT':
+      return $t('paperless.page.permission.tenant');
+    default:
+      return type ?? '';
   }
 }
 
-const drawerTitle = computed(() => {
-  return `${$t('paperless.page.permission.title')} - ${resourceName.value}`;
-});
+function relationToName(relation: string | undefined) {
+  switch (relation) {
+    case 'RELATION_OWNER':
+      return $t('paperless.page.permission.owner');
+    case 'RELATION_EDITOR':
+      return $t('paperless.page.permission.editor');
+    case 'RELATION_VIEWER':
+      return $t('paperless.page.permission.viewer');
+    case 'RELATION_SHARER':
+      return $t('paperless.page.permission.sharer');
+    default:
+      return relation ?? '';
+  }
+}
 
-// Permission list
-const gridOptions: VxeGridProps<paperlessservicev1_PermissionTuple> = {
-  height: 300,
-  stripe: false,
-  rowConfig: {
-    isHover: true,
-  },
-  pagerConfig: {
-    enabled: true,
-    pageSize: 10,
-    pageSizes: [10, 20, 50],
-  },
+function relationToColor(relation: string | undefined) {
+  switch (relation) {
+    case 'RELATION_OWNER':
+      return 'red';
+    case 'RELATION_EDITOR':
+      return 'orange';
+    case 'RELATION_VIEWER':
+      return 'blue';
+    case 'RELATION_SHARER':
+      return 'purple';
+    default:
+      return 'default';
+  }
+}
 
-  proxyConfig: {
-    ajax: {
-      query: async ({ page }) => {
-        if (!resourceType.value || !resourceId.value) {
-          return { items: [], total: 0 };
-        }
-        const resp = await permissionStore.listPermissions(
-          resourceType.value as any,
-          resourceId.value,
-          { page: page.currentPage, pageSize: page.pageSize },
-        );
-        return {
-          items: resp.permissions ?? [],
-          total: resp.total ?? 0,
-        };
-      },
-    },
-  },
+function formatDateTime(value: string | undefined) {
+  if (!value) return $t('paperless.page.permission.noExpiry');
+  try {
+    return new Date(value).toLocaleString();
+  } catch {
+    return value;
+  }
+}
 
-  columns: [
-    {
-      title: $t('paperless.page.permission.subjectType'),
-      field: 'subjectType',
-      width: 100,
-      slots: { default: 'subjectType' },
-    },
-    {
-      title: $t('paperless.page.permission.subject'),
-      field: 'subjectId',
-      minWidth: 150,
-    },
-    {
-      title: $t('paperless.page.permission.relation'),
-      field: 'relation',
-      width: 100,
-      slots: { default: 'relation' },
-    },
-    {
-      title: $t('ui.table.action'),
-      field: 'action',
-      fixed: 'right',
-      slots: { default: 'action' },
-      width: 80,
-    },
-  ],
-};
+function resolveSubjectName(subjectType: string | undefined, subjectId: string | undefined): string {
+  if (!subjectId) return '';
 
-const [Grid, gridApi] = useVbenVxeGrid({ gridOptions });
+  if (subjectType === 'SUBJECT_TYPE_USER') {
+    const user = users.value.find((u) => String(u.id) === subjectId);
+    if (user) {
+      return `${user.realname || user.username} (${user.username})`;
+    }
+  } else if (subjectType === 'SUBJECT_TYPE_ROLE') {
+    const role = roles.value.find((r) => String(r.id) === subjectId);
+    if (role) {
+      return role.name ?? subjectId;
+    }
+  }
+
+  return subjectId;
+}
 
 async function loadPermissions() {
-  await gridApi.reload();
-}
-
-// Grant form
-const grantFormSchema: VbenFormProps['schema'] = [
-  {
-    component: 'Select',
-    fieldName: 'subjectType',
-    defaultValue: 'SUBJECT_TYPE_USER',
-    label: $t('paperless.page.permission.subjectType'),
-    rules: 'required',
-    componentProps: {
-      placeholder: $t('ui.placeholder.select'),
-      options: [
-        { value: 'SUBJECT_TYPE_USER', label: $t('paperless.page.permission.user') },
-        { value: 'SUBJECT_TYPE_ROLE', label: $t('paperless.page.permission.role') },
-      ],
-      onChange: () => {
-        grantFormApi.setFieldValue('subjectId', undefined);
-      },
-    },
-  },
-  {
-    component: 'Select',
-    fieldName: 'subjectId',
-    label: $t('paperless.page.permission.subject'),
-    rules: 'required',
-    dependencies: {
-      triggerFields: ['subjectType'],
-    },
-    componentProps: ({ values }) => {
-      const isUser = values.subjectType === 'SUBJECT_TYPE_USER';
-      return {
-        placeholder: $t('ui.placeholder.select'),
-        options: isUser ? users.value : roles.value,
-        showSearch: true,
-        filterOption: (input: string, option: any) =>
-          option.label.toLowerCase().includes(input.toLowerCase()),
-      };
-    },
-  },
-  {
-    component: 'Select',
-    fieldName: 'relation',
-    defaultValue: 'RELATION_VIEWER',
-    label: $t('paperless.page.permission.relation'),
-    rules: 'required',
-    componentProps: {
-      placeholder: $t('ui.placeholder.select'),
-      options: [
-        { value: 'RELATION_OWNER', label: $t('paperless.page.permission.owner') },
-        { value: 'RELATION_EDITOR', label: $t('paperless.page.permission.editor') },
-        { value: 'RELATION_SHARER', label: $t('paperless.page.permission.sharer') },
-        { value: 'RELATION_VIEWER', label: $t('paperless.page.permission.viewer') },
-      ],
-    },
-  },
-];
-
-const [GrantForm, grantFormApi] = useVbenForm({
-  schema: grantFormSchema,
-  showDefaultActions: false,
-});
-
-async function handleGrantAccess() {
+  if (!data.value?.resourceId || !data.value?.resourceType) return;
+  loading.value = true;
   try {
-    const result = await grantFormApi.validate();
-    const values = result as unknown as {
-      subjectType: string;
-      subjectId: string;
-      relation: string;
-    };
-    submitting.value = true;
-
-    await permissionStore.grantAccess({
-      resourceType: resourceType.value as any,
-      resourceId: resourceId.value,
-      subjectType: values.subjectType as any,
-      subjectId: values.subjectId,
-      relation: values.relation as any,
-    });
-
-    notification.success({ message: $t('paperless.page.permission.grantSuccess') });
-    showGrantForm.value = false;
-    grantFormApi.resetForm();
-    await loadPermissions();
-  } catch (error: any) {
-    notification.error({
-      message: $t('ui.notification.operation_failed'),
-      description: error.message,
-    });
+    const resp = await permissionStore.listPermissions(
+      data.value.resourceType as any,
+      data.value.resourceId,
+    );
+    permissions.value = resp.permissions ?? [];
+  } catch (e) {
+    console.error('Failed to load permissions:', e);
+    notification.error({ message: $t('ui.notification.load_failed') });
   } finally {
-    submitting.value = false;
+    loading.value = false;
   }
 }
 
-async function handleRevokeAccess(row: paperlessservicev1_PermissionTuple) {
+async function handleGrant() {
+  if (!data.value?.resourceId || !data.value?.resourceType) return;
+
+  granting.value = true;
+  try {
+    await permissionStore.grantAccess({
+      resourceType: data.value.resourceType as any,
+      resourceId: data.value.resourceId,
+      subjectType: grantForm.value.subjectType as any,
+      subjectId: grantForm.value.subjectId,
+      relation: grantForm.value.relation as any,
+    });
+    notification.success({
+      message: $t('paperless.page.permission.grantSuccess'),
+    });
+    showGrantForm.value = false;
+    resetGrantForm();
+    await loadPermissions();
+  } catch (e) {
+    console.error('Failed to grant access:', e);
+    notification.error({ message: $t('ui.notification.operation_failed') });
+  } finally {
+    granting.value = false;
+  }
+}
+
+async function handleRevoke(permission: any) {
+  if (!data.value?.resourceId || !data.value?.resourceType) return;
+
   Modal.confirm({
     title: $t('paperless.page.permission.revokeAccess'),
     content: $t('paperless.page.permission.revokeConfirm'),
@@ -244,122 +239,224 @@ async function handleRevokeAccess(row: paperlessservicev1_PermissionTuple) {
     onOk: async () => {
       try {
         await permissionStore.revokeAccess(
-          row.resourceType as any,
-          row.resourceId!,
-          row.subjectType as any,
-          row.subjectId!,
-          row.relation as any,
+          data.value!.resourceType as any,
+          data.value!.resourceId,
+          permission.subjectType,
+          permission.subjectId ?? '',
+          permission.relation,
         );
-        notification.success({ message: $t('paperless.page.permission.revokeSuccess') });
+        notification.success({
+          message: $t('paperless.page.permission.revokeSuccess'),
+        });
         await loadPermissions();
-      } catch {
+      } catch (e) {
+        console.error('Failed to revoke access:', e);
         notification.error({ message: $t('ui.notification.operation_failed') });
       }
     },
   });
 }
 
-function getSubjectTypeLabel(subjectType: string | undefined): string {
-  switch (subjectType) {
-    case 'SUBJECT_TYPE_USER':
-      return $t('paperless.page.permission.user');
-    case 'SUBJECT_TYPE_ROLE':
-      return $t('paperless.page.permission.role');
-    case 'SUBJECT_TYPE_TENANT':
-      return $t('paperless.page.permission.tenant');
-    default:
-      return '-';
-  }
+function resetGrantForm() {
+  grantForm.value = {
+    subjectType: 'SUBJECT_TYPE_USER',
+    subjectId: '',
+    relation: 'RELATION_VIEWER',
+    expiresAt: undefined,
+  };
 }
 
-function getRelationLabel(relation: string | undefined): string {
-  switch (relation) {
-    case 'RELATION_OWNER':
-      return $t('paperless.page.permission.owner');
-    case 'RELATION_EDITOR':
-      return $t('paperless.page.permission.editor');
-    case 'RELATION_SHARER':
-      return $t('paperless.page.permission.sharer');
-    case 'RELATION_VIEWER':
-      return $t('paperless.page.permission.viewer');
-    default:
-      return '-';
-  }
-}
+const columns: ColumnsType<any> = [
+  {
+    title: $t('paperless.page.permission.subjectType'),
+    dataIndex: 'subjectType',
+    key: 'subjectType',
+    width: 100,
+    customRender: ({ text }) => subjectTypeToName(text),
+  },
+  {
+    title: $t('paperless.page.permission.subject'),
+    dataIndex: 'subjectId',
+    key: 'subjectId',
+    width: 200,
+    ellipsis: true,
+    customRender: ({ record }) => resolveSubjectName(record.subjectType, record.subjectId),
+  },
+  {
+    title: $t('paperless.page.permission.relation'),
+    dataIndex: 'relation',
+    key: 'relation',
+    width: 100,
+    customRender: ({ text }) =>
+      h(Tag, { color: relationToColor(text) }, () => relationToName(text)),
+  },
+  {
+    title: $t('paperless.page.permission.expiresAt'),
+    dataIndex: 'expiresAt',
+    key: 'expiresAt',
+    width: 180,
+    customRender: ({ text }) => formatDateTime(text),
+  },
+  {
+    title: $t('ui.table.action'),
+    key: 'action',
+    width: 80,
+    fixed: 'right',
+  },
+];
 
-function getRelationColor(relation: string | undefined): string {
-  switch (relation) {
-    case 'RELATION_OWNER':
-      return 'red';
-    case 'RELATION_EDITOR':
-      return 'orange';
-    case 'RELATION_SHARER':
-      return 'blue';
-    case 'RELATION_VIEWER':
-      return 'green';
+const [Drawer, drawerApi] = useVbenDrawer({
+  onCancel() {
+    drawerApi.close();
+  },
+
+  async onOpenChange(isOpen) {
+    if (isOpen) {
+      data.value = drawerApi.getData() as {
+        resourceType: 'RESOURCE_TYPE_CATEGORY' | 'RESOURCE_TYPE_DOCUMENT';
+        resourceId: string;
+        resourceName?: string;
+      };
+      permissions.value = [];
+      showGrantForm.value = false;
+      resetGrantForm();
+      await Promise.all([loadPermissions(), loadSubjects()]);
+    }
+  },
+});
+
+const resourceTypeName = computed(() => {
+  switch (data.value?.resourceType) {
+    case 'RESOURCE_TYPE_CATEGORY':
+      return $t('paperless.page.permission.category');
+    case 'RESOURCE_TYPE_DOCUMENT':
+      return $t('paperless.page.permission.document');
     default:
-      return 'default';
+      return '';
   }
-}
+});
 </script>
 
 <template>
-  <Drawer :title="drawerTitle" class="w-[700px]">
-    <div class="mb-4 flex items-center justify-between">
-      <span class="text-lg font-medium">{{ $t('paperless.page.permission.title') }}</span>
-      <Button
-        v-if="!showGrantForm"
-        type="primary"
-        :icon="h(LucidePlus)"
-        @click="showGrantForm = true"
-      >
-        {{ $t('paperless.page.permission.grantAccess') }}
-      </Button>
-    </div>
-
-    <!-- Grant Access Form -->
-    <div v-if="showGrantForm" class="mb-4 rounded border p-4">
-      <GrantForm />
-      <div class="mt-4 flex justify-end gap-2">
-        <Button @click="showGrantForm = false">
-          {{ $t('ui.button.cancel') }}
-        </Button>
-        <Button type="primary" :loading="submitting" @click="handleGrantAccess">
-          {{ $t('paperless.page.permission.grant') }}
-        </Button>
-      </div>
-    </div>
-
-    <Divider v-if="showGrantForm" />
-
-    <!-- Permissions List -->
-    <Grid>
-      <template #subjectType="{ row }">
-        <Tag>{{ getSubjectTypeLabel(row.subjectType) }}</Tag>
-      </template>
-      <template #relation="{ row }">
-        <Tag :color="getRelationColor(row.relation)">
-          {{ getRelationLabel(row.relation) }}
-        </Tag>
-      </template>
-      <template #action="{ row }">
+  <Drawer :title="title" :footer="false" width="700px">
+    <template v-if="data">
+      <div class="mb-4 flex items-center justify-between">
+        <div>
+          <span class="text-muted-foreground">{{ resourceTypeName }}:</span>
+          <span class="ml-2 font-semibold">{{
+            data.resourceName || data.resourceId
+          }}</span>
+        </div>
         <Button
-          danger
-          type="link"
-          size="small"
-          :icon="h(LucideTrash)"
-          :title="$t('paperless.page.permission.revokeAccess')"
-          @click="handleRevokeAccess(row)"
-        />
-      </template>
-    </Grid>
-
-    <template #footer>
-      <div class="flex justify-end">
-        <Button @click="drawerApi.close()">
-          {{ $t('ui.button.close') }}
+          type="primary"
+          :icon="h(LucidePlus)"
+          @click="showGrantForm = !showGrantForm"
+        >
+          {{ $t('paperless.page.permission.grantAccess') }}
         </Button>
       </div>
+
+      <!-- Grant Form -->
+      <div v-if="showGrantForm" class="bg-muted mb-4 rounded p-4">
+        <Form layout="vertical" :model="grantForm" @finish="handleGrant">
+          <div class="grid grid-cols-2 gap-4">
+            <FormItem
+              :label="$t('paperless.page.permission.subjectType')"
+              name="subjectType"
+              :rules="[{ required: true }]"
+            >
+              <Select
+                v-model:value="grantForm.subjectType"
+                :options="subjectTypeOptions"
+              />
+            </FormItem>
+
+            <FormItem
+              :label="grantForm.subjectType === 'SUBJECT_TYPE_USER' ? $t('paperless.page.permission.user') : $t('paperless.page.permission.role')"
+              name="subjectId"
+              :rules="[{ required: true }]"
+            >
+              <Select
+                v-model:value="grantForm.subjectId"
+                :options="subjectOptions"
+                :loading="loadingSubjects"
+                :placeholder="$t('ui.placeholder.select')"
+                show-search
+                :filter-option="(input: string, option: any) =>
+                  option.label.toLowerCase().includes(input.toLowerCase())"
+              />
+            </FormItem>
+
+            <FormItem
+              :label="$t('paperless.page.permission.relation')"
+              name="relation"
+              :rules="[{ required: true }]"
+            >
+              <Select
+                v-model:value="grantForm.relation"
+                :options="relationOptions"
+              />
+            </FormItem>
+
+            <FormItem
+              :label="$t('paperless.page.permission.expiresAt')"
+              name="expiresAt"
+            >
+              <DatePicker
+                v-model:value="grantForm.expiresAt"
+                show-time
+                :placeholder="$t('paperless.page.permission.noExpiry')"
+                class="w-full"
+              />
+            </FormItem>
+          </div>
+
+          <FormItem class="mb-0">
+            <Space>
+              <Button type="primary" html-type="submit" :loading="granting">
+                {{ $t('paperless.page.permission.grantAccess') }}
+              </Button>
+              <Button @click="showGrantForm = false; resetGrantForm()">
+                {{ $t('ui.button.cancel') }}
+              </Button>
+            </Space>
+          </FormItem>
+        </Form>
+      </div>
+
+      <Divider v-if="showGrantForm" />
+
+      <Spin :spinning="loading">
+        <Table
+          :columns="columns"
+          :data-source="permissions"
+          :pagination="false"
+          :scroll="{ y: 400 }"
+          row-key="id"
+          size="small"
+        >
+          <template #bodyCell="{ column, record }">
+            <template v-if="column.key === 'action'">
+              <Button
+                danger
+                type="text"
+                size="small"
+                :icon="h(LucideTrash)"
+                :title="$t('paperless.page.permission.revokeAccess')"
+                @click="handleRevoke(record)"
+              />
+            </template>
+          </template>
+
+          <template #emptyText>
+            <div class="py-8 text-center">
+              <span class="text-muted-foreground">{{
+                $t('ui.text.no_data')
+              }}</span>
+            </div>
+          </template>
+        </Table>
+      </Spin>
     </template>
   </Drawer>
 </template>
