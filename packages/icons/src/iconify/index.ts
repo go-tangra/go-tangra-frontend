@@ -74,6 +74,7 @@ export const LucideFolder = createIconifyIcon('lucide:folder');
 export const LucideFolderOpen = createIconifyIcon('lucide:folder-open');
 export const LucideHistory = createIconifyIcon('lucide:history');
 export const LucideKey = createIconifyIcon('lucide:key');
+export const LucideKeyRound = createIconifyIcon('lucide:key-round');
 export const LucideUsers = createIconifyIcon('lucide:users');
 
 // IPAM icons
