@@ -244,8 +244,8 @@ async function handleRevoke(permission: any) {
         await permissionStore.revokeAccess({
           resourceType: data.value!.resourceType,
           resourceId: data.value!.resourceId,
-          subjectType: permission.subject_type,
-          subjectId: permission.subject_id ?? '',
+          subjectType: permission.subjectType,
+          subjectId: permission.subjectId ?? '',
           relation: permission.relation,
         });
         notification.success({
@@ -272,18 +272,18 @@ function resetGrantForm() {
 const columns: ColumnsType<any> = [
   {
     title: $t('warden.page.permission.subjectType'),
-    dataIndex: 'subject_type',
-    key: 'subject_type',
+    dataIndex: 'subjectType',
+    key: 'subjectType',
     width: 100,
     customRender: ({ text }) => subjectTypeToName(text),
   },
   {
     title: $t('warden.page.permission.subject'),
-    dataIndex: 'subject_id',
-    key: 'subject_id',
+    dataIndex: 'subjectId',
+    key: 'subjectId',
     width: 200,
     ellipsis: true,
-    customRender: ({ record }) => resolveSubjectName(record.subject_type, record.subject_id),
+    customRender: ({ record }) => resolveSubjectName(record.subjectType, record.subjectId),
   },
   {
     title: $t('warden.page.permission.relation'),
@@ -295,8 +295,8 @@ const columns: ColumnsType<any> = [
   },
   {
     title: $t('warden.page.permission.expiresAt'),
-    dataIndex: 'expires_at',
-    key: 'expires_at',
+    dataIndex: 'expiresAt',
+    key: 'expiresAt',
     width: 180,
     customRender: ({ text }) => formatDateTime(text),
   },
