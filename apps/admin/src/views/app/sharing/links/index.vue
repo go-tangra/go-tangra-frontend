@@ -166,10 +166,6 @@ function handleView(row: SharedLink) {
   linkDrawerApi.open();
 }
 
-function handleCreate() {
-  linkDrawerApi.setData({ row: {}, mode: 'create' });
-  linkDrawerApi.open();
-}
 
 async function handleRevoke(row: SharedLink) {
   if (!row.id) return;
@@ -186,11 +182,6 @@ async function handleRevoke(row: SharedLink) {
 <template>
   <Page auto-content-height>
     <Grid :table-title="$t('sharing.page.link.title')">
-      <template #toolbar-tools>
-        <Button class="mr-2" type="primary" @click="handleCreate">
-          {{ $t('sharing.page.link.create') }}
-        </Button>
-      </template>
       <template #resourceType="{ row }">
         <Tag
           :color="

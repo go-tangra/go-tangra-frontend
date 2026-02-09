@@ -128,6 +128,10 @@ export const CertificateJobService = {
   cancel: async (jobId: string, options?: RequestOptions): Promise<void> => {
     return lcmApi.post<void>(`/certificate-jobs/${jobId}/cancel`, undefined, options);
   },
+
+  retry: async (jobId: string, options?: RequestOptions): Promise<RequestCertificateResponse> => {
+    return lcmApi.post<RequestCertificateResponse>(`/certificate-jobs/${jobId}/retry`, undefined, options);
+  },
 };
 
 // ==================== Certificate Permission Service ====================

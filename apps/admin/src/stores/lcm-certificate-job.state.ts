@@ -69,6 +69,13 @@ export const useLcmCertificateJobStore = defineStore('lcm-certificate-job', () =
     return await CertificateJobService.cancel(jobId);
   }
 
+  /**
+   * Retry a failed job
+   */
+  async function retryJob(jobId: string): Promise<RequestCertificateResponse> {
+    return await CertificateJobService.retry(jobId);
+  }
+
   function $reset() {}
 
   return {
@@ -78,5 +85,6 @@ export const useLcmCertificateJobStore = defineStore('lcm-certificate-job', () =
     getJobResult,
     requestCertificate,
     cancelJob,
+    retryJob,
   };
 });

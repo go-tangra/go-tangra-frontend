@@ -4,7 +4,7 @@ import type { VxeGridProps } from '#/adapter/vxe-table';
 import { h, computed, ref } from 'vue';
 
 import { Page, useVbenDrawer, type VbenFormProps } from '@vben/common-ui';
-import { LucideEye, LucideDownload, LucideXCircle } from '@vben/icons';
+import { LucideEye, LucideDownload, LucideRefreshCw, LucideXCircle } from '@vben/icons';
 
 import { notification } from 'ant-design-vue';
 
@@ -154,7 +154,7 @@ const gridOptions: VxeGridProps<lcmservicev1_CertificateJobInfo> = {
       field: 'action',
       fixed: 'right',
       slots: { default: 'action' },
-      width: 130,
+      width: 160,
     },
   ],
 };
@@ -250,6 +250,26 @@ function canCancel(row: lcmservicev1_CertificateJobInfo) {
 function canDownload(row: lcmservicev1_CertificateJobInfo) {
   return row.status === 'CERTIFICATE_JOB_STATUS_COMPLETED';
 }
+
+function canRetry(row: lcmservicev1_CertificateJobInfo) {
+  return row.status === 'CERTIFICATE_JOB_STATUS_FAILED';
+}
+
+/* Retry failed job */
+async function handleRetry(row: lcmservicev1_CertificateJobInfo) {
+  if (!row.jobId) {
+    notification.error({ message: $t('lcm.page.certificateJob.error.noJobId') });
+    return;
+  }
+
+  try {
+    await certificateJobStore.retryJob(row.jobId);
+    notification.success({ message: $t('lcm.page.certificateJob.retrySuccess') });
+    await gridApi.reload();
+  } catch {
+    notification.error({ message: $t('lcm.page.certificateJob.retryFailed') });
+  }
+}
 </script>
 
 <template>
@@ -282,6 +302,19 @@ function canDownload(row: lcmservicev1_CertificateJobInfo) {
           :title="$t('ui.button.download')"
           @click.stop="handleDownload(row)"
         />
+        <a-popconfirm
+          v-if="canRetry(row)"
+          :cancel-text="$t('ui.button.cancel')"
+          :ok-text="$t('ui.button.ok')"
+          :title="$t('lcm.page.certificateJob.confirmRetry')"
+          @confirm="handleRetry(row)"
+        >
+          <a-button
+            type="link"
+            :icon="h(LucideRefreshCw)"
+            :title="$t('lcm.page.certificateJob.retry')"
+          />
+        </a-popconfirm>
         <a-popconfirm
           v-if="canCancel(row)"
           :cancel-text="$t('ui.button.cancel')"
