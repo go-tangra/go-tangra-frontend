@@ -12,6 +12,7 @@ export interface ViewSharedContentResponse {
   password?: string;
   fileName?: string;
   mimeType?: string;
+  fileContent?: string; // base64-encoded file content for documents
   error?: string;
 }
 

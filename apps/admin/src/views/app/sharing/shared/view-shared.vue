@@ -14,7 +14,6 @@ import {
 
 import {
   viewSharedContent,
-  getSharedDownloadUrl,
   type ViewSharedContentResponse,
 } from '#/generated/api/modules/sharing/public-client';
 
@@ -47,7 +46,23 @@ async function copyPassword() {
 }
 
 function downloadFile() {
-  window.open(getSharedDownloadUrl(token), '_blank');
+  if (!content.value?.fileContent) return;
+  const byteCharacters = atob(content.value.fileContent);
+  const byteNumbers = new Uint8Array(byteCharacters.length);
+  for (let i = 0; i < byteCharacters.length; i++) {
+    byteNumbers[i] = byteCharacters.charCodeAt(i);
+  }
+  const blob = new Blob([byteNumbers], {
+    type: content.value.mimeType || 'application/octet-stream',
+  });
+  const url = URL.createObjectURL(blob);
+  const link = document.createElement('a');
+  link.href = url;
+  link.download = content.value.fileName || 'download';
+  document.body.appendChild(link);
+  link.click();
+  document.body.removeChild(link);
+  URL.revokeObjectURL(url);
 }
 </script>
 
