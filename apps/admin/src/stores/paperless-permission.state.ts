@@ -26,7 +26,7 @@ interface Permission {
 }
 
 interface ListPermissionsResponse {
-  items?: Permission[];
+  permissions?: Permission[];
   total?: number;
 }
 

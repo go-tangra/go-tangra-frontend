@@ -50,10 +50,10 @@ const roles = ref<Array<{ value: string; label: string }>>([]);
 
 async function loadUsers() {
   try {
-    const resp = await userStore.listUser({ page: 1, pageSize: 1000 });
-    users.value = (resp.items ?? []).map((u: { id?: number; nickname?: string; username?: string }) => ({
+    const resp = await userStore.listUser(undefined, { status: 'NORMAL' });
+    users.value = (resp.items ?? []).map((u: { id?: number; realname?: string; nickname?: string; username?: string }) => ({
       value: String(u.id ?? ''),
-      label: u.nickname ?? u.username ?? '',
+      label: `${u.realname || u.nickname || u.username} (${u.username})`,
     }));
   } catch (e) {
     console.error('Failed to load users:', e);
@@ -62,7 +62,7 @@ async function loadUsers() {
 
 async function loadRoles() {
   try {
-    const resp = await roleStore.listRole({ page: 1, pageSize: 1000 });
+    const resp = await roleStore.listRole(undefined, {});
     roles.value = (resp.items ?? []).map((r: { id?: number; name?: string }) => ({
       value: String(r.id ?? ''),
       label: r.name ?? '',
@@ -101,7 +101,7 @@ const gridOptions: VxeGridProps<paperlessservicev1_PermissionTuple> = {
           { page: page.currentPage, pageSize: page.pageSize },
         );
         return {
-          items: resp.items ?? [],
+          items: resp.permissions ?? [],
           total: resp.total ?? 0,
         };
       },
@@ -147,6 +147,7 @@ const grantFormSchema: VbenFormProps['schema'] = [
   {
     component: 'Select',
     fieldName: 'subjectType',
+    defaultValue: 'SUBJECT_TYPE_USER',
     label: $t('paperless.page.permission.subjectType'),
     rules: 'required',
     componentProps: {
@@ -182,6 +183,7 @@ const grantFormSchema: VbenFormProps['schema'] = [
   {
     component: 'Select',
     fieldName: 'relation',
+    defaultValue: 'RELATION_VIEWER',
     label: $t('paperless.page.permission.relation'),
     rules: 'required',
     componentProps: {
