@@ -143,7 +143,12 @@
       "exportFailed": "Export failed",
       "itemsImported": "items imported",
       "itemsExported": "items exported",
-      "foldersCreated": "folders created"
+      "foldersCreated": "folders created",
+      "permissionRules": "Permissions to Apply",
+      "permissionRulesHelp": "These permissions will be granted on every imported folder and secret",
+      "addPermissionRule": "Add Permission Rule",
+      "removePermissionRule": "Remove",
+      "noPermissionRules": "No additional permissions (only you will have access as owner)"
     }
   }
 }

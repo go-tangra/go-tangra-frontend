@@ -95,10 +95,13 @@ LOCATIONS
         }
 
         # Public sharing endpoint (no auth, proxied to sharing-service HTTP)
+        # Uses variable to allow nginx to start even when sharing-service is not available
         location /public/v1/sharing/ {
+            resolver 127.0.0.11 valid=30s ipv6=off;
 LOCATIONS
-    echo "            proxy_pass http://${SHARING_HTTP_HOST:-sharing-service}:${SHARING_HTTP_PORT:-9601}/api/v1/;"
+    echo "            set \$sharing_upstream http://${SHARING_HTTP_HOST:-sharing-service}:${SHARING_HTTP_PORT:-9601};"
     cat << 'LOCATIONS'
+            proxy_pass $sharing_upstream/api/v1/;
             proxy_http_version 1.1;
             proxy_set_header Host $host;
             proxy_set_header X-Real-IP $remote_addr;

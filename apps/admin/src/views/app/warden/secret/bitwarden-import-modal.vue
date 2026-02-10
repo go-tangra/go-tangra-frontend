@@ -1,8 +1,15 @@
 <script lang="ts" setup>
-import { ref, computed, watch } from 'vue';
+import { h, ref, computed, watch } from 'vue';
 
 import { useVbenModal } from '@vben/common-ui';
-import { LucideUpload, LucideFileJson, LucideCheck, LucideX } from '@vben/icons';
+import {
+  LucideUpload,
+  LucideFileJson,
+  LucideCheck,
+  LucideX,
+  LucidePlus,
+  LucideTrash,
+} from '@vben/icons';
 
 import {
   Upload,
@@ -12,6 +19,7 @@ import {
   SelectOption,
   Switch,
   Alert,
+  Button,
   Descriptions,
   DescriptionsItem,
   Tag,
@@ -24,7 +32,7 @@ import {
   type ImportFromBitwardenResponse,
 } from '#/generated/api/modules/warden';
 import { $t } from '#/locales';
-import { useWardenSecretStore } from '#/stores';
+import { useWardenSecretStore, useUserListStore, useRoleStore } from '#/stores';
 
 interface Props {
   folderId?: string;
@@ -37,6 +45,62 @@ const emit = defineEmits<{
 }>();
 
 const secretStore = useWardenSecretStore();
+const userListStore = useUserListStore();
+const roleStore = useRoleStore();
+
+// Permission rules
+interface PermissionRule {
+  subjectType: 'SUBJECT_TYPE_USER' | 'SUBJECT_TYPE_ROLE';
+  subjectId: string;
+  relation: 'RELATION_EDITOR' | 'RELATION_OWNER' | 'RELATION_SHARER' | 'RELATION_VIEWER';
+}
+
+const permissionRules = ref<PermissionRule[]>([]);
+const users = ref<any[]>([]);
+const roles = ref<any[]>([]);
+const loadingSubjects = ref(false);
+
+function getSubjectOptions(subjectType: string) {
+  if (subjectType === 'SUBJECT_TYPE_USER') {
+    return users.value.map((user) => ({
+      value: String(user.id),
+      label: `${user.realname || user.username} (${user.username})`,
+    }));
+  }
+  return roles.value.map((role) => ({
+    value: role.code ?? '',
+    label: role.name ?? '',
+  }));
+}
+
+function addPermissionRule() {
+  permissionRules.value.push({
+    subjectType: 'SUBJECT_TYPE_ROLE',
+    subjectId: '',
+    relation: 'RELATION_EDITOR',
+  });
+}
+
+function removePermissionRule(index: number) {
+  permissionRules.value.splice(index, 1);
+}
+
+async function loadSubjects() {
+  loadingSubjects.value = true;
+  try {
+    const usersResp = await userListStore.listUser(undefined, { status: 'NORMAL' });
+    users.value = usersResp.items ?? [];
+  } catch {
+    users.value = [];
+  }
+  try {
+    const rolesResp = await roleStore.listRole(undefined, {});
+    roles.value = rolesResp.items ?? [];
+  } catch {
+    roles.value = [];
+  }
+  loadingSubjects.value = false;
+}
 
 // State
 const fileContent = ref<string>('');
@@ -205,6 +269,7 @@ async function handleImport() {
       targetFolderId: targetFolderId.value,
       duplicateHandling: duplicateHandling.value as any,
       preserveFolders: preserveFolders.value,
+      permissionRules: permissionRules.value.filter((r) => r.subjectId),
     }) as ImportFromBitwardenResponse;
 
     console.log('Import result:', result);
@@ -235,6 +300,7 @@ function resetState() {
   validationResult.value = null;
   duplicateHandling.value = 'DUPLICATE_HANDLING_SKIP';
   preserveFolders.value = true;
+  permissionRules.value = [];
 }
 
 // Modal
@@ -248,7 +314,9 @@ const [ModalComponent, modalApi] = useVbenModal({
   },
 
   onOpenChange(isOpen) {
-    if (!isOpen) {
+    if (isOpen) {
+      loadSubjects();
+    } else {
       resetState();
     }
   },
@@ -438,6 +506,93 @@ defineExpose({
             </span>
           </FormItem>
         </Form>
+
+        <!-- Permission Rules -->
+        <div class="mt-4">
+          <div class="flex items-center justify-between mb-2">
+            <div>
+              <span class="font-medium">
+                {{ $t('warden.page.bitwarden.permissionRules') }}
+              </span>
+              <p class="text-xs text-gray-500">
+                {{ $t('warden.page.bitwarden.permissionRulesHelp') }}
+              </p>
+            </div>
+            <Button
+              type="dashed"
+              size="small"
+              :icon="h(LucidePlus)"
+              :loading="loadingSubjects"
+              @click="addPermissionRule"
+            >
+              {{ $t('warden.page.bitwarden.addPermissionRule') }}
+            </Button>
+          </div>
+
+          <p
+            v-if="permissionRules.length === 0"
+            class="text-sm text-gray-400 italic"
+          >
+            {{ $t('warden.page.bitwarden.noPermissionRules') }}
+          </p>
+
+          <div
+            v-for="(rule, index) in permissionRules"
+            :key="index"
+            class="flex items-center gap-2 mb-2"
+          >
+            <Select
+              v-model:value="rule.subjectType"
+              class="w-[130px]"
+              size="small"
+              @change="rule.subjectId = ''"
+            >
+              <SelectOption value="SUBJECT_TYPE_USER">
+                {{ $t('warden.page.permission.user') }}
+              </SelectOption>
+              <SelectOption value="SUBJECT_TYPE_ROLE">
+                {{ $t('warden.page.permission.role') }}
+              </SelectOption>
+            </Select>
+
+            <Select
+              v-model:value="rule.subjectId"
+              class="flex-1"
+              size="small"
+              show-search
+              option-filter-prop="label"
+              :placeholder="$t('warden.page.permission.subject')"
+              :options="getSubjectOptions(rule.subjectType)"
+            />
+
+            <Select
+              v-model:value="rule.relation"
+              class="w-[120px]"
+              size="small"
+            >
+              <SelectOption value="RELATION_OWNER">
+                {{ $t('warden.page.permission.owner') }}
+              </SelectOption>
+              <SelectOption value="RELATION_EDITOR">
+                {{ $t('warden.page.permission.editor') }}
+              </SelectOption>
+              <SelectOption value="RELATION_VIEWER">
+                {{ $t('warden.page.permission.viewer') }}
+              </SelectOption>
+              <SelectOption value="RELATION_SHARER">
+                {{ $t('warden.page.permission.sharer') }}
+              </SelectOption>
+            </Select>
+
+            <Button
+              type="text"
+              size="small"
+              danger
+              :icon="h(LucideTrash)"
+              @click="removePermissionRule(index)"
+            />
+          </div>
+        </div>
       </div>
 
     </div>

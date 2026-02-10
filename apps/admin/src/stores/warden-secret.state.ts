@@ -181,6 +181,11 @@ export const useWardenSecretStore = defineStore('warden-secret', () => {
       targetFolderId?: string;
       duplicateHandling?: string;
       preserveFolders?: boolean;
+      permissionRules?: Array<{
+        subjectType: string;
+        subjectId: string;
+        relation: string;
+      }>;
     },
   ) {
     return await wardenApi.post('/bitwarden/import', {
@@ -188,6 +193,7 @@ export const useWardenSecretStore = defineStore('warden-secret', () => {
       targetFolderId: options?.targetFolderId,
       duplicateHandling: options?.duplicateHandling,
       preserveFolders: options?.preserveFolders ?? true,
+      permissionRules: options?.permissionRules,
     });
   }
 

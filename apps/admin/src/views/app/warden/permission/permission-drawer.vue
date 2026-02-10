@@ -73,7 +73,7 @@ const subjectOptions = computed(() => {
     }));
   } else {
     return roles.value.map((role) => ({
-      value: String(role.id),
+      value: role.code ?? '',
       label: role.name ?? '',
     }));
   }
@@ -178,7 +178,7 @@ function resolveSubjectName(subjectType: string | undefined, subjectId: string |
       return `${user.realname || user.username} (${user.username})`;
     }
   } else if (subjectType === 'SUBJECT_TYPE_ROLE') {
-    const role = roles.value.find((r) => String(r.id) === subjectId);
+    const role = roles.value.find((r) => r.code === subjectId);
     if (role) {
       return role.name ?? subjectId;
     }
