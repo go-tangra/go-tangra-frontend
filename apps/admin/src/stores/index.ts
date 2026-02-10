@@ -56,6 +56,8 @@ export * from './paperless-document.state';
 export * from './paperless-permission.state';
 export * from './sharing-share.state';
 export * from './sharing-template.state';
+export * from './bookmark-bookmark.state';
+export * from './bookmark-permission.state';
 
 export const enableList = computed(() => [
   { value: 'true', label: $t('enum.enable.true') },
