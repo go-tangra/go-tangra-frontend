@@ -1,7 +1,7 @@
 <script lang="ts" setup>
 import type { VxeGridProps } from '#/adapter/vxe-table';
 
-import { h, computed } from 'vue';
+import { h, ref, computed } from 'vue';
 
 import { Page, useVbenDrawer, type VbenFormProps } from '@vben/common-ui';
 import {
@@ -13,13 +13,14 @@ import {
   LucideCirclePlay,
 } from '@vben/icons';
 
-import { notification, Space, Button, Tag, Modal, Input } from 'ant-design-vue';
+import { notification, Space, Button, Tag, Modal, Select } from 'ant-design-vue';
 
 import { useVbenVxeGrid } from '#/adapter/vxe-table';
 import { $t } from '#/locales';
 import {
   useExecutorScriptStore,
   useExecutorExecutionStore,
+  useExecutorAssignmentStore,
   enableBoolToColor,
   enableBoolToName,
 } from '#/stores';
@@ -30,6 +31,7 @@ import AssignmentDrawer from './assignment-drawer.vue';
 
 const scriptStore = useExecutorScriptStore();
 const executionStore = useExecutorExecutionStore();
+const assignmentStore = useExecutorAssignmentStore();
 
 const scriptTypeOptions = computed(() => [
   { value: 'SCRIPT_TYPE_BASH', label: $t('executor.page.script.typeBash') },
@@ -204,18 +206,44 @@ function handleAssignments(row: Script) {
   assignmentDrawerApi.open();
 }
 
-const triggerClientId = { value: '' };
+const triggerClientId = ref('');
+const triggerClientOptions = ref<{ value: string; label: string }[]>([]);
 
-function handleExecute(row: Script) {
+async function handleExecute(row: Script) {
   triggerClientId.value = '';
+  triggerClientOptions.value = [];
+
+  // Fetch assigned clients for this script
+  try {
+    const resp = await assignmentStore.listAssignments(row.id);
+    triggerClientOptions.value = (resp.assignments ?? []).map((a) => ({
+      value: a.clientId,
+      label: a.clientId,
+    }));
+  } catch {
+    triggerClientOptions.value = [];
+  }
+
+  if (triggerClientOptions.value.length === 0) {
+    notification.warning({
+      message: $t('executor.page.execution.noAssignedClients'),
+    });
+    return;
+  }
+
   Modal.confirm({
     title: $t('executor.page.execution.triggerTitle'),
     content: h('div', { style: 'margin-top: 12px' }, [
       h('div', { style: 'margin-bottom: 8px' }, $t('executor.page.execution.triggerClientId')),
-      h(Input, {
+      h(Select, {
+        style: 'width: 100%',
         placeholder: $t('executor.page.execution.triggerClientIdPlaceholder'),
-        onChange: (e: Event) => {
-          triggerClientId.value = (e.target as HTMLInputElement).value;
+        options: triggerClientOptions.value,
+        showSearch: true,
+        filterOption: (input: string, option?: Record<string, any>) =>
+          String(option?.value ?? '').toLowerCase().includes(input.toLowerCase()),
+        onChange: (value: unknown) => {
+          triggerClientId.value = String(value ?? '');
         },
       }),
     ]),
