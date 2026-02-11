@@ -20,6 +20,7 @@ const emit = defineEmits<{
 const deviceStore = useIpamDeviceStore();
 const loading = ref(false);
 const devices = ref<ipamservicev1_Device[]>([]);
+const unpositionedDevices = ref<ipamservicev1_Device[]>([]);
 
 interface RackSlot {
   position: number;
@@ -88,8 +89,12 @@ async function loadDevices() {
       { page: 1, pageSize: 100 },
       { locationId: props.locationId },
     );
-    devices.value = (resp.items ?? []).filter(
+    const allDevices = resp.items ?? [];
+    devices.value = allDevices.filter(
       (d) => d.rackPosition !== undefined && d.rackPosition !== null,
+    );
+    unpositionedDevices.value = allDevices.filter(
+      (d) => d.rackPosition === undefined || d.rackPosition === null,
     );
   } catch (e) {
     console.error('Failed to load devices for rack:', e);
@@ -133,7 +138,7 @@ defineExpose({
 <template>
   <div class="rack-visualization">
     <Spin :spinning="loading">
-      <div v-if="devices.length === 0 && !loading" class="mb-4">
+      <div v-if="devices.length === 0 && unpositionedDevices.length === 0 && !loading" class="mb-4">
         <Empty :description="$t('ui.table.noData')" />
       </div>
 
@@ -160,6 +165,22 @@ defineExpose({
         <div class="flex items-center gap-1">
           <div class="legend-occupied w-4 h-4 rounded"></div>
           <span>{{ $t('ipam.page.rack.occupied') }}</span>
+        </div>
+      </div>
+
+      <!-- Unpositioned Devices -->
+      <div v-if="unpositionedDevices.length > 0" class="mb-4">
+        <div class="text-sm font-medium mb-2">{{ $t('ipam.page.rack.unpositioned') }}</div>
+        <div class="flex flex-col gap-1">
+          <div
+            v-for="device in unpositionedDevices"
+            :key="device.id"
+            class="unpositioned-device flex items-center gap-2 px-3 py-2 rounded cursor-pointer"
+            @click="emit('deviceClick', device)"
+          >
+            <span class="font-medium truncate">{{ device.name }}</span>
+            <span v-if="device.deviceHeightU" class="text-xs opacity-70">({{ device.deviceHeightU }}U)</span>
+          </div>
         </div>
       </div>
 
@@ -266,5 +287,14 @@ defineExpose({
 .slot-conflict {
   background-color: hsl(var(--destructive) / 0.15);
   border-left: 3px solid hsl(var(--destructive));
+}
+
+.unpositioned-device {
+  background-color: hsl(var(--warning, 38 92% 50%) / 0.15);
+  border-left: 3px solid hsl(var(--warning, 38 92% 50%));
+}
+
+.unpositioned-device:hover {
+  background-color: hsl(var(--warning, 38 92% 50%) / 0.25);
 }
 </style>

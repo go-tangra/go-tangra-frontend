@@ -237,7 +237,8 @@
       "freeSlots": "{free} U 可用",
       "deviceAt": "U{position} 处的设备",
       "emptySlot": "U{position} 处的空槽位",
-      "positionConflict": "位置冲突: {positions} 已被其他设备占用"
+      "positionConflict": "位置冲突: {positions} 已被其他设备占用",
+      "unpositioned": "未定位设备"
     },
     "hostGroup": {
       "title": "主机组",

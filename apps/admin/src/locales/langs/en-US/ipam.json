@@ -237,7 +237,8 @@
       "freeSlots": "{free} U available",
       "deviceAt": "Device at U{position}",
       "emptySlot": "Empty slot at U{position}",
-      "positionConflict": "Position conflict: {positions} is already occupied by another device"
+      "positionConflict": "Position conflict: {positions} is already occupied by another device",
+      "unpositioned": "Unpositioned Devices"
     },
     "hostGroup": {
       "title": "Host Groups",
