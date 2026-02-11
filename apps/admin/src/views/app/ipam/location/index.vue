@@ -437,16 +437,12 @@ onMounted(() => {
       @close="handleRackDrawerClose"
     >
       <RackVisualization
-        v-if="rackDrawerLocation?.id && rackDrawerLocation?.rackSizeU"
+        v-if="rackDrawerLocation?.id"
         ref="rackVisualizationRef"
         :location-id="rackDrawerLocation.id"
-        :rack-size-u="rackDrawerLocation.rackSizeU"
+        :rack-size-u="rackDrawerLocation.rackSizeU ?? 42"
         @slot-click="handleRackSlotClick"
         @device-click="handleRackDeviceClick"
-      />
-      <Empty
-        v-else-if="rackDrawerLocation && !rackDrawerLocation.rackSizeU"
-        :description="$t('ipam.page.location.rackSizeUHelp')"
       />
     </Drawer>
   </Page>
