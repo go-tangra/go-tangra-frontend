@@ -354,6 +354,44 @@ export const IssuedCertificateService = {
   },
 };
 
+// ==================== mTLS Certificate Service ====================
+
+export interface MtlsCertificate {
+  serialNumber?: string;
+  clientId?: string;
+  commonName?: string;
+  tenantId?: number;
+  issuerName?: string;
+  status?: string;
+  certType?: string;
+}
+
+export interface ListMtlsCertificatesResponse {
+  items?: MtlsCertificate[];
+  total?: number;
+}
+
+export const MtlsCertificateService = {
+  list: async (
+    params?: {
+      status?: string;
+      clientId?: string;
+      issuerName?: string;
+      commonName?: string;
+      includeExpired?: boolean;
+      includeRevoked?: boolean;
+      page?: number;
+      pageSize?: number;
+    },
+    options?: RequestOptions
+  ): Promise<ListMtlsCertificatesResponse> => {
+    return lcmApi.get<ListMtlsCertificatesResponse>(
+      `/certificates${buildQuery(params || {})}`,
+      options
+    );
+  },
+};
+
 // ==================== System Service ====================
 
 export const SystemService = {

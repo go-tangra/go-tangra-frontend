@@ -6,7 +6,7 @@ import { useVbenDrawer } from '@vben/common-ui';
 import {
   Form,
   FormItem,
-  Input,
+  AutoComplete,
   Button,
   notification,
   Table,
@@ -21,6 +21,7 @@ import type {
   Script,
   ScriptAssignment,
 } from '#/generated/api/modules/executor/services';
+import { MtlsCertificateService } from '#/generated/api/modules/lcm/services';
 
 const assignmentStore = useExecutorAssignmentStore();
 
@@ -30,6 +31,41 @@ const assignmentsLoading = ref(false);
 const loading = ref(false);
 const showAssignForm = ref(false);
 const formState = ref({ clientId: '' });
+
+const clientSuggestions = ref<{ value: string; label: string }[]>([]);
+let searchDebounceTimer: ReturnType<typeof setTimeout> | null = null;
+
+async function handleClientSearch(searchText: string) {
+  if (!searchText || searchText.length < 2) {
+    clientSuggestions.value = [];
+    return;
+  }
+  if (searchDebounceTimer) clearTimeout(searchDebounceTimer);
+  searchDebounceTimer = setTimeout(async () => {
+    try {
+      const resp = await MtlsCertificateService.list({
+        commonName: searchText,
+        pageSize: 10,
+      });
+      const seen = new Set<string>();
+      clientSuggestions.value = (resp.items ?? [])
+        .filter((cert) => {
+          const cn = cert.commonName ?? cert.clientId ?? '';
+          if (!cn || seen.has(cn)) return false;
+          seen.add(cn);
+          return true;
+        })
+        .map((cert) => ({
+          value: cert.commonName ?? cert.clientId ?? '',
+          label: cert.clientId && cert.clientId !== cert.commonName
+            ? `${cert.commonName} (${cert.clientId})`
+            : cert.commonName ?? cert.clientId ?? '',
+        }));
+    } catch {
+      clientSuggestions.value = [];
+    }
+  }, 300);
+}
 
 const title = computed(
   () =>
@@ -148,9 +184,12 @@ const [Drawer, drawerApi] = useVbenDrawer({
           name="clientId"
           :rules="[{ required: true, message: $t('ui.formRules.required') }]"
         >
-          <Input
+          <AutoComplete
             v-model:value="formState.clientId"
+            :options="clientSuggestions"
             :placeholder="$t('executor.page.assignment.clientIdPlaceholder')"
+            :filter-option="false"
+            @search="handleClientSearch"
           />
         </FormItem>
         <Space>
