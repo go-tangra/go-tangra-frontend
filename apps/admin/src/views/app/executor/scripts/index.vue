@@ -94,9 +94,6 @@ const gridOptions: VxeGridProps<Script> = {
     import: false,
     refresh: true,
     zoom: true,
-    slots: {
-      buttons: 'toolbar-buttons',
-    },
   },
   exportConfig: {},
   rowConfig: {
@@ -247,8 +244,8 @@ async function handleDelete(row: Script) {
 <template>
   <Page auto-content-height>
     <Grid :table-title="$t('executor.page.script.title')">
-      <template #toolbar-buttons>
-        <Button type="primary" :icon="h(LucidePlus)" @click="handleCreate">
+      <template #toolbar-tools>
+        <Button class="mr-2" type="primary" :icon="h(LucidePlus)" @click="handleCreate">
           {{ $t('executor.page.script.create') }}
         </Button>
       </template>
