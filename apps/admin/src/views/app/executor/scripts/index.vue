@@ -126,6 +126,12 @@ const gridOptions: VxeGridProps<Script> = {
   columns: [
     { title: $t('ui.table.seq'), type: 'seq', width: 50 },
     {
+      title: $t('executor.page.script.id'),
+      field: 'id',
+      width: 280,
+      slots: { default: 'id' },
+    },
+    {
       title: $t('executor.page.script.name'),
       field: 'name',
       minWidth: 180,
@@ -248,6 +254,9 @@ async function handleDelete(row: Script) {
         <Button class="mr-2" type="primary" :icon="h(LucidePlus)" @click="handleCreate">
           {{ $t('executor.page.script.create') }}
         </Button>
+      </template>
+      <template #id="{ row }">
+        <span class="font-mono text-xs">{{ row.id }}</span>
       </template>
       <template #scriptType="{ row }">
         <Tag :color="scriptTypeToColor(row.scriptType)">
