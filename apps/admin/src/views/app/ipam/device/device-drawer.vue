@@ -90,6 +90,24 @@ const formState = ref<{
   deviceHeightU: 1,
 });
 
+// Physical device types that can only be placed in rack locations
+const physicalDeviceTypes = new Set([
+  'DEVICE_TYPE_SERVER',
+  'DEVICE_TYPE_ROUTER',
+  'DEVICE_TYPE_SWITCH',
+  'DEVICE_TYPE_FIREWALL',
+  'DEVICE_TYPE_LOAD_BALANCER',
+]);
+
+const isPhysicalDevice = computed(() => physicalDeviceTypes.has(formState.value.deviceType));
+
+const filteredLocations = computed(() => {
+  if (isPhysicalDevice.value) {
+    return locations.value.filter((l) => l.locationType === 'LOCATION_TYPE_RACK');
+  }
+  return locations.value;
+});
+
 const selectedLocation = computed(() => {
   if (!formState.value.locationId) return null;
   return locations.value.find((l) => l.value === formState.value.locationId);
@@ -176,6 +194,19 @@ watch(
       await loadRackDevices(newLocationId);
     } else {
       rackDevices.value = [];
+    }
+  },
+);
+
+// Clear location when device type changes and current selection is no longer valid
+watch(
+  () => formState.value.deviceType,
+  () => {
+    if (formState.value.locationId) {
+      const stillValid = filteredLocations.value.some((l) => l.value === formState.value.locationId);
+      if (!stillValid) {
+        formState.value.locationId = undefined;
+      }
     }
   },
 );
@@ -705,7 +736,7 @@ const interfaceColumns = [
         <FormItem :label="$t('ipam.page.location.title')" name="locationId">
           <Select
             v-model:value="formState.locationId"
-            :options="locations"
+            :options="filteredLocations"
             :placeholder="$t('ui.placeholder.select')"
             allow-clear
             show-search
