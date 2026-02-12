@@ -337,7 +337,7 @@ onMounted(loadStatus);
           <div
             v-for="(bcode, idx) in backupCodes"
             :key="idx"
-            class="rounded bg-gray-100 p-2 text-center font-mono"
+            class="rounded bg-gray-100 p-2 text-center font-mono text-gray-900 dark:bg-gray-700 dark:text-gray-100"
           >
             {{ bcode }}
           </div>

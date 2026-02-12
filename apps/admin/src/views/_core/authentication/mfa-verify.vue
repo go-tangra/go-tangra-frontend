@@ -1,5 +1,5 @@
 <script lang="ts" setup>
-import { ref } from 'vue';
+import { computed, ref } from 'vue';
 import { useRouter } from 'vue-router';
 
 import { LOGIN_PATH } from '@vben/constants';
@@ -16,10 +16,20 @@ const authStore = useAuthStore();
 const router = useRouter();
 
 const code = ref('');
-const method = ref<'BACKUP_CODE' | 'TOTP' | 'WEBAUTHN'>('TOTP');
 const loading = ref(false);
 
 const webauthnSupported = isWebAuthnSupported();
+
+// Pick the first available method as default (prefer TOTP > WEBAUTHN > BACKUP_CODE)
+const defaultMethod = computed(() => {
+  const m = authStore.mfaMethods;
+  if (m.includes('TOTP')) return 'TOTP';
+  if (webauthnSupported && m.includes('WEBAUTHN')) return 'WEBAUTHN';
+  if (m.includes('BACKUP_CODE')) return 'BACKUP_CODE';
+  return 'TOTP';
+});
+
+const method = ref<'BACKUP_CODE' | 'TOTP' | 'WEBAUTHN'>(defaultMethod.value);
 
 async function handleVerify() {
   if (method.value === 'WEBAUTHN') {
