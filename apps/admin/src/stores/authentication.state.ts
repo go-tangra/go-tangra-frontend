@@ -178,6 +178,9 @@ export const useAuthStore = defineStore('auth', () => {
             message: $t('authentication.loginSuccess'),
           });
         }
+
+        // Check MFA status and warn if not enabled
+        checkMFAStatus();
       }
     } catch (error) {
       await _doLogout();
@@ -387,6 +390,23 @@ export const useAuthStore = defineStore('auth', () => {
     } finally {
       loginLoading.value = false;
     }
+  }
+
+  /**
+   * Check MFA status after login and show a warning if not enabled.
+   */
+  function checkMFAStatus() {
+    mfaService.GetMFAStatus({} as Record<string, never>).then((status) => {
+      if (!status.enabled) {
+        notification.warning({
+          message: $t('page.auth.mfa.notEnabledTitle'),
+          description: $t('page.auth.mfa.notEnabledDescription'),
+          duration: 8,
+        });
+      }
+    }).catch(() => {
+      // Silently ignore — non-critical check
+    });
   }
 
   /**

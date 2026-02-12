@@ -47,7 +47,9 @@
       "webauthnEnrollFailed": "Failed to enroll security key",
       "webauthnRegistering": "Registering Security Key",
       "webauthnTapPrompt": "Insert your security key and follow the browser prompt.",
-      "webauthnVerifyFailed": "Security key verification failed"
+      "webauthnVerifyFailed": "Security key verification failed",
+      "notEnabledTitle": "MFA Not Enabled",
+      "notEnabledDescription": "Your account does not have multi-factor authentication enabled. We strongly recommend enabling MFA to protect your account."
     }
   },
   "dashboard": {

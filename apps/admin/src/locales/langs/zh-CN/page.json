@@ -47,7 +47,9 @@
       "webauthnEnrollFailed": "安全密钥注册失败",
       "webauthnRegistering": "正在注册安全密钥",
       "webauthnTapPrompt": "插入您的安全密钥并按照浏览器提示操作。",
-      "webauthnVerifyFailed": "安全密钥验证失败"
+      "webauthnVerifyFailed": "安全密钥验证失败",
+      "notEnabledTitle": "未启用 MFA",
+      "notEnabledDescription": "您的账户尚未启用多因素认证。我们强烈建议您启用 MFA 以保护您的账户安全。"
     }
   },
   "dashboard": {
