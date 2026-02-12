@@ -11,13 +11,17 @@ import { notification } from 'ant-design-vue';
 import CryptoJS from 'crypto-js';
 import { defineStore } from 'pinia';
 
+import type { authenticationservicev1_MFAMethod } from '#/generated/api/admin/service/v1';
+
 import {
   createAdminPortalServiceClient,
   createAuthenticationServiceClient,
+  createMFAServiceClient,
   createUserProfileServiceClient,
 } from '#/generated/api/admin/service/v1';
 import { $t } from '#/locales';
 import { requestClientRequestHandler } from '#/utils/request';
+import { isWebAuthnSupported, performAssertion } from '#/utils/webauthn';
 
 type RefreshTokenFunc = () => Promise<string> | string;
 
@@ -39,9 +43,15 @@ export const useAuthStore = defineStore('auth', () => {
 
   const loginLoading = ref(false);
 
+  // MFA state
+  const mfaPending = ref(false);
+  const mfaToken = ref<null | string>(null);
+  const mfaMethods = ref<string[]>([]);
+
   const authnService = createAuthenticationServiceClient(
     requestClientRequestHandler,
   );
+  const mfaService = createMFAServiceClient(requestClientRequestHandler);
   const adminPortalService = createAdminPortalServiceClient(
     requestClientRequestHandler,
   );
@@ -98,6 +108,16 @@ export const useAuthStore = defineStore('auth', () => {
         password: encryptPassword(params.password),
         grant_type: 'password',
       });
+
+      // Check if MFA is required
+      if ((resp as any).mfa_required) {
+        mfaPending.value = true;
+        mfaToken.value = (resp as any).mfa_token ?? null;
+        mfaMethods.value = (resp as any).mfa_methods ?? [];
+        loginLoading.value = false;
+        await router.push('/auth/mfa-verify');
+        return null;
+      }
 
       const accessToken = (resp as any).access_token;
       const refresh_token = (resp as any).refresh_token;
@@ -182,6 +202,191 @@ export const useAuthStore = defineStore('auth', () => {
     return {
       userInfo,
     };
+  }
+
+  /**
+   * Process a login response (tokens) — shared by normal login, TOTP verify, and WebAuthn verify.
+   */
+  async function processLoginResponse(resp: any): Promise<{ userInfo: null | UserInfo }> {
+    const accessToken = (resp as any).access_token;
+    const refresh_token = (resp as any).refresh_token;
+
+    let expiresIn = (resp as any).expires_in;
+    let refreshExpiresIn = (resp as any).refresh_expires_in;
+
+    const expiresInSec = Number(expiresIn);
+    expiresIn =
+      !Number.isFinite(expiresInSec) || expiresInSec <= 0
+        ? Date.now() + ACCESS_TOKEN_REFRESH_INTERVAL
+        : Date.now() + Math.floor(expiresInSec * 1000);
+
+    const refreshExpiresInSec = Number(refreshExpiresIn);
+    refreshExpiresIn =
+      !Number.isFinite(refreshExpiresInSec) || refreshExpiresInSec <= 0
+        ? Date.now() + REFRESH_TOKEN_REFRESH_INTERVAL
+        : Date.now() + Math.floor(refreshExpiresInSec * 1000);
+
+    let userInfo: null | UserInfo = null;
+
+    if (accessToken) {
+      accessStore.setAccessToken(accessToken);
+      accessStore.setAccessTokenExpireTime(expiresIn);
+
+      if (refresh_token) {
+        accessStore.setRefreshToken(refresh_token);
+        accessStore.setRefreshTokenExpireTime(refreshExpiresIn);
+        startRefreshTimer();
+      }
+
+      const [fetchUserInfoResult, accessCodes] = await Promise.all([
+        fetchUserInfo(),
+        fetchAccessCodes(),
+      ]);
+
+      userInfo = fetchUserInfoResult;
+      if (!userInfo) {
+        throw new Error($t('authentication.loginFailedDesc'));
+      }
+
+      userStore.setUserInfo(userInfo);
+      accessStore.setAccessCodes(accessCodes.codes ?? []);
+
+      if (accessStore.loginExpired) {
+        accessStore.setLoginExpired(false);
+      } else {
+        await router.push(userInfo.homePath || DEFAULT_HOME_PATH);
+      }
+
+      if (userInfo?.realname) {
+        notification.success({
+          description: `${$t('authentication.loginSuccessDesc')}:${userInfo?.realname}`,
+          duration: 3,
+          message: $t('authentication.loginSuccess'),
+        });
+      }
+    }
+
+    return { userInfo };
+  }
+
+  /**
+   * Verify MFA code to complete login
+   * @param code TOTP code or backup code
+   * @param method MFA method used ('TOTP' or 'BACKUP_CODE')
+   */
+  async function verifyMFA(
+    code: string,
+    method: 'BACKUP_CODE' | 'TOTP' = 'TOTP',
+  ): Promise<{ userInfo: null | UserInfo } | null> {
+    if (!mfaToken.value) {
+      notification.error({
+        message: $t('authentication.loginFailed'),
+        description: 'MFA session expired',
+      });
+      return null;
+    }
+
+    try {
+      loginLoading.value = true;
+
+      const verifyRequest: { backup_code?: string; operation_id: string; totp_code?: string } = {
+        operation_id: mfaToken.value,
+      };
+
+      if (method === 'BACKUP_CODE') {
+        verifyRequest.backup_code = code;
+      } else {
+        verifyRequest.totp_code = code;
+      }
+
+      const verifyResp = await mfaService.VerifyMFAChallenge(verifyRequest);
+
+      if (!verifyResp.success || !verifyResp.login_response) {
+        throw new Error('MFA verification failed');
+      }
+
+      // Clear MFA state
+      mfaPending.value = false;
+      mfaToken.value = null;
+      mfaMethods.value = [];
+
+      return await processLoginResponse(verifyResp.login_response);
+    } catch (error) {
+      if (error instanceof Error) {
+        notification.error({
+          message: $t('authentication.loginFailed'),
+          description: error.message,
+        });
+      }
+      return null;
+    } finally {
+      loginLoading.value = false;
+    }
+  }
+
+  /**
+   * Verify MFA via WebAuthn security key to complete login.
+   * Calls StartMFAChallenge to get WebAuthn options, invokes browser API, then verifies.
+   */
+  async function verifyMFAWebAuthn(): Promise<{ userInfo: null | UserInfo } | null> {
+    if (!mfaToken.value) {
+      notification.error({
+        message: $t('authentication.loginFailed'),
+        description: 'MFA session expired',
+      });
+      return null;
+    }
+
+    if (!isWebAuthnSupported()) {
+      notification.error({
+        message: $t('page.auth.mfa.webauthnNotSupported'),
+      });
+      return null;
+    }
+
+    try {
+      loginLoading.value = true;
+
+      // Step 1: Start the WebAuthn challenge
+      const challengeResp = await mfaService.StartMFAChallenge({
+        method: 'WEBAUTHN' as authenticationservicev1_MFAMethod,
+        user_id: mfaToken.value,
+      });
+
+      if (!challengeResp.webauthn?.options_json) {
+        throw new Error('No WebAuthn challenge received');
+      }
+
+      // Step 2: Invoke browser WebAuthn API
+      const assertion = await performAssertion(challengeResp.webauthn.options_json);
+
+      // Step 3: Verify the assertion with the server
+      const verifyResp = await mfaService.VerifyMFAChallenge({
+        operation_id: challengeResp.operation_id,
+        webauthn: assertion,
+      });
+
+      if (!verifyResp.success || !verifyResp.login_response) {
+        throw new Error('WebAuthn verification failed');
+      }
+
+      // Clear MFA state
+      mfaPending.value = false;
+      mfaToken.value = null;
+      mfaMethods.value = [];
+
+      return await processLoginResponse(verifyResp.login_response);
+    } catch (error) {
+      if (error instanceof Error) {
+        notification.error({
+          message: $t('page.auth.mfa.webauthnVerifyFailed'),
+          description: error.message,
+        });
+      }
+      return null;
+    } finally {
+      loginLoading.value = false;
+    }
   }
 
   /**
@@ -402,6 +607,9 @@ export const useAuthStore = defineStore('auth', () => {
 
   function $reset() {
     loginLoading.value = false;
+    mfaPending.value = false;
+    mfaToken.value = null;
+    mfaMethods.value = [];
     _stopRefreshTimer();
   }
 
@@ -411,8 +619,14 @@ export const useAuthStore = defineStore('auth', () => {
     fetchUserInfo,
     loginLoading,
     logout,
+    mfaMethods,
+    mfaPending,
+    mfaService,
+    mfaToken,
     refreshToken,
     reauthenticate,
     startRefreshTimer,
+    verifyMFA,
+    verifyMFAWebAuthn,
   };
 });

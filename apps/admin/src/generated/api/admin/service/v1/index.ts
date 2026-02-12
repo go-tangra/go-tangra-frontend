@@ -1056,6 +1056,10 @@ export type authenticationservicev1_LoginResponse = {
   scope?: string;
   refresh_expires_in?: number;
   id_token?: string;
+  // MFA fields: present only when multi-factor authentication is required
+  mfa_required?: boolean;
+  mfa_token?: string;
+  mfa_methods?: string[];
 };
 
 // Token type
@@ -16452,6 +16456,218 @@ export function createModuleRegistrationServiceClient(
   handler: RequestHandler
 ): ModuleRegistrationService {
   return {
+  };
+}
+
+// === MFA Service Types ===
+
+export type authenticationservicev1_MFAMethod =
+  | "MFA_METHOD_UNSPECIFIED"
+  | "TOTP"
+  | "SMS"
+  | "EMAIL"
+  | "U2F"
+  | "WEBAUTHN"
+  | "BACKUP_CODE"
+  | "OTHER";
+
+export type authenticationservicev1_MFAEnforcement =
+  | "MFA_NOT_REQUIRED"
+  | "MFA_OPTIONAL"
+  | "MFA_REQUIRED";
+
+export type authenticationservicev1_EnrolledMethod = {
+  id: string;
+  method: authenticationservicev1_MFAMethod;
+  display: string;
+  enabled: boolean;
+  created_at?: string;
+  last_used_at?: string;
+};
+
+export type authenticationservicev1_GetMFAStatusResponse = {
+  enabled: boolean;
+  enrolled: authenticationservicev1_EnrolledMethod[];
+  enforcement: authenticationservicev1_MFAEnforcement;
+};
+
+export type authenticationservicev1_ListEnrolledMethodsResponse = {
+  items: authenticationservicev1_EnrolledMethod[];
+};
+
+export type authenticationservicev1_TOTPResult = {
+  secret: string;
+  otp_auth_url: string;
+  qr_code_data_uri: string;
+};
+
+export type authenticationservicev1_WebAuthnResult = {
+  challenge: string;
+  options_json: string;
+  rp_id: string;
+};
+
+export type authenticationservicev1_WebAuthnAssertion = {
+  id: string;
+  client_data_json: string;
+  authenticator_data: string;
+  signature?: string;
+  user_handle?: string;
+};
+
+export type authenticationservicev1_StartEnrollMethodResponse = {
+  totp?: authenticationservicev1_TOTPResult;
+  webauthn?: authenticationservicev1_WebAuthnResult;
+  operation_id: string;
+  expires_at?: string;
+};
+
+export type authenticationservicev1_ConfirmEnrollMethodResponse = {
+  success: boolean;
+  credential_id: string;
+};
+
+export type authenticationservicev1_VerifyMFAChallengeResponse = {
+  success: boolean;
+  session_token?: string;
+  login_response?: authenticationservicev1_LoginResponse;
+};
+
+export type authenticationservicev1_GenerateBackupCodesResponse = {
+  codes: string[];
+  generated_at?: string;
+};
+
+export type authenticationservicev1_ListBackupCodesResponse = {
+  remaining: number;
+  generated_at?: string;
+};
+
+// === MFA Service Interface ===
+
+export interface MFAService {
+  // Start MFA challenge during login
+  StartMFAChallenge(request: { method: authenticationservicev1_MFAMethod; user_id?: string }): Promise<{ operation_id: string; expires_at?: string; webauthn?: authenticationservicev1_WebAuthnResult }>;
+  // Verify MFA challenge during login - returns JWT tokens on success
+  VerifyMFAChallenge(request: { operation_id: string; totp_code?: string; backup_code?: string; webauthn?: authenticationservicev1_WebAuthnAssertion }): Promise<authenticationservicev1_VerifyMFAChallengeResponse>;
+  // Get current user's MFA status
+  GetMFAStatus(request: Record<string, never>): Promise<authenticationservicev1_GetMFAStatusResponse>;
+  // List enrolled MFA methods
+  ListEnrolledMethods(request: Record<string, never>): Promise<authenticationservicev1_ListEnrolledMethodsResponse>;
+  // Start enrolling an MFA method
+  StartEnrollMethod(request: { method: authenticationservicev1_MFAMethod }): Promise<authenticationservicev1_StartEnrollMethodResponse>;
+  // Confirm MFA enrollment with verification code
+  ConfirmEnrollMethod(request: { method: authenticationservicev1_MFAMethod; operation_id: string; totp_code?: string; webauthn?: authenticationservicev1_WebAuthnAssertion; display?: string }): Promise<authenticationservicev1_ConfirmEnrollMethodResponse>;
+  // Disable MFA for current user
+  DisableMFA(request: { credential_id?: string; method?: authenticationservicev1_MFAMethod; password?: string; totp_code?: string }): Promise<wellKnownEmpty>;
+  // Generate new backup codes
+  GenerateBackupCodes(request: { count?: number }): Promise<authenticationservicev1_GenerateBackupCodesResponse>;
+  // List backup code metadata (remaining count)
+  ListBackupCodes(request: Record<string, never>): Promise<authenticationservicev1_ListBackupCodesResponse>;
+  // Revoke a specific MFA device/credential
+  RevokeMFADevice(request: { credential_id: string }): Promise<wellKnownEmpty>;
+}
+
+export function createMFAServiceClient(
+  handler: RequestHandler
+): MFAService {
+  return {
+    StartMFAChallenge(request) {
+      const path = `admin/v1/mfa/challenge`;
+      const body = JSON.stringify(request);
+      return handler({
+        path,
+        method: "POST",
+        body,
+        responseType: "json",
+      }) as Promise<{ operation_id: string; expires_at?: string; webauthn?: authenticationservicev1_WebAuthnResult }>;
+    },
+    VerifyMFAChallenge(request) {
+      const path = `admin/v1/mfa/verify`;
+      const body = JSON.stringify(request);
+      return handler({
+        path,
+        method: "POST",
+        body,
+        responseType: "json",
+      }) as Promise<authenticationservicev1_VerifyMFAChallengeResponse>;
+    },
+    GetMFAStatus(_request) {
+      const path = `admin/v1/me/mfa/status`;
+      return handler({
+        path,
+        method: "GET",
+        body: null,
+        responseType: "json",
+      }) as Promise<authenticationservicev1_GetMFAStatusResponse>;
+    },
+    ListEnrolledMethods(_request) {
+      const path = `admin/v1/me/mfa/methods`;
+      return handler({
+        path,
+        method: "GET",
+        body: null,
+        responseType: "json",
+      }) as Promise<authenticationservicev1_ListEnrolledMethodsResponse>;
+    },
+    StartEnrollMethod(request) {
+      const path = `admin/v1/me/mfa/enroll`;
+      const body = JSON.stringify(request);
+      return handler({
+        path,
+        method: "POST",
+        body,
+        responseType: "json",
+      }) as Promise<authenticationservicev1_StartEnrollMethodResponse>;
+    },
+    ConfirmEnrollMethod(request) {
+      const path = `admin/v1/me/mfa/enroll/confirm`;
+      const body = JSON.stringify(request);
+      return handler({
+        path,
+        method: "POST",
+        body,
+        responseType: "json",
+      }) as Promise<authenticationservicev1_ConfirmEnrollMethodResponse>;
+    },
+    DisableMFA(request) {
+      const path = `admin/v1/me/mfa/disable`;
+      const body = JSON.stringify(request);
+      return handler({
+        path,
+        method: "POST",
+        body,
+        responseType: "json",
+      }) as Promise<wellKnownEmpty>;
+    },
+    GenerateBackupCodes(request) {
+      const path = `admin/v1/me/mfa/backup-codes`;
+      const body = JSON.stringify(request);
+      return handler({
+        path,
+        method: "POST",
+        body,
+        responseType: "json",
+      }) as Promise<authenticationservicev1_GenerateBackupCodesResponse>;
+    },
+    ListBackupCodes(_request) {
+      const path = `admin/v1/me/mfa/backup-codes`;
+      return handler({
+        path,
+        method: "GET",
+        body: null,
+        responseType: "json",
+      }) as Promise<authenticationservicev1_ListBackupCodesResponse>;
+    },
+    RevokeMFADevice(request) {
+      const path = `admin/v1/me/mfa/devices/${request.credential_id}`;
+      return handler({
+        path,
+        method: "DELETE",
+        body: null,
+        responseType: "json",
+      }) as Promise<wellKnownEmpty>;
+    },
   };
 }
 

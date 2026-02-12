@@ -4,7 +4,7 @@ import type { VxeGridProps } from '#/adapter/vxe-table';
 import { h, computed, ref } from 'vue';
 
 import { Page, useVbenDrawer, type VbenFormProps } from '@vben/common-ui';
-import { LucideEye, LucideDownload, LucideKeyRound } from '@vben/icons';
+import { LucideEye, LucideDownload, LucideKeyRound, LucideRefreshCw } from '@vben/icons';
 
 import { notification } from 'ant-design-vue';
 
@@ -78,6 +78,11 @@ function statusToName(status: string | undefined) {
 function isIssued(row: IssuedCertificateInfo) {
   return row.status === 'ISSUED_CERTIFICATE_STATUS_ISSUED' ||
          row.status === 'ISSUED_CERTIFICATE_STATUS_RENEWED' ||
+         row.status === 'ISSUED_CERTIFICATE_STATUS_EXPIRED';
+}
+
+function canRenew(row: IssuedCertificateInfo) {
+  return row.status === 'ISSUED_CERTIFICATE_STATUS_ISSUED' ||
          row.status === 'ISSUED_CERTIFICATE_STATUS_EXPIRED';
 }
 
@@ -193,7 +198,7 @@ const gridOptions: VxeGridProps<IssuedCertificateInfo> = {
       field: 'action',
       fixed: 'right',
       slots: { default: 'action' },
-      width: 160,
+      width: 200,
     },
   ],
 };
@@ -227,6 +232,17 @@ async function handleDownloadCert(row: IssuedCertificateInfo) {
     notification.success({ message: $t('lcm.page.issuedCertificate.downloadSuccess') });
   } catch {
     notification.error({ message: $t('lcm.page.issuedCertificate.downloadFailed') });
+  }
+}
+
+async function handleForceRenew(row: IssuedCertificateInfo) {
+  if (!row.id) return;
+  try {
+    await issuedCertStore.renewCertificate(row.id);
+    notification.success({ message: $t('lcm.page.issuedCertificate.renewSuccess') });
+    await gridApi.reload();
+  } catch {
+    notification.error({ message: $t('lcm.page.issuedCertificate.renewFailed') });
   }
 }
 
@@ -283,6 +299,19 @@ async function handleDownloadKey(row: IssuedCertificateInfo) {
           :title="$t('lcm.page.issuedCertificate.downloadKey')"
           @click.stop="handleDownloadKey(row)"
         />
+        <a-popconfirm
+          v-if="canRenew(row)"
+          :cancel-text="$t('ui.button.cancel')"
+          :ok-text="$t('ui.button.ok')"
+          :title="$t('lcm.page.issuedCertificate.confirmForceRenew')"
+          @confirm="handleForceRenew(row)"
+        >
+          <a-button
+            type="link"
+            :icon="h(LucideRefreshCw)"
+            :title="$t('lcm.page.issuedCertificate.forceRenew')"
+          />
+        </a-popconfirm>
       </template>
     </Grid>
     <Drawer />

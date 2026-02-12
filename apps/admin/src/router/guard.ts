@@ -5,6 +5,8 @@ import { preferences } from '@vben/preferences';
 import { useAccessStore, useUserStore } from '@vben/stores';
 import { startProgress, stopProgress } from '@vben/utils';
 
+import { BasicLayout } from '#/layouts';
+import { $t } from '#/locales';
 import { accessRoutes, coreRouteNames } from '#/router/routes';
 import { useAuthStore } from '#/stores';
 
@@ -115,6 +117,30 @@ function setupAccessGuard(router: Router) {
     // 保存菜单信息和路由信息
     accessStore.setAccessMenus(accessibleMenus);
     accessStore.setAccessRoutes(accessibleRoutes);
+
+    // Register profile route (always available, not managed by backend menu)
+    router.addRoute({
+      path: '/profile',
+      name: 'Profile',
+      component: BasicLayout,
+      redirect: '/profile/settings',
+      meta: {
+        hideInMenu: true,
+        title: $t('page.profile.title'),
+      },
+      children: [
+        {
+          path: 'settings',
+          name: 'ProfileSettings',
+          meta: {
+            icon: 'lucide:user-cog',
+            title: $t('page.profile.title'),
+          },
+          component: () => import('#/views/app/profile/index.vue'),
+        },
+      ],
+    });
+
     accessStore.setIsAccessChecked(true);
 
     const redirectPath = (from.query.redirect ??

@@ -325,6 +325,11 @@ export interface GetIssuedCertificateResponse {
   serverGeneratedKey?: boolean;
 }
 
+export interface ForceRenewCertificateResponse {
+  renewalId?: string;
+  message?: string;
+}
+
 export const IssuedCertificateService = {
   list: async (
     params?: {
@@ -349,6 +354,17 @@ export const IssuedCertificateService = {
   ): Promise<GetIssuedCertificateResponse> => {
     return lcmApi.get<GetIssuedCertificateResponse>(
       `/issued-certificates/${id}${buildQuery(params || {})}`,
+      options
+    );
+  },
+
+  renew: async (
+    id: string,
+    options?: RequestOptions
+  ): Promise<ForceRenewCertificateResponse> => {
+    return lcmApi.post<ForceRenewCertificateResponse>(
+      `/issued-certificates/${id}/renew`,
+      undefined,
       options
     );
   },

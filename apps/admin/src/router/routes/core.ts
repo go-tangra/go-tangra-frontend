@@ -92,6 +92,15 @@ const coreRoutes: RouteRecordRaw[] = [
           title: $t('page.auth.register'),
         },
       },
+      {
+        name: 'MFAVerify',
+        path: 'mfa-verify',
+        component: () =>
+          import('#/views/_core/authentication/mfa-verify.vue'),
+        meta: {
+          title: $t('page.auth.mfa.title'),
+        },
+      },
     ],
   },
 ];

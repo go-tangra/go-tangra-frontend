@@ -266,7 +266,11 @@
       "downloadFailed": "Download failed",
       "noCertificate": "No certificate available",
       "noPrivateKey": "No private key available",
-      "keyNotAvailable": "Private key not available (key was not server-generated)"
+      "keyNotAvailable": "Private key not available (key was not server-generated)",
+      "forceRenew": "Force Renew",
+      "confirmForceRenew": "Are you sure you want to force renew this certificate?",
+      "renewSuccess": "Certificate renewal scheduled successfully",
+      "renewFailed": "Failed to schedule certificate renewal"
     },
     "auditLog": {
       "moduleName": "LCM Audit Log",

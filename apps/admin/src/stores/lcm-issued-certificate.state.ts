@@ -4,6 +4,7 @@ import {
   IssuedCertificateService,
   type IssuedCertificateInfo,
   type GetIssuedCertificateResponse,
+  type ForceRenewCertificateResponse,
 } from '#/generated/api/modules/lcm';
 import type { Paging } from '#/utils/request';
 
@@ -45,11 +46,19 @@ export const useLcmIssuedCertificateStore = defineStore('lcm-issued-certificate'
     return await IssuedCertificateService.get(id, { includePrivateKey });
   }
 
+  /**
+   * Force renew a certificate
+   */
+  async function renewCertificate(id: string): Promise<ForceRenewCertificateResponse> {
+    return await IssuedCertificateService.renew(id);
+  }
+
   function $reset() {}
 
   return {
     $reset,
     listCertificates,
     getCertificate,
+    renewCertificate,
   };
 });

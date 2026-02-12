@@ -2,6 +2,7 @@
 import type { NotificationItem } from '@vben/layouts';
 
 import { computed, ref, watch } from 'vue';
+import { useRouter } from 'vue-router';
 
 import { AuthenticationLoginExpiredModal } from '@vben/common-ui';
 import { useWatermark } from '@vben/hooks';
@@ -18,6 +19,8 @@ import { dateUtil } from '@vben/utils';
 import { notification } from 'ant-design-vue';
 
 import { type internal_messageservicev1_InternalMessageRecipient as InternalMessageRecipient } from '#/generated/api/admin/service/v1';
+import { LucideShieldCheck } from '@vben/icons';
+
 import { $t } from '#/locales';
 import { useAuthStore, useInternalMessageStore } from '#/stores';
 import { SSEClient } from '#/transport/sse';
@@ -27,6 +30,7 @@ const userStore = useUserStore();
 const authStore = useAuthStore();
 const accessStore = useAccessStore();
 const internalMessageStore = useInternalMessageStore();
+const router = useRouter();
 
 const notifications = ref<NotificationItem[]>([]);
 
@@ -37,7 +41,11 @@ const showDot = computed(() =>
 const { destroyWatermark, updateWatermark } = useWatermark();
 
 const menus = computed(() => [
-
+  {
+    handler: () => router.push('/profile/settings'),
+    icon: LucideShieldCheck,
+    text: $t('page.profile.title'),
+  },
 ]);
 
 const avatar = computed(() => {
