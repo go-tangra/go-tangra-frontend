@@ -25,3 +25,4 @@ export { deployerApi } from './deployer/client';
 export { paperlessApi } from './paperless/client';
 export { bookmarkApi } from './bookmark/client';
 export { executorApi } from './executor/client';
+export { assetApi } from './asset/client';

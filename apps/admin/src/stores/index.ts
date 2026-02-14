@@ -61,6 +61,13 @@ export * from './bookmark-permission.state';
 export * from './executor-script.state';
 export * from './executor-assignment.state';
 export * from './executor-execution.state';
+export * from './asset-supplier.state';
+export * from './asset-employee.state';
+export * from './asset-location.state';
+export * from './asset-category.state';
+export * from './asset-asset.state';
+export * from './asset-consumable.state';
+export * from './asset-system.state';
 
 export const enableList = computed(() => [
   { value: 'true', label: $t('enum.enable.true') },
