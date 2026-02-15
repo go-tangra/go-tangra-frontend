@@ -694,7 +694,7 @@ export const AssetService = {
 
   uploadPhoto: async (
     id: string,
-    data: { photoData: string; fileName: string },
+    data: { content: string; fileName: string },
     options?: RequestOptions,
   ): Promise<{ asset: Asset }> => {
     return assetApi.post<{ asset: Asset }>(
@@ -720,7 +720,7 @@ export const AssetService = {
 
   uploadDocument: async (
     id: string,
-    data: { fileName: string; fileData: string; description?: string },
+    data: { fileName: string; content: string; description?: string },
     options?: RequestOptions,
   ): Promise<{ document: AssetDocument }> => {
     return assetApi.post<{ document: AssetDocument }>(
@@ -823,7 +823,7 @@ export const ConsumableService = {
 
   uploadDocument: async (
     id: string,
-    data: { fileName: string; fileData: string; description?: string },
+    data: { fileName: string; content: string; description?: string },
     options?: RequestOptions,
   ): Promise<{ document: AssetDocument }> => {
     return assetApi.post<{ document: AssetDocument }>(
@@ -918,7 +918,7 @@ export const LicenseService = {
 
   uploadDocument: async (
     id: string,
-    data: { fileName: string; fileData: string; description?: string },
+    data: { fileName: string; content: string; description?: string },
     options?: RequestOptions,
   ): Promise<{ document: AssetDocument }> => {
     return assetApi.post<{ document: AssetDocument }>(

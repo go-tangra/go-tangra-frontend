@@ -64,12 +64,12 @@ export const useAssetConsumableStore = defineStore('asset-consumable', () => {
   async function uploadDocument(
     id: string,
     fileName: string,
-    fileData: string,
+    content: string,
     description?: string,
   ): Promise<{ document: AssetDocument }> {
     return await ConsumableService.uploadDocument(id, {
       fileName,
-      fileData,
+      content,
       description,
     });
   }

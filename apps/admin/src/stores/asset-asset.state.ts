@@ -85,10 +85,10 @@ export const useAssetAssetStore = defineStore('asset-asset', () => {
 
   async function uploadPhoto(
     id: string,
-    photoData: string,
+    content: string,
     fileName: string,
   ): Promise<{ asset: Asset }> {
-    return await AssetService.uploadPhoto(id, { photoData, fileName });
+    return await AssetService.uploadPhoto(id, { content, fileName });
   }
 
   async function deletePhoto(id: string): Promise<void> {
@@ -102,12 +102,12 @@ export const useAssetAssetStore = defineStore('asset-asset', () => {
   async function uploadDocument(
     id: string,
     fileName: string,
-    fileData: string,
+    content: string,
     description?: string,
   ): Promise<{ document: AssetDocument }> {
     return await AssetService.uploadDocument(id, {
       fileName,
-      fileData,
+      content,
       description,
     });
   }
