@@ -362,6 +362,9 @@ const formState = ref({
   orderNumber: '',
   purchaseCost: undefined as number | undefined,
   notes: '',
+  salvageValue: undefined as number | undefined,
+  usefulLifeYears: undefined as number | undefined,
+  depreciationRate: 0.40,
 });
 
 const title = computed(() => {
@@ -396,6 +399,9 @@ async function handleSubmit() {
         orderNumber: formState.value.orderNumber || undefined,
         purchaseCost: formState.value.purchaseCost,
         notes: formState.value.notes || undefined,
+        salvageValue: formState.value.salvageValue,
+        usefulLifeYears: formState.value.usefulLifeYears,
+        depreciationRate: formState.value.depreciationRate,
       });
       notification.success({
         message: $t('asset.page.asset.createSuccess'),
@@ -416,6 +422,9 @@ async function handleSubmit() {
           orderNumber: formState.value.orderNumber || undefined,
           purchaseCost: formState.value.purchaseCost,
           notes: formState.value.notes || undefined,
+          salvageValue: formState.value.salvageValue,
+          usefulLifeYears: formState.value.usefulLifeYears,
+          depreciationRate: formState.value.depreciationRate,
         },
         [
           'serial',
@@ -430,6 +439,9 @@ async function handleSubmit() {
           'orderNumber',
           'purchaseCost',
           'notes',
+          'salvageValue',
+          'usefulLifeYears',
+          'depreciationRate',
         ],
       );
       notification.success({
@@ -462,6 +474,9 @@ function resetForm() {
     orderNumber: '',
     purchaseCost: undefined,
     notes: '',
+    salvageValue: undefined,
+    usefulLifeYears: undefined,
+    depreciationRate: 0.40,
   };
   assignmentHistory.value = [];
   photoUrl.value = undefined;
@@ -499,6 +514,9 @@ const [Modal, modalApi] = useVbenModal({
           orderNumber: data.value.row.orderNumber ?? '',
           purchaseCost: data.value.row.purchaseCost,
           notes: data.value.row.notes ?? '',
+          salvageValue: data.value.row.salvageValue,
+          usefulLifeYears: data.value.row.usefulLifeYears,
+          depreciationRate: data.value.row.depreciationRate ?? 0.40,
         };
 
         if (data.value.row.id) {
@@ -641,6 +659,15 @@ const documentColumns = [
             </DescriptionsItem>
             <DescriptionsItem :label="$t('asset.page.asset.warrantyMonths')">
               {{ asset.warrantyMonths ?? '-' }}
+            </DescriptionsItem>
+            <DescriptionsItem :label="$t('asset.page.asset.salvageValue')">
+              {{ asset.salvageValue ?? '-' }}
+            </DescriptionsItem>
+            <DescriptionsItem :label="$t('asset.page.asset.usefulLifeYears')">
+              {{ asset.usefulLifeYears ?? '-' }}
+            </DescriptionsItem>
+            <DescriptionsItem :label="$t('asset.page.asset.depreciationRate')">
+              {{ asset.depreciationRate ?? '-' }}
             </DescriptionsItem>
           </Descriptions>
         </TabPane>
@@ -881,6 +908,43 @@ const documentColumns = [
               <InputNumber
                 v-model:value="formState.warrantyMonths"
                 :min="0"
+                style="width: 100%"
+              />
+            </FormItem>
+
+            <FormItem
+              :label="$t('asset.page.asset.salvageValue')"
+              name="salvageValue"
+            >
+              <InputNumber
+                v-model:value="formState.salvageValue"
+                :min="0"
+                :precision="2"
+                style="width: 100%"
+              />
+            </FormItem>
+
+            <FormItem
+              :label="$t('asset.page.asset.usefulLifeYears')"
+              name="usefulLifeYears"
+            >
+              <InputNumber
+                v-model:value="formState.usefulLifeYears"
+                :min="0"
+                style="width: 100%"
+              />
+            </FormItem>
+
+            <FormItem
+              :label="$t('asset.page.asset.depreciationRate')"
+              name="depreciationRate"
+            >
+              <InputNumber
+                v-model:value="formState.depreciationRate"
+                :min="0"
+                :max="1"
+                :step="0.01"
+                :precision="2"
                 style="width: 100%"
               />
             </FormItem>

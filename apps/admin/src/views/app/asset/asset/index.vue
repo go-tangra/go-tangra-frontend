@@ -120,6 +120,39 @@ function getEmployeeName(id: string | undefined) {
   return employeeMap.value.get(id) ?? id;
 }
 
+function calculateCurrentValue(row: Asset): string {
+  const cost = row.purchaseCost;
+  const usefulLife = row.usefulLifeYears;
+  const salvage = row.salvageValue ?? 0;
+  if (cost == null || !usefulLife || usefulLife <= 0) return '-';
+
+  const purchaseDate = row.purchaseDate ? new Date(row.purchaseDate) : null;
+  const now = new Date();
+  const yearsElapsed = purchaseDate
+    ? Math.floor(
+        (now.getTime() - purchaseDate.getTime()) / (365.25 * 24 * 60 * 60 * 1000),
+      )
+    : 0;
+  if (yearsElapsed <= 0) return cost.toFixed(2);
+
+  const rate = row.depreciationRate ?? 2 / usefulLife;
+  let bookValue = cost;
+  const years = Math.min(yearsElapsed, usefulLife);
+  for (let i = 0; i < years; i++) {
+    let depreciation = bookValue * rate;
+    if (bookValue - depreciation < salvage) {
+      depreciation = bookValue - salvage;
+    }
+    bookValue -= depreciation;
+    if (bookValue <= salvage) {
+      bookValue = salvage;
+      break;
+    }
+  }
+
+  return bookValue.toFixed(2);
+}
+
 const formOptions: VbenFormProps = {
   collapsed: false,
   showCollapseButton: false,
@@ -230,6 +263,12 @@ const gridOptions: VxeGridProps<Asset> = {
       title: $t('asset.page.asset.purchaseCost'),
       field: 'purchaseCost',
       width: 120,
+    },
+    {
+      title: $t('asset.page.asset.currentValue'),
+      field: 'currentValue',
+      width: 130,
+      slots: { default: 'currentValue' },
     },
     {
       title: $t('ui.table.action'),
@@ -367,6 +406,9 @@ onMounted(() => {
       </template>
       <template #employeeName="{ row }">
         {{ getEmployeeName(row.employeeId) }}
+      </template>
+      <template #currentValue="{ row }">
+        {{ calculateCurrentValue(row) }}
       </template>
       <template #action="{ row }">
         <Space>

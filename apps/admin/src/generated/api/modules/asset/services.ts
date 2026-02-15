@@ -146,6 +146,9 @@ export interface Asset {
   notes?: string;
   tags?: string;
   metadata?: string;
+  salvageValue?: number;
+  usefulLifeYears?: number;
+  depreciationRate?: number;
   createTime?: string;
   updateTime?: string;
   createdBy?: number;

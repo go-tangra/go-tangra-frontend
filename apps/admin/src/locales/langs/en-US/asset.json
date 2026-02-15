@@ -71,7 +71,11 @@
       "tabGeneral": "General",
       "tabProcurement": "Procurement",
       "tabAssignment": "Assignment",
-      "tabDocuments": "Documents"
+      "tabDocuments": "Documents",
+      "salvageValue": "Salvage Value",
+      "usefulLifeYears": "Useful Life (Years)",
+      "depreciationRate": "Depreciation Rate",
+      "currentValue": "Current Value"
     },
     "consumable": {
       "title": "Consumables",
