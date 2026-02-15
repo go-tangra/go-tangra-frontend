@@ -950,23 +950,9 @@ const documentColumns = [
               />
             </FormItem>
           </TabPane>
-        </Tabs>
 
-        <FormItem class="mt-4">
-          <Button type="primary" html-type="submit" :loading="loading" block>
-            {{
-              isCreateMode
-                ? $t('ui.button.create', { moduleName: '' })
-                : $t('ui.button.save')
-            }}
-          </Button>
-        </FormItem>
-      </Form>
-
-      <!-- Assignment & Documents tabs for edit mode only -->
-      <template v-if="isEditMode && data?.row?.id">
-        <Tabs v-model:activeKey="activeTab" class="mt-4">
           <TabPane
+            v-if="isEditMode && data?.row?.id"
             key="assignment"
             :tab="$t('asset.page.asset.tabAssignment')"
           >
@@ -1003,6 +989,7 @@ const documentColumns = [
           </TabPane>
 
           <TabPane
+            v-if="isEditMode && data?.row?.id"
             key="documents"
             :tab="$t('asset.page.asset.tabDocuments')"
           >
@@ -1120,7 +1107,17 @@ const documentColumns = [
             </Spin>
           </TabPane>
         </Tabs>
-      </template>
+
+        <FormItem class="mt-4">
+          <Button type="primary" html-type="submit" :loading="loading" block>
+            {{
+              isCreateMode
+                ? $t('ui.button.create', { moduleName: '' })
+                : $t('ui.button.save')
+            }}
+          </Button>
+        </FormItem>
+      </Form>
     </template>
 
     <!-- Hidden file inputs -->
