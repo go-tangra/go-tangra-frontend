@@ -67,6 +67,7 @@ export * from './asset-location.state';
 export * from './asset-category.state';
 export * from './asset-asset.state';
 export * from './asset-consumable.state';
+export * from './asset-license.state';
 export * from './asset-system.state';
 
 export const enableList = computed(() => [

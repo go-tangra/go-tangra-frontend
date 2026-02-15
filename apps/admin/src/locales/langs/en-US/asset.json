@@ -3,6 +3,7 @@
     "moduleName": "Asset Management",
     "assets": "Assets",
     "consumables": "Consumables",
+    "licenses": "Licenses",
     "categories": "Categories",
     "suppliers": "Suppliers",
     "employees": "Employees",
@@ -96,6 +97,26 @@
       "updateSuccess": "Consumable updated successfully",
       "deleteSuccess": "Consumable deleted successfully",
       "confirmDelete": "Are you sure you want to delete this consumable?"
+    },
+    "license": {
+      "title": "Licenses",
+      "create": "Create License",
+      "edit": "Edit License",
+      "view": "License Details",
+      "name": "Name",
+      "supplierId": "Supplier",
+      "purchaseDate": "Purchase Date",
+      "purchaseCost": "Purchase Cost",
+      "orderNumber": "Order Number",
+      "validFrom": "Valid From",
+      "validTo": "Valid To",
+      "notes": "Notes",
+      "status": "Status",
+      "sectionDocuments": "Documents",
+      "createSuccess": "License created successfully",
+      "updateSuccess": "License updated successfully",
+      "deleteSuccess": "License deleted successfully",
+      "confirmDelete": "Are you sure you want to delete this license?"
     },
     "category": {
       "title": "Categories",
@@ -250,6 +271,11 @@
       "assigned": "Assigned",
       "unassigned": "Unassigned",
       "transferred": "Transferred"
+    },
+    "licenseStatus": {
+      "active": "Active",
+      "expired": "Expired",
+      "suspended": "Suspended"
     }
   }
 }

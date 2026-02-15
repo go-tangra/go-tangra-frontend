@@ -201,6 +201,35 @@ export interface Consumable {
   updatedBy?: number;
 }
 
+export type LicenseStatus =
+  | 'LICENSE_STATUS_ACTIVE'
+  | 'LICENSE_STATUS_EXPIRED'
+  | 'LICENSE_STATUS_SUSPENDED'
+  | 'LICENSE_STATUS_UNSPECIFIED';
+
+export interface License {
+  id: string;
+  tenantId?: number;
+  name: string;
+  supplierId?: string;
+  purchaseDate?: string;
+  purchaseCost?: number;
+  orderNumber?: string;
+  validFrom?: string;
+  validTo?: string;
+  notes?: string;
+  status?: LicenseStatus;
+  createdAt?: string;
+  updatedAt?: string;
+  createdBy?: number;
+  updatedBy?: number;
+}
+
+export interface ListLicensesResponse {
+  items: License[];
+  total: number;
+}
+
 export interface HealthCheckResponse {
   status: string;
   version?: string;
@@ -819,6 +848,101 @@ export const ConsumableService = {
   ): Promise<{ content: string; fileName: string; mimeType: string }> => {
     return assetApi.get(
       `/consumables/${consumableId}/documents/${documentId}/download`,
+      options,
+    );
+  },
+};
+
+// ==================== License Service ====================
+
+export const LicenseService = {
+  list: async (
+    params?: {
+      query?: string;
+      supplierId?: string;
+      status?: LicenseStatus;
+      page?: number;
+      pageSize?: number;
+      noPaging?: boolean;
+    },
+    options?: RequestOptions,
+  ): Promise<ListLicensesResponse> => {
+    return assetApi.get<ListLicensesResponse>(
+      `/licenses${buildQuery(params || {})}`,
+      options,
+    );
+  },
+
+  get: async (
+    id: string,
+    options?: RequestOptions,
+  ): Promise<{ license: License }> => {
+    return assetApi.get<{ license: License }>(`/licenses/${id}`, options);
+  },
+
+  create: async (
+    data: Partial<License>,
+    options?: RequestOptions,
+  ): Promise<{ license: License }> => {
+    return assetApi.post<{ license: License }>('/licenses', data, options);
+  },
+
+  update: async (
+    id: string,
+    data: { id: string; data: License; updateMask: string },
+    options?: RequestOptions,
+  ): Promise<{ license: License }> => {
+    return assetApi.put<{ license: License }>(
+      `/licenses/${id}`,
+      data,
+      options,
+    );
+  },
+
+  delete: async (id: string, options?: RequestOptions): Promise<void> => {
+    return assetApi.delete(`/licenses/${id}`, options);
+  },
+
+  listDocuments: async (
+    id: string,
+    options?: RequestOptions,
+  ): Promise<ListDocumentsResponse> => {
+    return assetApi.get<ListDocumentsResponse>(
+      `/licenses/${id}/documents`,
+      options,
+    );
+  },
+
+  uploadDocument: async (
+    id: string,
+    data: { fileName: string; fileData: string; description?: string },
+    options?: RequestOptions,
+  ): Promise<{ document: AssetDocument }> => {
+    return assetApi.post<{ document: AssetDocument }>(
+      `/licenses/${id}/documents`,
+      data,
+      options,
+    );
+  },
+
+  deleteDocument: async (
+    licenseId: string,
+    documentId: string,
+    options?: RequestOptions,
+  ): Promise<void> => {
+    return assetApi.delete(
+      `/licenses/${licenseId}/documents/${documentId}`,
+      options,
+    );
+  },
+
+  downloadDocument: async (
+    licenseId: string,
+    documentId: string,
+    options?: RequestOptions,
+  ): Promise<{ content: string; fileName: string; mimeType: string }> => {
+    return assetApi.get(
+      `/licenses/${licenseId}/documents/${documentId}/download`,
       options,
     );
   },

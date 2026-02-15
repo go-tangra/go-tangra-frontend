@@ -38,6 +38,16 @@ const asset: RouteRecordRaw[] = [
         component: () => import('#/views/app/asset/consumable/index.vue'),
       },
       {
+        path: 'licenses',
+        name: 'AssetLicenses',
+        meta: {
+          icon: 'lucide:scroll-text',
+          title: $t('asset.menu.licenses'),
+          authority: ['platform:admin', 'tenant:manager'],
+        },
+        component: () => import('#/views/app/asset/license/index.vue'),
+      },
+      {
         path: 'categories',
         name: 'AssetCategories',
         meta: {
