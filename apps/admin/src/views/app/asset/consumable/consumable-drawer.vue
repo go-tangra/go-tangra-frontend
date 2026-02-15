@@ -14,6 +14,7 @@ import {
   Select,
   Descriptions,
   DescriptionsItem,
+  DatePicker,
 } from 'ant-design-vue';
 
 import type { Consumable } from '#/generated/api/modules/asset';
@@ -116,7 +117,7 @@ async function handleSubmit() {
         modelNumber: formState.value.modelNumber || undefined,
         amount: formState.value.amount,
         minAmount: formState.value.minAmount,
-        purchaseDate: formState.value.purchaseDate || undefined,
+        purchaseDate: formState.value.purchaseDate ? `${formState.value.purchaseDate}T00:00:00Z` : undefined,
         purchaseCost: formState.value.purchaseCost,
         orderNumber: formState.value.orderNumber || undefined,
         notes: formState.value.notes || undefined,
@@ -137,7 +138,7 @@ async function handleSubmit() {
           modelNumber: formState.value.modelNumber || undefined,
           amount: formState.value.amount,
           minAmount: formState.value.minAmount,
-          purchaseDate: formState.value.purchaseDate || undefined,
+          purchaseDate: formState.value.purchaseDate ? `${formState.value.purchaseDate}T00:00:00Z` : undefined,
           purchaseCost: formState.value.purchaseCost,
           orderNumber: formState.value.orderNumber || undefined,
           notes: formState.value.notes || undefined,
@@ -420,10 +421,10 @@ const consumable = computed(() => data.value?.row);
           :label="$t('asset.page.consumable.purchaseDate')"
           name="purchaseDate"
         >
-          <Input
+          <DatePicker
             v-model:value="formState.purchaseDate"
-            :placeholder="'YYYY-MM-DD'"
-            :maxlength="10"
+            value-format="YYYY-MM-DD"
+            style="width: 100%"
           />
         </FormItem>
 

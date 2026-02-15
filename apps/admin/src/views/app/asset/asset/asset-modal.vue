@@ -27,6 +27,7 @@ import {
   Spin,
   Tabs,
   TabPane,
+  DatePicker,
 } from 'ant-design-vue';
 
 import type {
@@ -395,7 +396,7 @@ async function handleSubmit() {
         locationId: formState.value.locationId,
         status: formState.value.status as any,
         warrantyMonths: formState.value.warrantyMonths,
-        purchaseDate: formState.value.purchaseDate || undefined,
+        purchaseDate: formState.value.purchaseDate ? `${formState.value.purchaseDate}T00:00:00Z` : undefined,
         orderNumber: formState.value.orderNumber || undefined,
         purchaseCost: formState.value.purchaseCost,
         notes: formState.value.notes || undefined,
@@ -418,7 +419,7 @@ async function handleSubmit() {
           locationId: formState.value.locationId,
           status: formState.value.status as any,
           warrantyMonths: formState.value.warrantyMonths,
-          purchaseDate: formState.value.purchaseDate || undefined,
+          purchaseDate: formState.value.purchaseDate ? `${formState.value.purchaseDate}T00:00:00Z` : undefined,
           orderNumber: formState.value.orderNumber || undefined,
           purchaseCost: formState.value.purchaseCost,
           notes: formState.value.notes || undefined,
@@ -871,10 +872,10 @@ const documentColumns = [
               :label="$t('asset.page.asset.purchaseDate')"
               name="purchaseDate"
             >
-              <Input
+              <DatePicker
                 v-model:value="formState.purchaseDate"
-                :placeholder="'YYYY-MM-DD'"
-                :maxlength="10"
+                value-format="YYYY-MM-DD"
+                style="width: 100%"
               />
             </FormItem>
 

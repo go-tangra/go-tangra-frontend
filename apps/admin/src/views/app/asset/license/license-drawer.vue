@@ -15,6 +15,7 @@ import {
   Descriptions,
   DescriptionsItem,
   Tag,
+  DatePicker,
 } from 'ant-design-vue';
 
 import type { License, LicenseStatus } from '#/generated/api/modules/asset';
@@ -112,11 +113,11 @@ async function handleSubmit() {
       await licenseStore.createLicense({
         name: formState.value.name,
         supplierId: formState.value.supplierId,
-        purchaseDate: formState.value.purchaseDate || undefined,
+        purchaseDate: formState.value.purchaseDate ? `${formState.value.purchaseDate}T00:00:00Z` : undefined,
         purchaseCost: formState.value.purchaseCost,
         orderNumber: formState.value.orderNumber || undefined,
-        validFrom: formState.value.validFrom || undefined,
-        validTo: formState.value.validTo || undefined,
+        validFrom: formState.value.validFrom ? `${formState.value.validFrom}T00:00:00Z` : undefined,
+        validTo: formState.value.validTo ? `${formState.value.validTo}T00:00:00Z` : undefined,
         notes: formState.value.notes || undefined,
         status: (formState.value.status as LicenseStatus) || undefined,
       });
@@ -129,11 +130,11 @@ async function handleSubmit() {
         {
           name: formState.value.name,
           supplierId: formState.value.supplierId,
-          purchaseDate: formState.value.purchaseDate || undefined,
+          purchaseDate: formState.value.purchaseDate ? `${formState.value.purchaseDate}T00:00:00Z` : undefined,
           purchaseCost: formState.value.purchaseCost,
           orderNumber: formState.value.orderNumber || undefined,
-          validFrom: formState.value.validFrom || undefined,
-          validTo: formState.value.validTo || undefined,
+          validFrom: formState.value.validFrom ? `${formState.value.validFrom}T00:00:00Z` : undefined,
+          validTo: formState.value.validTo ? `${formState.value.validTo}T00:00:00Z` : undefined,
           notes: formState.value.notes || undefined,
           status: (formState.value.status as LicenseStatus) || undefined,
         },
@@ -302,10 +303,10 @@ const license = computed(() => data.value?.row);
           :label="$t('asset.page.license.purchaseDate')"
           name="purchaseDate"
         >
-          <Input
+          <DatePicker
             v-model:value="formState.purchaseDate"
-            :placeholder="'YYYY-MM-DD'"
-            :maxlength="10"
+            value-format="YYYY-MM-DD"
+            style="width: 100%"
           />
         </FormItem>
 
@@ -336,10 +337,10 @@ const license = computed(() => data.value?.row);
           :label="$t('asset.page.license.validFrom')"
           name="validFrom"
         >
-          <Input
+          <DatePicker
             v-model:value="formState.validFrom"
-            :placeholder="'YYYY-MM-DD'"
-            :maxlength="10"
+            value-format="YYYY-MM-DD"
+            style="width: 100%"
           />
         </FormItem>
 
@@ -347,10 +348,10 @@ const license = computed(() => data.value?.row);
           :label="$t('asset.page.license.validTo')"
           name="validTo"
         >
-          <Input
+          <DatePicker
             v-model:value="formState.validTo"
-            :placeholder="'YYYY-MM-DD'"
-            :maxlength="10"
+            value-format="YYYY-MM-DD"
+            style="width: 100%"
           />
         </FormItem>
 
