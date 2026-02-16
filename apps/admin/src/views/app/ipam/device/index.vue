@@ -187,6 +187,7 @@ const gridOptions: VxeGridProps<ipamservicev1_Device> = {
     { title: $t('ipam.page.device.primaryIp'), field: 'primaryIp', width: 140 },
     { title: $t('ipam.page.device.managementIp'), field: 'managementIp', width: 140 },
     { title: $t('ipam.page.device.osVersion'), field: 'osVersion', width: 150 },
+    { title: $t('ipam.page.device.notes'), field: 'notes', minWidth: 150 },
     {
       title: $t('ui.table.action'),
       field: 'action',
