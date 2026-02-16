@@ -48,6 +48,16 @@ const asset: RouteRecordRaw[] = [
         component: () => import('#/views/app/asset/license/index.vue'),
       },
       {
+        path: 'insurance',
+        name: 'AssetInsurance',
+        meta: {
+          icon: 'lucide:shield-check',
+          title: $t('asset.menu.insurance'),
+          authority: ['platform:admin', 'tenant:manager'],
+        },
+        component: () => import('#/views/app/asset/insurance/index.vue'),
+      },
+      {
         path: 'categories',
         name: 'AssetCategories',
         meta: {

@@ -10,9 +10,10 @@ import {
   LucidePencil,
   LucideLink,
   LucideBan,
+  LucideShieldCheck,
 } from '@vben/icons';
 
-import { notification, Space, Button, Tag, Modal, Select, Input } from 'ant-design-vue';
+import { notification, Space, Button, Tag, Modal, Select, Input, InputNumber } from 'ant-design-vue';
 
 import { useVbenVxeGrid } from '#/adapter/vxe-table';
 import type { Asset } from '#/generated/api/modules/asset';
@@ -20,13 +21,15 @@ import {
   CategoryService,
   EmployeeService,
   LocationService,
+  InsurancePolicyService,
 } from '#/generated/api/modules/asset';
 import { $t } from '#/locales';
-import { useAssetAssetStore } from '#/stores';
+import { useAssetAssetStore, useAssetInsuranceStore } from '#/stores';
 
 import AssetModal from './asset-modal.vue';
 
 const assetStore = useAssetAssetStore();
+const insuranceStore = useAssetInsuranceStore();
 
 const categoryMap = ref<Map<string, string>>(new Map());
 const employeeMap = ref<Map<string, string>>(new Map());
@@ -39,13 +42,16 @@ interface SelectOption {
 const categoryOptions = ref<SelectOption[]>([]);
 const employeeOptions = ref<SelectOption[]>([]);
 const locationOptions = ref<SelectOption[]>([]);
+const policyOptions = ref<SelectOption[]>([]);
+const insuredAssetIds = ref<Set<string>>(new Set());
 
 async function loadRelatedData() {
   try {
-    const [catResp, empResp, locResp] = await Promise.all([
+    const [catResp, empResp, locResp, polResp] = await Promise.all([
       CategoryService.list({ noPaging: true }),
       EmployeeService.list({ noPaging: true }),
       LocationService.list({ noPaging: true }),
+      InsurancePolicyService.list({ noPaging: true }),
     ]);
     const catMap = new Map<string, string>();
     categoryOptions.value = (catResp.items ?? []).map((c) => {
@@ -66,6 +72,24 @@ async function loadRelatedData() {
       value: l.id,
       label: l.name,
     }));
+
+    const policies = polResp.items ?? [];
+    policyOptions.value = policies.map((p) => ({
+      value: p.id,
+      label: p.policyNumber ? `${p.name} (${p.policyNumber})` : p.name,
+    }));
+
+    // Load insured asset IDs from all policies
+    const ids = new Set<string>();
+    const assetLists = await Promise.all(
+      policies.map((p) => InsurancePolicyService.listAssets(p.id)),
+    );
+    for (const resp of assetLists) {
+      for (const pa of resp.items ?? []) {
+        if (pa.assetId) ids.add(pa.assetId);
+      }
+    }
+    insuredAssetIds.value = ids;
   } catch (e) {
     console.error('Failed to load related data:', e);
   }
@@ -275,7 +299,7 @@ const gridOptions: VxeGridProps<Asset> = {
       field: 'action',
       fixed: 'right',
       slots: { default: 'action' },
-      width: 200,
+      width: 230,
     },
   ],
 };
@@ -383,6 +407,41 @@ async function confirmUnassign() {
   }
 }
 
+// Add to insurance policy modal
+const addToPolicyModalVisible = ref(false);
+const addToPolicyTarget = ref<Asset | null>(null);
+const addToPolicyId = ref<string | undefined>(undefined);
+const addToPolicyCoveredValue = ref<number | undefined>(undefined);
+const addToPolicyNotes = ref('');
+
+function handleAddToPolicy(row: Asset) {
+  addToPolicyTarget.value = row;
+  addToPolicyId.value = undefined;
+  addToPolicyCoveredValue.value = undefined;
+  addToPolicyNotes.value = '';
+  addToPolicyModalVisible.value = true;
+}
+
+async function confirmAddToPolicy() {
+  if (!addToPolicyTarget.value?.id || !addToPolicyId.value) return;
+  try {
+    await insuranceStore.addAssetToPolicy(
+      addToPolicyId.value,
+      addToPolicyTarget.value.id,
+      addToPolicyCoveredValue.value,
+      addToPolicyNotes.value || undefined,
+    );
+    insuredAssetIds.value.add(addToPolicyTarget.value.id);
+    insuredAssetIds.value = new Set(insuredAssetIds.value);
+    notification.success({
+      message: $t('asset.page.insurance.addAssetSuccess'),
+    });
+    addToPolicyModalVisible.value = false;
+  } catch {
+    notification.error({ message: $t('ui.notification.update_failed') });
+  }
+}
+
 onMounted(() => {
   loadRelatedData();
 });
@@ -434,6 +493,14 @@ onMounted(() => {
             :icon="h(LucideBan)"
             :title="$t('asset.page.asset.unassign')"
             @click.stop="handleUnassign(row)"
+          />
+          <Button
+            type="link"
+            size="small"
+            :icon="h(LucideShieldCheck)"
+            :title="$t('asset.page.asset.addToPolicy')"
+            :disabled="insuredAssetIds.has(row.id)"
+            @click.stop="handleAddToPolicy(row)"
           />
           <Button
             type="link"
@@ -529,6 +596,53 @@ onMounted(() => {
         }}</label>
         <Input.TextArea
           v-model:value="unassignNotes"
+          :rows="3"
+          :placeholder="$t('ui.placeholder.input')"
+        />
+      </div>
+    </Modal>
+
+    <!-- Add to Insurance Policy Modal -->
+    <Modal
+      v-model:open="addToPolicyModalVisible"
+      :title="$t('asset.page.asset.addToPolicy')"
+      :ok-text="$t('asset.page.insurance.addAsset')"
+      :cancel-text="$t('ui.button.cancel')"
+      @ok="confirmAddToPolicy"
+    >
+      <div class="mb-4">
+        <label class="mb-1 block font-medium">{{
+          $t('asset.page.asset.selectPolicy')
+        }}</label>
+        <Select
+          v-model:value="addToPolicyId"
+          :options="policyOptions"
+          :placeholder="$t('ui.placeholder.select')"
+          show-search
+          :filter-option="
+            (input: string, option: any) =>
+              option.label.toLowerCase().includes(input.toLowerCase())
+          "
+          style="width: 100%"
+        />
+      </div>
+      <div class="mb-4">
+        <label class="mb-1 block font-medium">{{
+          $t('asset.page.insurance.coveredValue')
+        }}</label>
+        <InputNumber
+          v-model:value="addToPolicyCoveredValue"
+          :min="0"
+          :precision="2"
+          style="width: 100%"
+        />
+      </div>
+      <div>
+        <label class="mb-1 block font-medium">{{
+          $t('asset.page.insurance.notes')
+        }}</label>
+        <Input.TextArea
+          v-model:value="addToPolicyNotes"
           :rows="3"
           :placeholder="$t('ui.placeholder.input')"
         />

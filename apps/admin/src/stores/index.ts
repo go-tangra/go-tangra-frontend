@@ -39,6 +39,7 @@ export * from './deployer-target.state';
 export * from './deployer-configuration.state';
 export * from './deployer-job.state';
 export * from './dashboard.state';
+export * from './dynamic-dashboard.state';
 export * from './warden-folder.state';
 export * from './warden-secret.state';
 export * from './warden-permission.state';
@@ -68,6 +69,7 @@ export * from './asset-category.state';
 export * from './asset-asset.state';
 export * from './asset-consumable.state';
 export * from './asset-license.state';
+export * from './asset-insurance.state';
 export * from './asset-system.state';
 
 export const enableList = computed(() => [

@@ -12,7 +12,7 @@ import type {
 } from 'echarts/components';
 import type { ComposeOption } from 'echarts/core';
 
-import { BarChart, GaugeChart, LineChart, PieChart, RadarChart } from 'echarts/charts';
+import { BarChart, GaugeChart, HeatmapChart, LineChart, PieChart, RadarChart } from 'echarts/charts';
 import {
   // 数据集组件
   DatasetComponent,
@@ -23,6 +23,7 @@ import {
   TooltipComponent,
   // 内置数据转换器组件 (filter, sort)
   TransformComponent,
+  VisualMapComponent,
 } from 'echarts/components';
 import * as echarts from 'echarts/core';
 import { LabelLayout, UniversalTransition } from 'echarts/features';
@@ -44,6 +45,7 @@ echarts.use([
   PieChart,
   RadarChart,
   GaugeChart,
+  HeatmapChart,
   TooltipComponent,
   GridComponent,
   DatasetComponent,
@@ -55,6 +57,7 @@ echarts.use([
   CanvasRenderer,
   LegendComponent,
   ToolboxComponent,
+  VisualMapComponent,
 ]);
 
 export default echarts;

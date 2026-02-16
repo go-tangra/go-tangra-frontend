@@ -210,6 +210,20 @@ export type LicenseStatus =
   | 'LICENSE_STATUS_SUSPENDED'
   | 'LICENSE_STATUS_UNSPECIFIED';
 
+export type InsurancePolicyStatus =
+  | 'INSURANCE_POLICY_STATUS_ACTIVE'
+  | 'INSURANCE_POLICY_STATUS_CANCELLED'
+  | 'INSURANCE_POLICY_STATUS_EXPIRED'
+  | 'INSURANCE_POLICY_STATUS_UNSPECIFIED';
+
+export type CoverageType =
+  | 'COVERAGE_TYPE_ALL_RISK'
+  | 'COVERAGE_TYPE_CYBER'
+  | 'COVERAGE_TYPE_EQUIPMENT_BREAKDOWN'
+  | 'COVERAGE_TYPE_FIRE_THEFT'
+  | 'COVERAGE_TYPE_LIABILITY'
+  | 'COVERAGE_TYPE_UNSPECIFIED';
+
 export interface License {
   id: string;
   tenantId?: number;
@@ -231,6 +245,46 @@ export interface License {
 export interface ListLicensesResponse {
   items: License[];
   total: number;
+}
+
+export interface InsurancePolicy {
+  id: string;
+  tenantId?: number;
+  name: string;
+  policyNumber?: string;
+  provider?: string;
+  coverageType?: CoverageType;
+  premiumAmount?: number;
+  deductible?: number;
+  coverageLimit?: number;
+  validFrom?: string;
+  validTo?: string;
+  status?: InsurancePolicyStatus;
+  notes?: string;
+  assetCount?: number;
+  createdAt?: string;
+  updatedAt?: string;
+  createdBy?: number;
+  updatedBy?: number;
+}
+
+export interface PolicyAsset {
+  policyId: string;
+  assetId: string;
+  coveredValue?: number;
+  notes?: string;
+  assetTag?: string;
+  assetName?: string;
+  modelName?: string;
+}
+
+export interface ListInsurancePoliciesResponse {
+  items: InsurancePolicy[];
+  total: number;
+}
+
+export interface ListPolicyAssetsResponse {
+  items: PolicyAsset[];
 }
 
 export interface HealthCheckResponse {
@@ -946,6 +1000,101 @@ export const LicenseService = {
   ): Promise<{ content: string; fileName: string; mimeType: string }> => {
     return assetApi.get(
       `/licenses/${licenseId}/documents/${documentId}/download`,
+      options,
+    );
+  },
+};
+
+// ==================== Insurance Policy Service ====================
+
+export const InsurancePolicyService = {
+  list: async (
+    params?: {
+      query?: string;
+      status?: InsurancePolicyStatus;
+      coverageType?: CoverageType;
+      page?: number;
+      pageSize?: number;
+      noPaging?: boolean;
+    },
+    options?: RequestOptions,
+  ): Promise<ListInsurancePoliciesResponse> => {
+    return assetApi.get<ListInsurancePoliciesResponse>(
+      `/insurance-policies${buildQuery(params || {})}`,
+      options,
+    );
+  },
+
+  get: async (
+    id: string,
+    options?: RequestOptions,
+  ): Promise<{ insurancePolicy: InsurancePolicy }> => {
+    return assetApi.get<{ insurancePolicy: InsurancePolicy }>(
+      `/insurance-policies/${id}`,
+      options,
+    );
+  },
+
+  create: async (
+    data: Partial<InsurancePolicy>,
+    options?: RequestOptions,
+  ): Promise<{ insurancePolicy: InsurancePolicy }> => {
+    return assetApi.post<{ insurancePolicy: InsurancePolicy }>(
+      '/insurance-policies',
+      data,
+      options,
+    );
+  },
+
+  update: async (
+    id: string,
+    data: {
+      id: string;
+      data: InsurancePolicy;
+      updateMask: string;
+    },
+    options?: RequestOptions,
+  ): Promise<{ insurancePolicy: InsurancePolicy }> => {
+    return assetApi.put<{ insurancePolicy: InsurancePolicy }>(
+      `/insurance-policies/${id}`,
+      data,
+      options,
+    );
+  },
+
+  delete: async (id: string, options?: RequestOptions): Promise<void> => {
+    return assetApi.delete(`/insurance-policies/${id}`, options);
+  },
+
+  listAssets: async (
+    id: string,
+    options?: RequestOptions,
+  ): Promise<ListPolicyAssetsResponse> => {
+    return assetApi.get<ListPolicyAssetsResponse>(
+      `/insurance-policies/${id}/assets`,
+      options,
+    );
+  },
+
+  addAsset: async (
+    id: string,
+    data: { assetId: string; coveredValue?: number; notes?: string },
+    options?: RequestOptions,
+  ): Promise<{ policyAsset: PolicyAsset }> => {
+    return assetApi.post<{ policyAsset: PolicyAsset }>(
+      `/insurance-policies/${id}/assets`,
+      data,
+      options,
+    );
+  },
+
+  removeAsset: async (
+    id: string,
+    assetId: string,
+    options?: RequestOptions,
+  ): Promise<void> => {
+    return assetApi.delete(
+      `/insurance-policies/${id}/assets/${assetId}`,
       options,
     );
   },
