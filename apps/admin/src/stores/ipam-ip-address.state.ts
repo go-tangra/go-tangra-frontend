@@ -23,6 +23,7 @@ export const useIpamIpAddressStore = defineStore('ipam-ip-address', () => {
       status?: IpAddressStatus;
       query?: string;
     } | null,
+    orderBy?: string[],
   ): Promise<ListIpAddressesResponse> {
     return await IpAddressService.list({
       subnetId: formValues?.subnetId,
@@ -31,6 +32,7 @@ export const useIpamIpAddressStore = defineStore('ipam-ip-address', () => {
       query: formValues?.query,
       page: paging?.page,
       pageSize: paging?.pageSize,
+      orderBy,
     });
   }
 

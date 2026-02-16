@@ -187,7 +187,7 @@ export const SubnetService = {
 
 export const IpAddressService = {
   list: async (
-    params?: operations['IpAddressService_ListIpAddresses']['parameters']['query'],
+    params?: operations['IpAddressService_ListIpAddresses']['parameters']['query'] & { orderBy?: string[] },
     options?: RequestOptions
   ): Promise<ListIpAddressesResponse> => {
     return ipamApi.get<ListIpAddressesResponse>(`/ip-addresses${buildQuery(params || {})}`, options);

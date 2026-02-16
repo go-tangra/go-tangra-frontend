@@ -98,15 +98,32 @@ const gridOptions: VxeGridProps<ipamservicev1_IpAddress> = {
     pageSizes: [10, 20, 50, 100],
   },
 
+  sortConfig: {
+    remote: true,
+    defaultSort: { field: 'address', order: 'asc' },
+  },
+
   proxyConfig: {
+    sort: true,
     ajax: {
-      query: async ({ page }, formValues) => {
+      query: async ({ page, sorts }, formValues) => {
+        // Build orderBy from VxeGrid sort state
+        const orderBy: string[] = [];
+        if (sorts && sorts.length > 0) {
+          for (const sort of sorts) {
+            if (sort.field && sort.order) {
+              orderBy.push(sort.order === 'desc' ? `-${sort.field}` : sort.field);
+            }
+          }
+        }
+
         const resp = await ipAddressStore.listIpAddresses(
           { page: page.currentPage, pageSize: page.pageSize },
           {
             query: formValues?.query,
             status: formValues?.status,
           },
+          orderBy.length > 0 ? orderBy : undefined,
         );
         return {
           items: resp.items ?? [],
@@ -122,17 +139,19 @@ const gridOptions: VxeGridProps<ipamservicev1_IpAddress> = {
       title: $t('ipam.page.ipAddress.address'),
       field: 'address',
       minWidth: 150,
+      sortable: true,
       slots: { default: 'address' },
     },
-    { title: $t('ipam.page.ipAddress.hostname'), field: 'hostname', width: 150 },
+    { title: $t('ipam.page.ipAddress.hostname'), field: 'hostname', width: 150, sortable: true },
     {
       title: $t('ipam.page.ipAddress.status'),
       field: 'status',
       width: 120,
+      sortable: true,
       slots: { default: 'status' },
     },
-    { title: $t('ipam.page.ipAddress.macAddress'), field: 'macAddress', width: 150 },
-    { title: $t('ipam.page.ipAddress.description'), field: 'description', minWidth: 200 },
+    { title: $t('ipam.page.ipAddress.macAddress'), field: 'macAddress', width: 150, sortable: true },
+    { title: $t('ipam.page.ipAddress.description'), field: 'description', minWidth: 200, sortable: true },
     {
       title: $t('ui.table.action'),
       field: 'action',
