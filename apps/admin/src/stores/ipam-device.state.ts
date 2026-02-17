@@ -26,6 +26,7 @@ export const useIpamDeviceStore = defineStore('ipam-device', () => {
       status?: DeviceStatus;
       query?: string;
     } | null,
+    orderBy?: string[],
   ): Promise<ListDevicesResponse> {
     return await DeviceService.list({
       locationId: formValues?.locationId,
@@ -34,6 +35,7 @@ export const useIpamDeviceStore = defineStore('ipam-device', () => {
       query: formValues?.query,
       page: paging?.page,
       pageSize: paging?.pageSize,
+      orderBy,
     });
   }
 

@@ -145,9 +145,23 @@ const gridOptions: VxeGridProps<ipamservicev1_Device> = {
     pageSizes: [10, 20, 50, 100],
   },
 
+  sortConfig: {
+    remote: true,
+    defaultSort: { field: 'name', order: 'asc' },
+  },
+
   proxyConfig: {
+    sort: true,
     ajax: {
-      query: async ({ page }, formValues) => {
+      query: async ({ page, sorts }, formValues) => {
+        const orderBy: string[] = [];
+        if (sorts && sorts.length > 0) {
+          for (const sort of sorts) {
+            if (sort.field && sort.order) {
+              orderBy.push(sort.order === 'desc' ? `-${sort.field}` : sort.field);
+            }
+          }
+        }
         const resp = await deviceStore.listDevices(
           { page: page.currentPage, pageSize: page.pageSize },
           {
@@ -155,6 +169,7 @@ const gridOptions: VxeGridProps<ipamservicev1_Device> = {
             deviceType: formValues?.deviceType,
             status: formValues?.status,
           },
+          orderBy.length > 0 ? orderBy : undefined,
         );
         return {
           items: resp.items ?? [],
@@ -170,24 +185,27 @@ const gridOptions: VxeGridProps<ipamservicev1_Device> = {
       title: $t('ipam.page.device.name'),
       field: 'name',
       minWidth: 150,
+      sortable: true,
       slots: { default: 'name' },
     },
     {
       title: $t('ipam.page.device.deviceType'),
       field: 'deviceType',
       width: 150,
+      sortable: true,
       slots: { default: 'deviceType' },
     },
     {
       title: $t('ipam.page.device.status'),
       field: 'status',
       width: 120,
+      sortable: true,
       slots: { default: 'status' },
     },
-    { title: $t('ipam.page.device.primaryIp'), field: 'primaryIp', width: 140 },
-    { title: $t('ipam.page.device.managementIp'), field: 'managementIp', width: 140 },
-    { title: $t('ipam.page.device.osVersion'), field: 'osVersion', width: 150 },
-    { title: $t('ipam.page.device.notes'), field: 'notes', minWidth: 150 },
+    { title: $t('ipam.page.device.primaryIp'), field: 'primaryIp', width: 140, sortable: true },
+    { title: $t('ipam.page.device.managementIp'), field: 'managementIp', width: 140, sortable: true },
+    { title: $t('ipam.page.device.osVersion'), field: 'osVersion', width: 150, sortable: true },
+    { title: $t('ipam.page.device.notes'), field: 'notes', minWidth: 150, sortable: true },
     {
       title: $t('ui.table.action'),
       field: 'action',
