@@ -224,6 +224,7 @@ const gridOptions: VxeGridProps<ipamservicev1_IpAddress> = {
       width: 120,
       slots: { default: 'status' },
     },
+    { title: $t('ipam.page.ipAddress.macAddress'), field: 'macAddress', width: 150 },
     { title: $t('ipam.page.ipAddress.description'), field: 'description', minWidth: 200 },
     {
       title: $t('ui.table.action'),
