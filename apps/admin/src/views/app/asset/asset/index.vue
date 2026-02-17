@@ -21,6 +21,7 @@ import {
   CategoryService,
   EmployeeService,
   LocationService,
+  SupplierService,
   InsurancePolicyService,
 } from '#/generated/api/modules/asset';
 import { $t } from '#/locales';
@@ -33,6 +34,7 @@ const insuranceStore = useAssetInsuranceStore();
 
 const categoryMap = ref<Map<string, string>>(new Map());
 const employeeMap = ref<Map<string, string>>(new Map());
+const supplierMap = ref<Map<string, string>>(new Map());
 
 interface SelectOption {
   value: string;
@@ -41,15 +43,17 @@ interface SelectOption {
 
 const categoryOptions = ref<SelectOption[]>([]);
 const employeeOptions = ref<SelectOption[]>([]);
+const supplierOptions = ref<SelectOption[]>([]);
 const locationOptions = ref<SelectOption[]>([]);
 const policyOptions = ref<SelectOption[]>([]);
 const insuredAssetIds = ref<Set<string>>(new Set());
 
 async function loadRelatedData() {
   try {
-    const [catResp, empResp, locResp, polResp] = await Promise.all([
+    const [catResp, empResp, supResp, locResp, polResp] = await Promise.all([
       CategoryService.list({ noPaging: true }),
       EmployeeService.list({ noPaging: true }),
+      SupplierService.list({ noPaging: true }),
       LocationService.list({ noPaging: true }),
       InsurancePolicyService.list({ noPaging: true }),
     ]);
@@ -67,6 +71,13 @@ async function loadRelatedData() {
       return { value: e.id, label: name };
     });
     employeeMap.value = empMap;
+
+    const supMap = new Map<string, string>();
+    supplierOptions.value = (supResp.items ?? []).map((s) => {
+      supMap.set(s.id, s.name);
+      return { value: s.id, label: s.name };
+    });
+    supplierMap.value = supMap;
 
     locationOptions.value = (locResp.items ?? []).map((l) => ({
       value: l.id,
@@ -144,6 +155,11 @@ function getEmployeeName(id: string | undefined) {
   return employeeMap.value.get(id) ?? id;
 }
 
+function getSupplierName(id: string | undefined) {
+  if (!id) return '-';
+  return supplierMap.value.get(id) ?? id;
+}
+
 function calculateCurrentValue(row: Asset): string {
   const cost = row.purchaseCost;
   const usefulLife = row.usefulLifeYears;
@@ -211,6 +227,16 @@ const formOptions: VbenFormProps = {
         allowClear: true,
       },
     },
+    {
+      component: 'Select',
+      fieldName: 'supplierId',
+      label: $t('asset.page.asset.supplierId'),
+      componentProps: {
+        options: supplierOptions,
+        placeholder: $t('ui.placeholder.select'),
+        allowClear: true,
+      },
+    },
   ],
 };
 
@@ -243,6 +269,7 @@ const gridOptions: VxeGridProps<Asset> = {
             query: formValues?.query,
             status: formValues?.status,
             categoryId: formValues?.categoryId,
+            supplierId: formValues?.supplierId,
           },
         );
         return {
@@ -276,6 +303,12 @@ const gridOptions: VxeGridProps<Asset> = {
       field: 'categoryId',
       width: 140,
       slots: { default: 'categoryName' },
+    },
+    {
+      title: $t('asset.page.asset.supplierId'),
+      field: 'supplierId',
+      width: 140,
+      slots: { default: 'supplierName' },
     },
     {
       title: $t('asset.page.asset.employeeId'),
@@ -462,6 +495,9 @@ onMounted(() => {
       </template>
       <template #categoryName="{ row }">
         {{ getCategoryName(row.categoryId) }}
+      </template>
+      <template #supplierName="{ row }">
+        {{ getSupplierName(row.supplierId) }}
       </template>
       <template #employeeName="{ row }">
         {{ getEmployeeName(row.employeeId) }}
