@@ -124,7 +124,7 @@ async function handleSubmit() {
           locationId: formState.value.locationId,
           status: formState.value.status as any,
         },
-        ['name', 'description', 'location_id', 'status'],
+        ['name', 'description', 'locationId', 'status'],
       );
       notification.success({
         message: $t('ipam.page.vlan.updateSuccess'),
