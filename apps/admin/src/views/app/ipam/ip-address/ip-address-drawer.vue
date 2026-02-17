@@ -150,7 +150,7 @@ async function handleSubmit() {
           status: formState.value.status as any,
           macAddress: formState.value.macAddress || undefined,
         },
-        ['hostname', 'description', 'device_id', 'status', 'mac_address'],
+        ['hostname', 'description', 'deviceId', 'status', 'macAddress'],
       );
       notification.success({
         message: $t('ipam.page.ipAddress.updateSuccess'),
