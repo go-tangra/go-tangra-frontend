@@ -372,10 +372,10 @@ const ipAddress = computed(() => data.value?.row);
             <div
               v-for="addr in suggestedAddresses"
               :key="addr.address"
-              class="cursor-pointer rounded-md border px-3 py-2 transition-colors hover:border-blue-400 hover:bg-blue-50"
+              class="cursor-pointer rounded-md border px-3 py-2 transition-colors hover:border-blue-400 hover:bg-blue-50 dark:hover:border-blue-600 dark:hover:bg-blue-950"
               :class="{
-                'border-blue-500 bg-blue-50': selectedSuggestion === addr.address,
-                'border-gray-200': selectedSuggestion !== addr.address,
+                'border-blue-500 bg-blue-50 dark:border-blue-600 dark:bg-blue-950': selectedSuggestion === addr.address,
+                'border-gray-200 dark:border-gray-700': selectedSuggestion !== addr.address,
               }"
               @click="selectSuggestedAddress(addr)"
             >
@@ -403,7 +403,7 @@ const ipAddress = computed(() => data.value?.row);
             </div>
 
             <!-- Total available count -->
-            <div v-if="totalUnallocated !== undefined" class="mt-1 text-xs text-gray-400">
+            <div v-if="totalUnallocated !== undefined" class="mt-1 text-xs text-gray-400 dark:text-gray-500">
               {{ $t('ipam.page.ipAddress.totalAvailable', { count: totalUnallocated }) }}
             </div>
           </div>
