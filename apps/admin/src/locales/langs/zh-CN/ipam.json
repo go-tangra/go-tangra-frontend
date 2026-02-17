@@ -109,7 +109,14 @@
       "confirmDelete": "确定要删除此IP地址吗？",
       "createSuccess": "IP地址创建成功",
       "updateSuccess": "IP地址更新成功",
-      "deleteSuccess": "IP地址删除成功"
+      "deleteSuccess": "IP地址删除成功",
+      "suggestedAddresses": "建议的可用地址",
+      "refreshSuggestions": "刷新",
+      "noSuggestions": "此子网中未找到可用地址",
+      "suggestFailed": "加载地址建议失败",
+      "pingVerified": "ICMP空闲",
+      "portScanVerified": "端口空闲",
+      "totalAvailable": "子网中有 {count} 个可用地址"
     },
     "vlan": {
       "title": "VLAN",

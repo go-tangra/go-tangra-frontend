@@ -8,6 +8,7 @@ import {
   type GetIpAddressResponse,
   type CreateIpAddressResponse,
   type UpdateIpAddressResponse,
+  type SuggestAvailableAddressesResponse,
 } from '#/generated/api/modules/ipam';
 import type { Paging } from '#/utils/request';
 
@@ -101,6 +102,21 @@ export const useIpamIpAddressStore = defineStore('ipam-ip-address', () => {
     });
   }
 
+  /**
+   * Suggest available IP addresses in a subnet (verified via ICMP ping + TCP port scan)
+   */
+  async function suggestAvailableAddresses(
+    subnetId: string,
+    count?: number,
+    skipAddresses?: string[],
+  ): Promise<SuggestAvailableAddressesResponse> {
+    return await IpAddressService.suggestAvailable({
+      subnetId,
+      count,
+      skipAddresses,
+    });
+  }
+
   function $reset() {}
 
   return {
@@ -111,5 +127,6 @@ export const useIpamIpAddressStore = defineStore('ipam-ip-address', () => {
     updateIpAddress,
     deleteIpAddress,
     allocateNextAddress,
+    suggestAvailableAddresses,
   };
 });

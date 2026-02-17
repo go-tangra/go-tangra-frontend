@@ -15,9 +15,13 @@ import {
   Descriptions,
   DescriptionsItem,
   Tag,
+  Spin,
+  Alert,
 } from 'ant-design-vue';
+import { ReloadOutlined, CheckCircleOutlined } from '@ant-design/icons-vue';
 
 import { type ipamservicev1_IpAddress } from '#/generated/api/admin/service/v1';
+import type { SuggestedAddress } from '#/generated/api/modules/ipam';
 import { $t } from '#/locales';
 import { useIpamIpAddressStore, useIpamSubnetStore, useIpamDeviceStore } from '#/stores';
 
@@ -33,6 +37,14 @@ const data = ref<{
 const loading = ref(false);
 const subnets = ref<Array<{ value: string; label: string }>>([]);
 const devices = ref<Array<{ value: string; label: string }>>([]);
+
+// Suggestion state
+const suggestedAddresses = ref<SuggestedAddress[]>([]);
+const suggestLoading = ref(false);
+const suggestError = ref('');
+const totalUnallocated = ref<number | undefined>();
+const skippedAddresses = ref<string[]>([]);
+const selectedSuggestion = ref<string | undefined>();
 
 const statusOptions = computed(() => [
   { value: 'IP_ADDRESS_STATUS_ACTIVE', label: $t('ipam.enum.addressStatus.active') },
@@ -121,6 +133,53 @@ async function loadDevices() {
   }
 }
 
+async function fetchSuggestions(subnetId: string) {
+  suggestLoading.value = true;
+  suggestError.value = '';
+  suggestedAddresses.value = [];
+  selectedSuggestion.value = undefined;
+  try {
+    const resp = await ipAddressStore.suggestAvailableAddresses(
+      subnetId,
+      5,
+      skippedAddresses.value,
+    );
+    suggestedAddresses.value = resp.addresses ?? [];
+    totalUnallocated.value = resp.totalUnallocated;
+  } catch (e) {
+    console.error('Failed to fetch suggestions:', e);
+    suggestError.value = $t('ipam.page.ipAddress.suggestFailed');
+  } finally {
+    suggestLoading.value = false;
+  }
+}
+
+function onSubnetChange(subnetId: string) {
+  suggestedAddresses.value = [];
+  skippedAddresses.value = [];
+  totalUnallocated.value = undefined;
+  selectedSuggestion.value = undefined;
+  if (subnetId) {
+    fetchSuggestions(subnetId);
+  }
+}
+
+function selectSuggestedAddress(addr: SuggestedAddress) {
+  formState.value.address = addr.address;
+  selectedSuggestion.value = addr.address;
+}
+
+function refreshSuggestions() {
+  if (!formState.value.subnetId) return;
+  // Add current suggestions to skip list to get different results
+  for (const addr of suggestedAddresses.value) {
+    if (!skippedAddresses.value.includes(addr.address)) {
+      skippedAddresses.value.push(addr.address);
+    }
+  }
+  fetchSuggestions(formState.value.subnetId);
+}
+
 async function handleSubmit() {
   loading.value = true;
   try {
@@ -179,6 +238,12 @@ function resetForm() {
     status: 'IP_ADDRESS_STATUS_ACTIVE',
     macAddress: '',
   };
+  suggestedAddresses.value = [];
+  suggestLoading.value = false;
+  suggestError.value = '';
+  totalUnallocated.value = undefined;
+  skippedAddresses.value = [];
+  selectedSuggestion.value = undefined;
 }
 
 const [Drawer, drawerApi] = useVbenDrawer({
@@ -245,19 +310,6 @@ const ipAddress = computed(() => data.value?.row);
       <Form layout="vertical" :model="formState" @finish="handleSubmit">
         <FormItem
           v-if="isCreateMode"
-          :label="$t('ipam.page.ipAddress.address')"
-          name="address"
-          :rules="[{ required: true, message: $t('ui.formRules.required') }]"
-        >
-          <Input
-            v-model:value="formState.address"
-            :placeholder="$t('ui.placeholder.input')"
-            :maxlength="45"
-          />
-        </FormItem>
-
-        <FormItem
-          v-if="isCreateMode"
           :label="$t('ipam.page.subnet.title')"
           name="subnetId"
           :rules="[{ required: true, message: $t('ui.formRules.required') }]"
@@ -269,6 +321,104 @@ const ipAddress = computed(() => data.value?.row);
             show-search
             :filter-option="(input: string, option: any) =>
               option.label.toLowerCase().includes(input.toLowerCase())"
+            @change="onSubnetChange"
+          />
+        </FormItem>
+
+        <!-- Suggested Addresses (create mode only, after subnet selected) -->
+        <div
+          v-if="isCreateMode && formState.subnetId"
+          class="mb-4"
+        >
+          <div class="mb-2 flex items-center justify-between">
+            <span class="text-sm font-medium">
+              {{ $t('ipam.page.ipAddress.suggestedAddresses') }}
+            </span>
+            <Button
+              size="small"
+              :loading="suggestLoading"
+              @click="refreshSuggestions"
+            >
+              <template #icon><ReloadOutlined /></template>
+              {{ $t('ipam.page.ipAddress.refreshSuggestions') }}
+            </Button>
+          </div>
+
+          <!-- Loading -->
+          <div v-if="suggestLoading" class="flex justify-center py-4">
+            <Spin />
+          </div>
+
+          <!-- Error -->
+          <Alert
+            v-else-if="suggestError"
+            type="warning"
+            :message="suggestError"
+            show-icon
+            class="mb-2"
+          />
+
+          <!-- No suggestions -->
+          <Alert
+            v-else-if="suggestedAddresses.length === 0 && !suggestLoading"
+            type="info"
+            :message="$t('ipam.page.ipAddress.noSuggestions')"
+            show-icon
+            class="mb-2"
+          />
+
+          <!-- Suggestion cards -->
+          <div v-else class="space-y-2">
+            <div
+              v-for="addr in suggestedAddresses"
+              :key="addr.address"
+              class="cursor-pointer rounded-md border px-3 py-2 transition-colors hover:border-blue-400 hover:bg-blue-50"
+              :class="{
+                'border-blue-500 bg-blue-50': selectedSuggestion === addr.address,
+                'border-gray-200': selectedSuggestion !== addr.address,
+              }"
+              @click="selectSuggestedAddress(addr)"
+            >
+              <div class="flex items-center justify-between">
+                <span class="font-mono text-sm font-medium">{{ addr.address }}</span>
+                <CheckCircleOutlined
+                  v-if="selectedSuggestion === addr.address"
+                  class="text-blue-500"
+                />
+              </div>
+              <div class="mt-1 flex gap-1">
+                <Tag v-if="addr.pingFree" color="success" class="!text-xs">
+                  {{ $t('ipam.page.ipAddress.pingVerified') }}
+                </Tag>
+                <Tag v-else color="warning" class="!text-xs">
+                  ICMP
+                </Tag>
+                <Tag v-if="addr.portScanFree" color="success" class="!text-xs">
+                  {{ $t('ipam.page.ipAddress.portScanVerified') }}
+                </Tag>
+                <Tag v-else color="warning" class="!text-xs">
+                  TCP
+                </Tag>
+              </div>
+            </div>
+
+            <!-- Total available count -->
+            <div v-if="totalUnallocated !== undefined" class="mt-1 text-xs text-gray-400">
+              {{ $t('ipam.page.ipAddress.totalAvailable', { count: totalUnallocated }) }}
+            </div>
+          </div>
+        </div>
+
+        <FormItem
+          v-if="isCreateMode"
+          :label="$t('ipam.page.ipAddress.address')"
+          name="address"
+          :rules="[{ required: true, message: $t('ui.formRules.required') }]"
+        >
+          <Input
+            v-model:value="formState.address"
+            :placeholder="$t('ui.placeholder.input')"
+            :maxlength="45"
           />
         </FormItem>
 

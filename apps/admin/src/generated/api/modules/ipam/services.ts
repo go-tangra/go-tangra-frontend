@@ -100,6 +100,18 @@ export type GetDeviceInterfacesResponse = components['schemas']['GetDeviceInterf
 export type CreateDeviceInterfaceResponse = components['schemas']['CreateDeviceInterfaceResponse'];
 export type CancelScanResponse = components['schemas']['CancelScanResponse'];
 
+// Suggest available addresses types (not yet in OpenAPI schema, defined inline)
+export interface SuggestedAddress {
+  address: string;
+  pingFree: boolean;
+  portScanFree: boolean;
+}
+
+export interface SuggestAvailableAddressesResponse {
+  addresses?: SuggestedAddress[];
+  totalUnallocated?: number;
+}
+
 // Request types
 export type CreateSubnetRequest = components['schemas']['CreateSubnetRequest'];
 export type UpdateSubnetRequest = components['schemas']['UpdateSubnetRequest'];
@@ -228,6 +240,13 @@ export const IpAddressService = {
     options?: RequestOptions
   ): Promise<BulkAllocateAddressesResponse> => {
     return ipamApi.post<BulkAllocateAddressesResponse>('/ip-addresses/allocate/bulk', data, options);
+  },
+
+  suggestAvailable: async (
+    params: { subnetId: string; count?: number; skipAddresses?: string[] },
+    options?: RequestOptions
+  ): Promise<SuggestAvailableAddressesResponse> => {
+    return ipamApi.get<SuggestAvailableAddressesResponse>(`/ip-addresses/suggest${buildQuery(params)}`, options);
   },
 };
 

@@ -109,7 +109,14 @@
       "confirmDelete": "Are you sure you want to delete this IP address?",
       "createSuccess": "IP address created successfully",
       "updateSuccess": "IP address updated successfully",
-      "deleteSuccess": "IP address deleted successfully"
+      "deleteSuccess": "IP address deleted successfully",
+      "suggestedAddresses": "Suggested Available Addresses",
+      "refreshSuggestions": "Refresh",
+      "noSuggestions": "No available addresses found in this subnet",
+      "suggestFailed": "Failed to load address suggestions",
+      "pingVerified": "ICMP free",
+      "portScanVerified": "Ports free",
+      "totalAvailable": "{count} addresses available in subnet"
     },
     "vlan": {
       "title": "VLANs",
