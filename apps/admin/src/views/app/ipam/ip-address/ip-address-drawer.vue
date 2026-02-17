@@ -18,7 +18,7 @@ import {
   Spin,
   Alert,
 } from 'ant-design-vue';
-import { ReloadOutlined, CheckCircleOutlined } from '@ant-design/icons-vue';
+import { LucideRefreshCw, LucideCheckCircle } from '@vben/icons';
 
 import { type ipamservicev1_IpAddress } from '#/generated/api/admin/service/v1';
 import type { SuggestedAddress } from '#/generated/api/modules/ipam';
@@ -339,7 +339,7 @@ const ipAddress = computed(() => data.value?.row);
               :loading="suggestLoading"
               @click="refreshSuggestions"
             >
-              <template #icon><ReloadOutlined /></template>
+              <template #icon><LucideRefreshCw class="size-4" /></template>
               {{ $t('ipam.page.ipAddress.refreshSuggestions') }}
             </Button>
           </div>
@@ -381,9 +381,9 @@ const ipAddress = computed(() => data.value?.row);
             >
               <div class="flex items-center justify-between">
                 <span class="font-mono text-sm font-medium">{{ addr.address }}</span>
-                <CheckCircleOutlined
+                <LucideCheckCircle
                   v-if="selectedSuggestion === addr.address"
-                  class="text-blue-500"
+                  class="size-4 text-blue-500"
                 />
               </div>
               <div class="mt-1 flex gap-1">
