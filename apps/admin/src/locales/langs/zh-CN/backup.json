@@ -1,0 +1,60 @@
+{
+  "menu": {
+    "backup": "备份",
+    "modules": "模块备份",
+    "full": "完整备份"
+  },
+  "page": {
+    "module": {
+      "title": "模块备份",
+      "moduleId": "模块",
+      "description": "描述",
+      "status": "状态",
+      "sizeBytes": "大小",
+      "entityCounts": "实体",
+      "createdAt": "创建时间",
+      "createdBy": "创建者",
+      "version": "版本",
+      "tenantId": "租户",
+      "fullBackup": "完整备份",
+      "warnings": "警告",
+      "create": "创建备份",
+      "view": "查看备份",
+      "restore": "恢复备份",
+      "confirmDelete": "确定要删除此备份吗？",
+      "deleteSuccess": "备份已成功删除",
+      "createSuccess": "备份已成功创建",
+      "restoreSuccess": "备份已成功恢复",
+      "moduleIdPlaceholder": "例如 ipam, warden, sharing",
+      "endpointPlaceholder": "例如 ipam-service:9400",
+      "descriptionPlaceholder": "输入备份描述",
+      "grpcEndpoint": "gRPC 端点",
+      "restoreMode": "恢复模式",
+      "restoreModeSkip": "跳过已存在",
+      "restoreModeOverwrite": "覆盖已存在",
+      "filterByModule": "按模块筛选"
+    },
+    "full": {
+      "title": "完整备份",
+      "description": "描述",
+      "status": "状态",
+      "totalSize": "总大小",
+      "moduleCount": "模块数",
+      "createdAt": "创建时间",
+      "createdBy": "创建者",
+      "errors": "错误",
+      "moduleBackups": "模块备份",
+      "create": "创建完整备份",
+      "view": "查看完整备份",
+      "restore": "恢复完整备份",
+      "confirmDelete": "确定要删除此完整备份吗？",
+      "deleteSuccess": "完整备份已成功删除",
+      "createSuccess": "完整备份已成功创建",
+      "restoreSuccess": "完整备份已成功恢复",
+      "descriptionPlaceholder": "输入备份描述",
+      "targets": "模块目标",
+      "addTarget": "添加目标",
+      "removeTarget": "移除"
+    }
+  }
+}

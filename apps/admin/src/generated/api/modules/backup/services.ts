@@ -1,0 +1,224 @@
+/**
+ * Backup Orchestrator Module Service Functions
+ *
+ * Typed service methods for the Backup API using dynamic module routing.
+ * Base URL: /admin/v1/modules/backup/v1
+ */
+
+import { backupApi, type RequestOptions } from './client';
+
+// ==================== Entity Types ====================
+
+export interface ModuleTarget {
+  module_id: string;
+  grpc_endpoint: string;
+}
+
+export interface BackupInfo {
+  id: string;
+  module_id: string;
+  description: string;
+  tenant_id: number;
+  full_backup: boolean;
+  status: string;
+  size_bytes: number;
+  entity_counts: Record<string, number>;
+  created_at: string;
+  created_by: string;
+  version: string;
+  warnings: string[];
+}
+
+export interface FullBackupInfo {
+  id: string;
+  description: string;
+  tenant_id: number;
+  full_backup: boolean;
+  status: string;
+  total_size_bytes: number;
+  module_backups: BackupInfo[];
+  created_at: string;
+  created_by: string;
+  errors: string[];
+}
+
+export interface EntityImportResult {
+  entity_type: string;
+  total: number;
+  created: number;
+  updated: number;
+  skipped: number;
+  failed: number;
+}
+
+export interface ModuleRestoreResult {
+  module_id: string;
+  success: boolean;
+  results: EntityImportResult[];
+  warnings: string[];
+  error: string;
+}
+
+// ==================== Request/Response Types ====================
+
+export interface CreateModuleBackupRequest {
+  target: ModuleTarget;
+  tenant_id?: number;
+  description: string;
+}
+
+export interface CreateModuleBackupResponse {
+  backup: BackupInfo;
+}
+
+export interface RestoreModuleBackupRequest {
+  target: ModuleTarget;
+  mode: 'RESTORE_MODE_OVERWRITE' | 'RESTORE_MODE_SKIP';
+}
+
+export interface RestoreModuleBackupResponse {
+  success: boolean;
+  results: EntityImportResult[];
+  warnings: string[];
+}
+
+export interface ListBackupsResponse {
+  backups: BackupInfo[];
+  total: number;
+}
+
+export interface GetBackupResponse {
+  backup: BackupInfo;
+}
+
+export interface DownloadBackupResponse {
+  data: string;
+  filename: string;
+}
+
+export interface CreateFullBackupRequest {
+  targets: ModuleTarget[];
+  tenant_id?: number;
+  description: string;
+}
+
+export interface CreateFullBackupResponse {
+  backup: FullBackupInfo;
+}
+
+export interface RestoreFullBackupRequest {
+  targets: ModuleTarget[];
+  mode: 'RESTORE_MODE_OVERWRITE' | 'RESTORE_MODE_SKIP';
+}
+
+export interface RestoreFullBackupResponse {
+  success: boolean;
+  module_results: ModuleRestoreResult[];
+}
+
+export interface ListFullBackupsResponse {
+  backups: FullBackupInfo[];
+  total: number;
+}
+
+export interface GetFullBackupResponse {
+  backup: FullBackupInfo;
+}
+
+// ==================== Helper ====================
+
+function buildQuery(params: Record<string, unknown>): string {
+  const searchParams = new URLSearchParams();
+  for (const [key, value] of Object.entries(params)) {
+    if (value !== undefined && value !== null && value !== '') {
+      searchParams.append(key, String(value));
+    }
+  }
+  const query = searchParams.toString();
+  return query ? `?${query}` : '';
+}
+
+// ==================== Module Backup Service ====================
+
+export const ModuleBackupService = {
+  create: (data: CreateModuleBackupRequest, options?: RequestOptions) =>
+    backupApi.post<CreateModuleBackupResponse>('/backups/modules', data, options),
+
+  restore: (
+    backupId: string,
+    data: RestoreModuleBackupRequest,
+    options?: RequestOptions,
+  ) =>
+    backupApi.post<RestoreModuleBackupResponse>(
+      `/backups/${backupId}/restore`,
+      data,
+      options,
+    ),
+
+  list: (
+    params?: {
+      module_id?: string;
+      tenant_id?: number;
+      page?: number;
+      page_size?: number;
+    },
+    options?: RequestOptions,
+  ) => {
+    const qs = buildQuery({
+      module_id: params?.module_id,
+      tenant_id: params?.tenant_id,
+      page: params?.page,
+      page_size: params?.page_size,
+    });
+    return backupApi.get<ListBackupsResponse>(`/backups${qs}`, options);
+  },
+
+  get: (id: string, options?: RequestOptions) =>
+    backupApi.get<GetBackupResponse>(`/backups/${id}`, options),
+
+  delete: (id: string, options?: RequestOptions) =>
+    backupApi.delete<void>(`/backups/${id}`, options),
+
+  download: (id: string, options?: RequestOptions) =>
+    backupApi.get<DownloadBackupResponse>(`/backups/${id}/download`, options),
+};
+
+// ==================== Full Backup Service ====================
+
+export const FullBackupService = {
+  create: (data: CreateFullBackupRequest, options?: RequestOptions) =>
+    backupApi.post<CreateFullBackupResponse>('/backups/full', data, options),
+
+  restore: (
+    backupId: string,
+    data: RestoreFullBackupRequest,
+    options?: RequestOptions,
+  ) =>
+    backupApi.post<RestoreFullBackupResponse>(
+      `/backups/full/${backupId}/restore`,
+      data,
+      options,
+    ),
+
+  list: (
+    params?: {
+      tenant_id?: number;
+      page?: number;
+      page_size?: number;
+    },
+    options?: RequestOptions,
+  ) => {
+    const qs = buildQuery({
+      tenant_id: params?.tenant_id,
+      page: params?.page,
+      page_size: params?.page_size,
+    });
+    return backupApi.get<ListFullBackupsResponse>(`/backups/full${qs}`, options);
+  },
+
+  get: (id: string, options?: RequestOptions) =>
+    backupApi.get<GetFullBackupResponse>(`/backups/full/${id}`, options),
+
+  delete: (id: string, options?: RequestOptions) =>
+    backupApi.delete<void>(`/backups/full/${id}`, options),
+};

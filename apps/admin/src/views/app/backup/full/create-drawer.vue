@@ -1,0 +1,145 @@
+<script lang="ts" setup>
+import { ref } from 'vue';
+
+import { useVbenDrawer } from '@vben/common-ui';
+
+import {
+  Form,
+  FormItem,
+  Input,
+  Button,
+  Space,
+  Checkbox,
+  CheckboxGroup,
+  notification,
+} from 'ant-design-vue';
+
+import { $t } from '#/locales';
+import { useBackupFullStore, useModuleRegistrationStore } from '#/stores';
+import type { Module } from '#/generated/api/admin/service/v1';
+
+const fullStore = useBackupFullStore();
+const moduleRegStore = useModuleRegistrationStore();
+const loading = ref(false);
+const modules = ref<Module[]>([]);
+
+const formState = ref({
+  description: '',
+  selectedModuleIds: [] as string[],
+});
+
+function resetForm() {
+  formState.value = {
+    description: '',
+    selectedModuleIds: [],
+  };
+}
+
+function selectAll() {
+  formState.value.selectedModuleIds = modules.value
+    .map((m) => m.moduleId)
+    .filter(Boolean) as string[];
+}
+
+async function handleSubmit() {
+  const targets = modules.value
+    .filter(
+      (m) =>
+        m.moduleId &&
+        m.grpcEndpoint &&
+        formState.value.selectedModuleIds.includes(m.moduleId),
+    )
+    .map((m) => ({
+      module_id: m.moduleId!,
+      grpc_endpoint: m.grpcEndpoint!,
+    }));
+
+  if (targets.length === 0) return;
+
+  loading.value = true;
+  try {
+    const resp = await fullStore.createFullBackup({
+      targets,
+      description: formState.value.description,
+    });
+    if (resp.backup.status === 'failed') {
+      notification.warning({
+        message: `Full backup ${resp.backup.status}`,
+        description: resp.backup.errors?.join(', '),
+      });
+    } else {
+      notification.success({
+        message: $t('backup.page.full.createSuccess'),
+      });
+    }
+    drawerApi.close();
+  } catch (e) {
+    console.error('Failed to create full backup:', e);
+    notification.error({ message: $t('ui.notification.create_failed') });
+  } finally {
+    loading.value = false;
+  }
+}
+
+const [Drawer, drawerApi] = useVbenDrawer({
+  onCancel() {
+    drawerApi.close();
+  },
+  async onOpenChange(isOpen) {
+    if (isOpen) {
+      resetForm();
+      modules.value = await moduleRegStore.listModules();
+    }
+  },
+});
+</script>
+
+<template>
+  <Drawer :title="$t('backup.page.full.create')" :footer="false">
+    <Form layout="vertical" :model="formState" @finish="handleSubmit">
+      <FormItem
+        :label="$t('backup.page.full.description')"
+        name="description"
+      >
+        <Input
+          v-model:value="formState.description"
+          :placeholder="$t('backup.page.full.descriptionPlaceholder')"
+        />
+      </FormItem>
+
+      <FormItem
+        :label="$t('backup.page.full.targets')"
+        name="selectedModuleIds"
+        :rules="[{ required: true, message: $t('ui.formRules.required'), type: 'array', min: 1 }]"
+      >
+        <div class="mb-2">
+          <Button size="small" type="link" @click="selectAll">
+            {{ $t('ui.button.select_all') }}
+          </Button>
+        </div>
+        <CheckboxGroup v-model:value="formState.selectedModuleIds" class="w-full">
+          <div class="flex flex-col gap-2">
+            <Checkbox
+              v-for="mod in modules"
+              :key="mod.moduleId"
+              :value="mod.moduleId"
+            >
+              <span class="font-medium">{{ mod.moduleName || mod.moduleId }}</span>
+              <span class="text-muted-foreground ml-1 text-xs">
+                ({{ mod.grpcEndpoint }})
+              </span>
+            </Checkbox>
+          </div>
+        </CheckboxGroup>
+      </FormItem>
+
+      <FormItem>
+        <Space>
+          <Button type="primary" html-type="submit" :loading="loading">
+            {{ $t('backup.page.full.create') }}
+          </Button>
+        </Space>
+      </FormItem>
+    </Form>
+  </Drawer>
+</template>

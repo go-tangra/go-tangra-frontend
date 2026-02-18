@@ -71,6 +71,9 @@ export * from './asset-consumable.state';
 export * from './asset-license.state';
 export * from './asset-insurance.state';
 export * from './asset-system.state';
+export * from './backup-module.state';
+export * from './backup-full.state';
+export * from './module-registration.state';
 
 export const enableList = computed(() => [
   { value: 'true', label: $t('enum.enable.true') },

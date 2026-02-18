@@ -1,0 +1,60 @@
+{
+  "menu": {
+    "backup": "Резервно копие",
+    "modules": "Модулни копия",
+    "full": "Пълни копия"
+  },
+  "page": {
+    "module": {
+      "title": "Модулни резервни копия",
+      "moduleId": "Модул",
+      "description": "Описание",
+      "status": "Статус",
+      "sizeBytes": "Размер",
+      "entityCounts": "Обекти",
+      "createdAt": "Създадено на",
+      "createdBy": "Създадено от",
+      "version": "Версия",
+      "tenantId": "Наемател",
+      "fullBackup": "Пълно копие",
+      "warnings": "Предупреждения",
+      "create": "Създай копие",
+      "view": "Преглед на копие",
+      "restore": "Възстанови копие",
+      "confirmDelete": "Сигурни ли сте, че искате да изтриете това копие?",
+      "deleteSuccess": "Копието е изтрито успешно",
+      "createSuccess": "Копието е създадено успешно",
+      "restoreSuccess": "Копието е възстановено успешно",
+      "moduleIdPlaceholder": "напр. ipam, warden, sharing",
+      "endpointPlaceholder": "напр. ipam-service:9400",
+      "descriptionPlaceholder": "Въведете описание на копието",
+      "grpcEndpoint": "gRPC крайна точка",
+      "restoreMode": "Режим на възстановяване",
+      "restoreModeSkip": "Пропусни съществуващи",
+      "restoreModeOverwrite": "Презапиши съществуващи",
+      "filterByModule": "Филтър по модул"
+    },
+    "full": {
+      "title": "Пълни резервни копия",
+      "description": "Описание",
+      "status": "Статус",
+      "totalSize": "Общ размер",
+      "moduleCount": "Модули",
+      "createdAt": "Създадено на",
+      "createdBy": "Създадено от",
+      "errors": "Грешки",
+      "moduleBackups": "Модулни копия",
+      "create": "Създай пълно копие",
+      "view": "Преглед на пълно копие",
+      "restore": "Възстанови пълно копие",
+      "confirmDelete": "Сигурни ли сте, че искате да изтриете това пълно копие?",
+      "deleteSuccess": "Пълното копие е изтрито успешно",
+      "createSuccess": "Пълното копие е създадено успешно",
+      "restoreSuccess": "Пълното копие е възстановено успешно",
+      "descriptionPlaceholder": "Въведете описание на копието",
+      "targets": "Целеви модули",
+      "addTarget": "Добави цел",
+      "removeTarget": "Премахни"
+    }
+  }
+}

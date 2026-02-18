@@ -333,22 +333,11 @@ export function createApiServiceClient(
       if (request.noPaging) {
         queryParams.push(`noPaging=${encodeURIComponent(request.noPaging.toString())}`)
       }
-      if (request.orderBy) {
-        request.orderBy.forEach((x) => {
-          queryParams.push(`orderBy=${encodeURIComponent(x.toString())}`)
-        })
-      }
-      if (request.sorting?.field) {
-        queryParams.push(`sorting.field=${encodeURIComponent(request.sorting.field.toString())}`)
-      }
-      if (request.sorting?.order) {
-        queryParams.push(`sorting.order=${encodeURIComponent(request.sorting.order.toString())}`)
-      }
       if (request.query) {
         queryParams.push(`query=${encodeURIComponent(request.query.toString())}`)
       }
-      if (request.or) {
-        queryParams.push(`or=${encodeURIComponent(request.or.toString())}`)
+      if (request.filter) {
+        queryParams.push(`filter=${encodeURIComponent(request.filter.toString())}`)
       }
       if (request.filterExpr?.type) {
         queryParams.push(`filterExpr.type=${encodeURIComponent(request.filterExpr.type.toString())}`)
@@ -376,8 +365,14 @@ export function createApiServiceClient(
       if (request.filterExpr?.conditions?.jsonPath) {
         queryParams.push(`filterExpr.conditions.jsonPath=${encodeURIComponent(request.filterExpr.conditions.jsonPath.toString())}`)
       }
-      if (request.filter) {
-        queryParams.push(`filter=${encodeURIComponent(request.filter.toString())}`)
+      if (request.orderBy) {
+        queryParams.push(`orderBy=${encodeURIComponent(request.orderBy.toString())}`)
+      }
+      if (request.sorting?.field) {
+        queryParams.push(`sorting.field=${encodeURIComponent(request.sorting.field.toString())}`)
+      }
+      if (request.sorting?.direction) {
+        queryParams.push(`sorting.direction=${encodeURIComponent(request.sorting.direction.toString())}`)
       }
       if (request.fieldMask) {
         queryParams.push(`fieldMask=${encodeURIComponent(request.fieldMask.toString())}`)
@@ -527,33 +522,20 @@ export type pagination_PagingRequest = {
   token?: string;
   // 是否不分页，如果为true，则page和pageSize参数无效。
   noPaging?: boolean;
-  // 排序条件，其语法为JSON字符串，例如：{"val1", "-val2"}。字段名前加'-'为降序，否则为升序。
-  orderBy: string[] | undefined;
-  // 排序规则（可选，建议必传以保证分页结果稳定）
-  sorting: pagination_Sorting[] | undefined;
-  // AND过滤参数，其语法为json格式的字符串，如：{"key1":"val1","key2":"val2"}，具体请参见：https://github.com/tx7do/go-utils/tree/main/entgo/query/README.md
+  // JSON字符串过滤条件，基础语法：{"field1":"val1", "field2___icontains":"val2"}，具体请参见：https://github.com/tx7do/go-crud/tree/main/pagination/filter/README.md
   query?: string;
-  // OR过滤参数，语法同AND过滤参数。
-  or?: string;
-  // 复杂过滤表达式
-  filterExpr?: pagination_FilterExpr;
-  // 过滤字符串，基于AIP规范的过滤表达式。
+  // Google AIP规范字符串过滤条件
   filter?: string;
+  // 复杂过滤表达式（优先使用）
+  filterExpr?: pagination_FilterExpr;
+  // 排序条件
+  orderBy?: string;
+  // 排序规则
+  sorting: pagination_Sorting[] | undefined;
   // 字段掩码，其作用为SELECT中的字段，其语法为使用逗号分隔字段名，例如：id,realName,userName。如果为空则选中所有字段，即SELECT *。
   fieldMask?: wellKnownFieldMask;
 };
 
-// 排序规则（分页场景通常需配合排序保证结果稳定）
-export type pagination_Sorting = {
-  // 排序字段（如"id"、"create_time"）
-  field: string | undefined;
-  order: pagination_Sorting_Order | undefined;
-};
-
-// 排序方向（ASC/DESC，默认ASC）
-export type pagination_Sorting_Order =
-  | "ASC"
-  | "DESC";
 // 过滤表达式
 export type pagination_FilterExpr = {
   // 过滤表达式类型
@@ -647,6 +629,18 @@ export type pagination_DatePart =
   | "MINUTE"
   | "SECOND"
   | "MICROSECOND";
+// 排序规则（分页场景通常需配合排序保证结果稳定）
+export type pagination_Sorting = {
+  // 排序字段（如"id"、"create_time"）
+  field: string | undefined;
+  // 排序方向
+  direction: pagination_Sorting_Direction | undefined;
+};
+
+// 排序方向（ASC/DESC，默认ASC）
+export type pagination_Sorting_Direction =
+  | "ASC"
+  | "DESC";
 // In JSON, a field mask is encoded as a single string where paths are
 // separated by a comma. Fields name in each path are converted
 // to/from lower-camel naming conventions.
@@ -772,22 +766,11 @@ export function createApiAuditLogServiceClient(
       if (request.noPaging) {
         queryParams.push(`noPaging=${encodeURIComponent(request.noPaging.toString())}`)
       }
-      if (request.orderBy) {
-        request.orderBy.forEach((x) => {
-          queryParams.push(`orderBy=${encodeURIComponent(x.toString())}`)
-        })
-      }
-      if (request.sorting?.field) {
-        queryParams.push(`sorting.field=${encodeURIComponent(request.sorting.field.toString())}`)
-      }
-      if (request.sorting?.order) {
-        queryParams.push(`sorting.order=${encodeURIComponent(request.sorting.order.toString())}`)
-      }
       if (request.query) {
         queryParams.push(`query=${encodeURIComponent(request.query.toString())}`)
       }
-      if (request.or) {
-        queryParams.push(`or=${encodeURIComponent(request.or.toString())}`)
+      if (request.filter) {
+        queryParams.push(`filter=${encodeURIComponent(request.filter.toString())}`)
       }
       if (request.filterExpr?.type) {
         queryParams.push(`filterExpr.type=${encodeURIComponent(request.filterExpr.type.toString())}`)
@@ -815,8 +798,14 @@ export function createApiAuditLogServiceClient(
       if (request.filterExpr?.conditions?.jsonPath) {
         queryParams.push(`filterExpr.conditions.jsonPath=${encodeURIComponent(request.filterExpr.conditions.jsonPath.toString())}`)
       }
-      if (request.filter) {
-        queryParams.push(`filter=${encodeURIComponent(request.filter.toString())}`)
+      if (request.orderBy) {
+        queryParams.push(`orderBy=${encodeURIComponent(request.orderBy.toString())}`)
+      }
+      if (request.sorting?.field) {
+        queryParams.push(`sorting.field=${encodeURIComponent(request.sorting.field.toString())}`)
+      }
+      if (request.sorting?.direction) {
+        queryParams.push(`sorting.direction=${encodeURIComponent(request.sorting.direction.toString())}`)
       }
       if (request.fieldMask) {
         queryParams.push(`fieldMask=${encodeURIComponent(request.fieldMask.toString())}`)
@@ -1059,13 +1048,205 @@ export type authenticationservicev1_LoginResponse = {
   // MFA fields: present only when multi-factor authentication is required
   mfa_required?: boolean;
   mfa_token?: string;
-  mfa_methods?: string[];
+  mfa_methods: string[] | undefined;
 };
 
 // Token type
 export type authenticationservicev1_TokenType =
   | "bearer"
   | "mac";
+// ListWidgetsRequest is the request for ListWidgets.
+export type ListWidgetsRequest = {
+  // Optional filter by module ID
+  moduleId?: string;
+  // Optional filter by widget type
+  widgetType?: string;
+  // Optional filter by tag
+  tag?: string;
+};
+
+// ListWidgetsResponse is the response for ListWidgets.
+export type ListWidgetsResponse = {
+  widgets: WidgetDefinition[] | undefined;
+  total: number | undefined;
+};
+
+// WidgetDefinition describes a dashboard widget available from a module.
+export type WidgetDefinition = {
+  id: string | undefined;
+  moduleId: string | undefined;
+  name: string | undefined;
+  description: string | undefined;
+  icon: string | undefined;
+  widgetType: string | undefined;
+  dataSource: WidgetDataSourceProto | undefined;
+  dataMapping: wellKnownStruct | undefined;
+  defaultSize: WidgetSizeProto | undefined;
+  tags: string[] | undefined;
+  authority: string[] | undefined;
+};
+
+// WidgetDataSourceProto defines how a widget fetches its data.
+export type WidgetDataSourceProto = {
+  endpoint: string | undefined;
+  method: string | undefined;
+  params: { [key: string]: string } | undefined;
+};
+
+// Any JSON value.
+type wellKnownStruct = Record<string, unknown>;
+
+// WidgetSizeProto defines default grid dimensions.
+export type WidgetSizeProto = {
+  width: number | undefined;
+  height: number | undefined;
+};
+
+// GetUserDashboardRequest is the request for GetUserDashboard.
+export type GetUserDashboardRequest = {
+};
+
+// GetUserDashboardResponse is the response for GetUserDashboard.
+export type GetUserDashboardResponse = {
+  dashboard: UserDashboard | undefined;
+};
+
+// UserDashboard represents a user's dashboard configuration.
+export type UserDashboard = {
+  id: number | undefined;
+  name: string | undefined;
+  widgets: DashboardWidget[] | undefined;
+  isDefault: boolean | undefined;
+  createdAt: wellKnownTimestamp | undefined;
+  updatedAt: wellKnownTimestamp | undefined;
+};
+
+// DashboardWidget represents a widget placed on a user's dashboard.
+export type DashboardWidget = {
+  widgetId: string | undefined;
+  gridX: number | undefined;
+  gridY: number | undefined;
+  gridW: number | undefined;
+  gridH: number | undefined;
+  config: wellKnownStruct | undefined;
+};
+
+// SaveUserDashboardRequest is the request for SaveUserDashboard.
+export type SaveUserDashboardRequest = {
+  name: string | undefined;
+  widgets: DashboardWidget[] | undefined;
+};
+
+// SaveUserDashboardResponse is the response for SaveUserDashboard.
+export type SaveUserDashboardResponse = {
+  dashboard: UserDashboard | undefined;
+};
+
+// ResetUserDashboardRequest is the request for ResetUserDashboard.
+export type ResetUserDashboardRequest = {
+};
+
+// ResetUserDashboardResponse is the response for ResetUserDashboard.
+export type ResetUserDashboardResponse = {
+  dashboard: UserDashboard | undefined;
+};
+
+// DashboardService provides user-customizable dashboard management.
+// Widget definitions are populated from module registrations and built-in admin widgets.
+export interface DashboardService {
+  // ListWidgets returns the widget catalog from all registered modules.
+  ListWidgets(request: ListWidgetsRequest): Promise<ListWidgetsResponse>;
+  // GetUserDashboard returns the current user's dashboard layout.
+  GetUserDashboard(request: GetUserDashboardRequest): Promise<GetUserDashboardResponse>;
+  // SaveUserDashboard saves the user's dashboard layout.
+  SaveUserDashboard(request: SaveUserDashboardRequest): Promise<SaveUserDashboardResponse>;
+  // ResetUserDashboard resets the user's dashboard to the default layout.
+  ResetUserDashboard(request: ResetUserDashboardRequest): Promise<ResetUserDashboardResponse>;
+}
+
+export function createDashboardServiceClient(
+  handler: RequestHandler
+): DashboardService {
+  return {
+    ListWidgets(request) { // eslint-disable-line @typescript-eslint/no-unused-vars
+      const path = `admin/v1/dashboard/widgets`; // eslint-disable-line quotes
+      const body = null;
+      const queryParams: string[] = [];
+      if (request.moduleId) {
+        queryParams.push(`moduleId=${encodeURIComponent(request.moduleId.toString())}`)
+      }
+      if (request.widgetType) {
+        queryParams.push(`widgetType=${encodeURIComponent(request.widgetType.toString())}`)
+      }
+      if (request.tag) {
+        queryParams.push(`tag=${encodeURIComponent(request.tag.toString())}`)
+      }
+      let uri = path;
+      if (queryParams.length > 0) {
+        uri += `?${queryParams.join("&")}`
+      }
+      return handler({
+        path: uri,
+        method: "GET",
+        body,
+      }, {
+        service: "DashboardService",
+        method: "ListWidgets",
+      }) as Promise<ListWidgetsResponse>;
+    },
+    GetUserDashboard(request) { // eslint-disable-line @typescript-eslint/no-unused-vars
+      const path = `admin/v1/dashboard`; // eslint-disable-line quotes
+      const body = null;
+      const queryParams: string[] = [];
+      let uri = path;
+      if (queryParams.length > 0) {
+        uri += `?${queryParams.join("&")}`
+      }
+      return handler({
+        path: uri,
+        method: "GET",
+        body,
+      }, {
+        service: "DashboardService",
+        method: "GetUserDashboard",
+      }) as Promise<GetUserDashboardResponse>;
+    },
+    SaveUserDashboard(request) { // eslint-disable-line @typescript-eslint/no-unused-vars
+      const path = `admin/v1/dashboard`; // eslint-disable-line quotes
+      const body = JSON.stringify(request);
+      const queryParams: string[] = [];
+      let uri = path;
+      if (queryParams.length > 0) {
+        uri += `?${queryParams.join("&")}`
+      }
+      return handler({
+        path: uri,
+        method: "PUT",
+        body,
+      }, {
+        service: "DashboardService",
+        method: "SaveUserDashboard",
+      }) as Promise<SaveUserDashboardResponse>;
+    },
+    ResetUserDashboard(request) { // eslint-disable-line @typescript-eslint/no-unused-vars
+      const path = `admin/v1/dashboard/reset`; // eslint-disable-line quotes
+      const body = JSON.stringify(request);
+      const queryParams: string[] = [];
+      let uri = path;
+      if (queryParams.length > 0) {
+        uri += `?${queryParams.join("&")}`
+      }
+      return handler({
+        path: uri,
+        method: "POST",
+        body,
+      }, {
+        service: "DashboardService",
+        method: "ResetUserDashboard",
+      }) as Promise<ResetUserDashboardResponse>;
+    },
+  };
+}
 // Data access audit log management service
 export interface DataAccessAuditLogService {
   // Query data access audit log list
@@ -1100,22 +1281,11 @@ export function createDataAccessAuditLogServiceClient(
       if (request.noPaging) {
         queryParams.push(`noPaging=${encodeURIComponent(request.noPaging.toString())}`)
       }
-      if (request.orderBy) {
-        request.orderBy.forEach((x) => {
-          queryParams.push(`orderBy=${encodeURIComponent(x.toString())}`)
-        })
-      }
-      if (request.sorting?.field) {
-        queryParams.push(`sorting.field=${encodeURIComponent(request.sorting.field.toString())}`)
-      }
-      if (request.sorting?.order) {
-        queryParams.push(`sorting.order=${encodeURIComponent(request.sorting.order.toString())}`)
-      }
       if (request.query) {
         queryParams.push(`query=${encodeURIComponent(request.query.toString())}`)
       }
-      if (request.or) {
-        queryParams.push(`or=${encodeURIComponent(request.or.toString())}`)
+      if (request.filter) {
+        queryParams.push(`filter=${encodeURIComponent(request.filter.toString())}`)
       }
       if (request.filterExpr?.type) {
         queryParams.push(`filterExpr.type=${encodeURIComponent(request.filterExpr.type.toString())}`)
@@ -1143,8 +1313,14 @@ export function createDataAccessAuditLogServiceClient(
       if (request.filterExpr?.conditions?.jsonPath) {
         queryParams.push(`filterExpr.conditions.jsonPath=${encodeURIComponent(request.filterExpr.conditions.jsonPath.toString())}`)
       }
-      if (request.filter) {
-        queryParams.push(`filter=${encodeURIComponent(request.filter.toString())}`)
+      if (request.orderBy) {
+        queryParams.push(`orderBy=${encodeURIComponent(request.orderBy.toString())}`)
+      }
+      if (request.sorting?.field) {
+        queryParams.push(`sorting.field=${encodeURIComponent(request.sorting.field.toString())}`)
+      }
+      if (request.sorting?.direction) {
+        queryParams.push(`sorting.direction=${encodeURIComponent(request.sorting.direction.toString())}`)
       }
       if (request.fieldMask) {
         queryParams.push(`fieldMask=${encodeURIComponent(request.fieldMask.toString())}`)
@@ -1246,945 +1422,6 @@ export type auditservicev1_GetDataAccessAuditLogRequest = {
   viewMask?: wellKnownFieldMask;
 };
 
-// Deployer Job Gateway Service - HTTP gateway for deployment job management
-export interface DeployerJobGatewayService {
-  // Create a new deployment job
-  CreateJob(request: deployerservicev1_CreateJobRequest): Promise<deployerservicev1_CreateJobResponse>;
-  // Get job status
-  GetJobStatus(request: deployerservicev1_GetJobStatusRequest): Promise<deployerservicev1_GetJobStatusResponse>;
-  // Get job result with history
-  GetJobResult(request: deployerservicev1_GetJobResultRequest): Promise<deployerservicev1_GetJobResultResponse>;
-  // List deployment jobs
-  ListJobs(request: deployerservicev1_ListJobsRequest): Promise<deployerservicev1_ListJobsResponse>;
-  // Cancel a pending or processing job
-  CancelJob(request: deployerservicev1_CancelJobRequest): Promise<deployerservicev1_CancelJobResponse>;
-  // Retry a failed job
-  RetryJob(request: deployerservicev1_RetryJobRequest): Promise<deployerservicev1_RetryJobResponse>;
-  // Deploy a certificate to a single target configuration (manual trigger)
-  Deploy(request: deployerservicev1_DeployRequest): Promise<deployerservicev1_DeployResponse>;
-  // Deploy a certificate to a deployment target group (creates parent job + child jobs)
-  DeployToTarget(request: deployerservicev1_DeployToTargetRequest): Promise<deployerservicev1_DeployToTargetResponse>;
-  // Deploy a certificate to multiple target configurations directly
-  DeployToConfigurations(request: deployerservicev1_DeployToConfigurationsRequest): Promise<deployerservicev1_DeployToConfigurationsResponse>;
-  // Verify a deployment
-  Verify(request: deployerservicev1_VerifyRequest): Promise<deployerservicev1_VerifyResponse>;
-  // Rollback a deployment
-  Rollback(request: deployerservicev1_RollbackRequest): Promise<deployerservicev1_RollbackResponse>;
-}
-
-export function createDeployerJobGatewayServiceClient(
-  handler: RequestHandler
-): DeployerJobGatewayService {
-  return {
-    CreateJob(request) { // eslint-disable-line @typescript-eslint/no-unused-vars
-      const path = `admin/v1/deployer/jobs`; // eslint-disable-line quotes
-      const body = JSON.stringify(request);
-      const queryParams: string[] = [];
-      let uri = path;
-      if (queryParams.length > 0) {
-        uri += `?${queryParams.join("&")}`
-      }
-      return handler({
-        path: uri,
-        method: "POST",
-        body,
-      }, {
-        service: "DeployerJobGatewayService",
-        method: "CreateJob",
-      }) as Promise<deployerservicev1_CreateJobResponse>;
-    },
-    GetJobStatus(request) { // eslint-disable-line @typescript-eslint/no-unused-vars
-      if (!request.id) {
-        throw new Error("missing required field request.id");
-      }
-      const path = `admin/v1/deployer/jobs/${request.id}`; // eslint-disable-line quotes
-      const body = null;
-      const queryParams: string[] = [];
-      if (request.includeChildJobs) {
-        queryParams.push(`includeChildJobs=${encodeURIComponent(request.includeChildJobs.toString())}`)
-      }
-      let uri = path;
-      if (queryParams.length > 0) {
-        uri += `?${queryParams.join("&")}`
-      }
-      return handler({
-        path: uri,
-        method: "GET",
-        body,
-      }, {
-        service: "DeployerJobGatewayService",
-        method: "GetJobStatus",
-      }) as Promise<deployerservicev1_GetJobStatusResponse>;
-    },
-    GetJobResult(request) { // eslint-disable-line @typescript-eslint/no-unused-vars
-      if (!request.id) {
-        throw new Error("missing required field request.id");
-      }
-      const path = `admin/v1/deployer/jobs/${request.id}/result`; // eslint-disable-line quotes
-      const body = null;
-      const queryParams: string[] = [];
-      if (request.includeChildJobs) {
-        queryParams.push(`includeChildJobs=${encodeURIComponent(request.includeChildJobs.toString())}`)
-      }
-      let uri = path;
-      if (queryParams.length > 0) {
-        uri += `?${queryParams.join("&")}`
-      }
-      return handler({
-        path: uri,
-        method: "GET",
-        body,
-      }, {
-        service: "DeployerJobGatewayService",
-        method: "GetJobResult",
-      }) as Promise<deployerservicev1_GetJobResultResponse>;
-    },
-    ListJobs(request) { // eslint-disable-line @typescript-eslint/no-unused-vars
-      const path = `admin/v1/deployer/jobs`; // eslint-disable-line quotes
-      const body = null;
-      const queryParams: string[] = [];
-      if (request.tenantId) {
-        queryParams.push(`tenantId=${encodeURIComponent(request.tenantId.toString())}`)
-      }
-      if (request.deploymentTargetId) {
-        queryParams.push(`deploymentTargetId=${encodeURIComponent(request.deploymentTargetId.toString())}`)
-      }
-      if (request.targetConfigurationId) {
-        queryParams.push(`targetConfigurationId=${encodeURIComponent(request.targetConfigurationId.toString())}`)
-      }
-      if (request.certificateId) {
-        queryParams.push(`certificateId=${encodeURIComponent(request.certificateId.toString())}`)
-      }
-      if (request.status) {
-        queryParams.push(`status=${encodeURIComponent(request.status.toString())}`)
-      }
-      if (request.triggeredBy) {
-        queryParams.push(`triggeredBy=${encodeURIComponent(request.triggeredBy.toString())}`)
-      }
-      if (request.jobType) {
-        queryParams.push(`jobType=${encodeURIComponent(request.jobType.toString())}`)
-      }
-      if (request.parentJobId) {
-        queryParams.push(`parentJobId=${encodeURIComponent(request.parentJobId.toString())}`)
-      }
-      if (request.createdAfter) {
-        queryParams.push(`createdAfter=${encodeURIComponent(request.createdAfter.toString())}`)
-      }
-      if (request.createdBefore) {
-        queryParams.push(`createdBefore=${encodeURIComponent(request.createdBefore.toString())}`)
-      }
-      if (request.includeChildJobs) {
-        queryParams.push(`includeChildJobs=${encodeURIComponent(request.includeChildJobs.toString())}`)
-      }
-      if (request.page) {
-        queryParams.push(`page=${encodeURIComponent(request.page.toString())}`)
-      }
-      if (request.pageSize) {
-        queryParams.push(`pageSize=${encodeURIComponent(request.pageSize.toString())}`)
-      }
-      let uri = path;
-      if (queryParams.length > 0) {
-        uri += `?${queryParams.join("&")}`
-      }
-      return handler({
-        path: uri,
-        method: "GET",
-        body,
-      }, {
-        service: "DeployerJobGatewayService",
-        method: "ListJobs",
-      }) as Promise<deployerservicev1_ListJobsResponse>;
-    },
-    CancelJob(request) { // eslint-disable-line @typescript-eslint/no-unused-vars
-      if (!request.id) {
-        throw new Error("missing required field request.id");
-      }
-      const path = `admin/v1/deployer/jobs/${request.id}:cancel`; // eslint-disable-line quotes
-      const body = JSON.stringify(request);
-      const queryParams: string[] = [];
-      let uri = path;
-      if (queryParams.length > 0) {
-        uri += `?${queryParams.join("&")}`
-      }
-      return handler({
-        path: uri,
-        method: "POST",
-        body,
-      }, {
-        service: "DeployerJobGatewayService",
-        method: "CancelJob",
-      }) as Promise<deployerservicev1_CancelJobResponse>;
-    },
-    RetryJob(request) { // eslint-disable-line @typescript-eslint/no-unused-vars
-      if (!request.id) {
-        throw new Error("missing required field request.id");
-      }
-      const path = `admin/v1/deployer/jobs/${request.id}:retry`; // eslint-disable-line quotes
-      const body = JSON.stringify(request);
-      const queryParams: string[] = [];
-      let uri = path;
-      if (queryParams.length > 0) {
-        uri += `?${queryParams.join("&")}`
-      }
-      return handler({
-        path: uri,
-        method: "POST",
-        body,
-      }, {
-        service: "DeployerJobGatewayService",
-        method: "RetryJob",
-      }) as Promise<deployerservicev1_RetryJobResponse>;
-    },
-    Deploy(request) { // eslint-disable-line @typescript-eslint/no-unused-vars
-      const path = `admin/v1/deployer/deploy`; // eslint-disable-line quotes
-      const body = JSON.stringify(request);
-      const queryParams: string[] = [];
-      let uri = path;
-      if (queryParams.length > 0) {
-        uri += `?${queryParams.join("&")}`
-      }
-      return handler({
-        path: uri,
-        method: "POST",
-        body,
-      }, {
-        service: "DeployerJobGatewayService",
-        method: "Deploy",
-      }) as Promise<deployerservicev1_DeployResponse>;
-    },
-    DeployToTarget(request) { // eslint-disable-line @typescript-eslint/no-unused-vars
-      const path = `admin/v1/deployer/deploy-to-target`; // eslint-disable-line quotes
-      const body = JSON.stringify(request);
-      const queryParams: string[] = [];
-      let uri = path;
-      if (queryParams.length > 0) {
-        uri += `?${queryParams.join("&")}`
-      }
-      return handler({
-        path: uri,
-        method: "POST",
-        body,
-      }, {
-        service: "DeployerJobGatewayService",
-        method: "DeployToTarget",
-      }) as Promise<deployerservicev1_DeployToTargetResponse>;
-    },
-    DeployToConfigurations(request) { // eslint-disable-line @typescript-eslint/no-unused-vars
-      const path = `admin/v1/deployer/deploy-to-configurations`; // eslint-disable-line quotes
-      const body = JSON.stringify(request);
-      const queryParams: string[] = [];
-      let uri = path;
-      if (queryParams.length > 0) {
-        uri += `?${queryParams.join("&")}`
-      }
-      return handler({
-        path: uri,
-        method: "POST",
-        body,
-      }, {
-        service: "DeployerJobGatewayService",
-        method: "DeployToConfigurations",
-      }) as Promise<deployerservicev1_DeployToConfigurationsResponse>;
-    },
-    Verify(request) { // eslint-disable-line @typescript-eslint/no-unused-vars
-      const path = `admin/v1/deployer/verify`; // eslint-disable-line quotes
-      const body = JSON.stringify(request);
-      const queryParams: string[] = [];
-      let uri = path;
-      if (queryParams.length > 0) {
-        uri += `?${queryParams.join("&")}`
-      }
-      return handler({
-        path: uri,
-        method: "POST",
-        body,
-      }, {
-        service: "DeployerJobGatewayService",
-        method: "Verify",
-      }) as Promise<deployerservicev1_VerifyResponse>;
-    },
-    Rollback(request) { // eslint-disable-line @typescript-eslint/no-unused-vars
-      const path = `admin/v1/deployer/rollback`; // eslint-disable-line quotes
-      const body = JSON.stringify(request);
-      const queryParams: string[] = [];
-      let uri = path;
-      if (queryParams.length > 0) {
-        uri += `?${queryParams.join("&")}`
-      }
-      return handler({
-        path: uri,
-        method: "POST",
-        body,
-      }, {
-        service: "DeployerJobGatewayService",
-        method: "Rollback",
-      }) as Promise<deployerservicev1_RollbackResponse>;
-    },
-  };
-}
-// Create a new deployment job
-export type deployerservicev1_CreateJobRequest = {
-  // Option 1: Deploy to a deployment target group (creates parent job + child jobs)
-  deploymentTargetId?: string;
-  // Option 2: Deploy directly to a single target configuration (creates direct job)
-  targetConfigurationId?: string;
-  // Certificate to deploy
-  //
-  // Behaviors: REQUIRED
-  certificateId: string | undefined;
-  triggeredBy?: deployerservicev1_TriggerType;
-  maxRetries?: number;
-};
-
-// Trigger type
-export type deployerservicev1_TriggerType =
-  | "TRIGGER_TYPE_UNSPECIFIED"
-  | "TRIGGER_TYPE_MANUAL"
-  | "TRIGGER_TYPE_EVENT"
-  | "TRIGGER_TYPE_AUTO_RENEWAL";
-export type deployerservicev1_CreateJobResponse = {
-  job: deployerservicev1_DeploymentJob | undefined;
-};
-
-// Deployment job entity
-export type deployerservicev1_DeploymentJob = {
-  id?: string;
-  tenantId?: number;
-  // For parent jobs: deployment target group ID
-  deploymentTargetId?: string;
-  // Name of the deployment target (for display)
-  deploymentTargetName?: string;
-  // For child/direct jobs: target configuration ID
-  targetConfigurationId?: string;
-  // Name of the target configuration (for display)
-  targetConfigurationName?: string;
-  // For child jobs: parent job ID
-  parentJobId?: string;
-  // Computed job type
-  jobType?: deployerservicev1_JobType;
-  certificateId?: string;
-  certificateSerial?: string;
-  status?: deployerservicev1_JobStatus;
-  statusMessage?: string;
-  progress?: number;
-  retryCount?: number;
-  maxRetries?: number;
-  triggeredBy?: deployerservicev1_TriggerType;
-  result?: wellKnownStruct;
-  startedAt?: wellKnownTimestamp;
-  completedAt?: wellKnownTimestamp;
-  nextRetryAt?: wellKnownTimestamp;
-  // For parent jobs: child job summary
-  totalChildJobs?: number;
-  completedChildJobs?: number;
-  failedChildJobs?: number;
-  // For parent jobs: list of child jobs (populated when requested)
-  childJobs: deployerservicev1_DeploymentJob[] | undefined;
-  createdBy?: number;
-  createTime?: wellKnownTimestamp;
-  updateTime?: wellKnownTimestamp;
-};
-
-// Job type
-export type deployerservicev1_JobType =
-  | "JOB_TYPE_UNSPECIFIED"
-  // Parent job: deploys to a target group, spawns child jobs
-  | "JOB_TYPE_PARENT"
-  // Child job: deploys to a single configuration, owned by a parent job
-  | "JOB_TYPE_CHILD"
-  // Direct job: deploys to a single configuration directly (legacy)
-  | "JOB_TYPE_DIRECT";
-// Job status
-export type deployerservicev1_JobStatus =
-  | "JOB_STATUS_UNSPECIFIED"
-  | "JOB_STATUS_PENDING"
-  | "JOB_STATUS_PROCESSING"
-  | "JOB_STATUS_COMPLETED"
-  | "JOB_STATUS_FAILED"
-  | "JOB_STATUS_CANCELLED"
-  | "JOB_STATUS_RETRYING"
-  // For parent jobs: some child jobs completed, some failed
-  | "JOB_STATUS_PARTIAL";
-// Any JSON value.
-type wellKnownStruct = Record<string, unknown>;
-
-// Get job status
-export type deployerservicev1_GetJobStatusRequest = {
-  //
-  // Behaviors: REQUIRED
-  id: string | undefined;
-  // Include child jobs in the response (for parent jobs)
-  includeChildJobs?: boolean;
-};
-
-export type deployerservicev1_GetJobStatusResponse = {
-  job: deployerservicev1_DeploymentJob | undefined;
-};
-
-// Get job result
-export type deployerservicev1_GetJobResultRequest = {
-  //
-  // Behaviors: REQUIRED
-  id: string | undefined;
-  // Include child jobs in the response (for parent jobs)
-  includeChildJobs?: boolean;
-};
-
-export type deployerservicev1_GetJobResultResponse = {
-  job: deployerservicev1_DeploymentJob | undefined;
-  history: deployerservicev1_JobHistoryEntry[] | undefined;
-};
-
-// Job history entry
-export type deployerservicev1_JobHistoryEntry = {
-  id?: number;
-  jobId?: string;
-  action?: string;
-  result?: string;
-  message?: string;
-  durationMs?: number;
-  details?: wellKnownStruct;
-  createTime?: wellKnownTimestamp;
-};
-
-// List deployment jobs
-export type deployerservicev1_ListJobsRequest = {
-  tenantId?: number;
-  // Filter by deployment target group (for parent jobs)
-  deploymentTargetId?: string;
-  // Filter by target configuration (for child/direct jobs)
-  targetConfigurationId?: string;
-  certificateId?: string;
-  status?: deployerservicev1_JobStatus;
-  triggeredBy?: deployerservicev1_TriggerType;
-  // Filter by job type
-  jobType?: deployerservicev1_JobType;
-  // Filter by parent job ID (to list child jobs)
-  parentJobId?: string;
-  createdAfter?: wellKnownTimestamp;
-  createdBefore?: wellKnownTimestamp;
-  // Include child jobs in response (for parent jobs)
-  includeChildJobs?: boolean;
-  page?: number;
-  pageSize?: number;
-};
-
-export type deployerservicev1_ListJobsResponse = {
-  items: deployerservicev1_DeploymentJob[] | undefined;
-  total: number | undefined;
-};
-
-// Cancel a deployment job
-export type deployerservicev1_CancelJobRequest = {
-  //
-  // Behaviors: REQUIRED
-  id: string | undefined;
-  // For parent jobs: also cancel child jobs
-  cancelChildJobs?: boolean;
-};
-
-export type deployerservicev1_CancelJobResponse = {
-  job: deployerservicev1_DeploymentJob | undefined;
-};
-
-// Retry a failed deployment job
-export type deployerservicev1_RetryJobRequest = {
-  //
-  // Behaviors: REQUIRED
-  id: string | undefined;
-  // For parent jobs: retry only failed child jobs
-  retryFailedChildrenOnly?: boolean;
-};
-
-export type deployerservicev1_RetryJobResponse = {
-  job: deployerservicev1_DeploymentJob | undefined;
-};
-
-// Deploy request - deploy to a single target configuration
-export type deployerservicev1_DeployRequest = {
-  //
-  // Behaviors: REQUIRED
-  targetConfigurationId: string | undefined;
-  //
-  // Behaviors: REQUIRED
-  certificateId: string | undefined;
-  waitForCompletion?: boolean;
-  timeoutSeconds?: number;
-};
-
-export type deployerservicev1_DeployResponse = {
-  job: deployerservicev1_DeploymentJob | undefined;
-  result?: deployerservicev1_DeploymentResult;
-};
-
-// Deployment result
-export type deployerservicev1_DeploymentResult = {
-  success: boolean | undefined;
-  message?: string;
-  resourceId?: string;
-  details?: wellKnownStruct;
-  durationMs?: number;
-};
-
-// Deploy to a deployment target group (creates parent job with child jobs)
-export type deployerservicev1_DeployToTargetRequest = {
-  // The deployment target group ID
-  //
-  // Behaviors: REQUIRED
-  deploymentTargetId: string | undefined;
-  // The certificate to deploy
-  //
-  // Behaviors: REQUIRED
-  certificateId: string | undefined;
-  // Optional: trigger reason
-  triggeredBy?: deployerservicev1_TriggerType;
-};
-
-export type deployerservicev1_DeployToTargetResponse = {
-  // The parent job created
-  job: deployerservicev1_DeploymentJob | undefined;
-};
-
-// Deploy to multiple target configurations directly
-export type deployerservicev1_DeployToConfigurationsRequest = {
-  // The certificate to deploy
-  //
-  // Behaviors: REQUIRED
-  certificateId: string | undefined;
-  // List of target configuration IDs to deploy to
-  //
-  // Behaviors: REQUIRED
-  configurationIds: string[] | undefined;
-  // Optional: trigger reason
-  triggeredBy?: deployerservicev1_TriggerType;
-};
-
-export type deployerservicev1_DeployToConfigurationsResponse = {
-  // Total number of configurations
-  total: number | undefined;
-  // Number of successful job creations
-  succeeded: number | undefined;
-  // Number of failed job creations
-  failed: number | undefined;
-  // Individual results per configuration
-  results: deployerservicev1_ConfigurationDeploymentResult[] | undefined;
-};
-
-// Result for a single configuration deployment
-export type deployerservicev1_ConfigurationDeploymentResult = {
-  configurationId: string | undefined;
-  configurationName: string | undefined;
-  job?: deployerservicev1_DeploymentJob;
-  error?: string;
-};
-
-// Verify request
-export type deployerservicev1_VerifyRequest = {
-  //
-  // Behaviors: REQUIRED
-  targetConfigurationId: string | undefined;
-  //
-  // Behaviors: REQUIRED
-  certificateId: string | undefined;
-};
-
-export type deployerservicev1_VerifyResponse = {
-  result: deployerservicev1_DeploymentResult | undefined;
-};
-
-// Rollback request
-export type deployerservicev1_RollbackRequest = {
-  //
-  // Behaviors: REQUIRED
-  targetConfigurationId: string | undefined;
-  //
-  // Behaviors: REQUIRED
-  certificateId: string | undefined;
-  previousCertificateId?: string;
-};
-
-export type deployerservicev1_RollbackResponse = {
-  job: deployerservicev1_DeploymentJob | undefined;
-  result?: deployerservicev1_DeploymentResult;
-};
-
-// Deployer Target Gateway Service - HTTP gateway for deployment target (group) management
-export interface DeployerTargetGatewayService {
-  // Create a new deployment target (group)
-  CreateTarget(request: deployerservicev1_CreateTargetRequest): Promise<deployerservicev1_CreateTargetResponse>;
-  // Get a deployment target by ID
-  GetTarget(request: deployerservicev1_GetTargetRequest): Promise<deployerservicev1_GetTargetResponse>;
-  // List deployment targets
-  ListTargets(request: deployerservicev1_ListTargetsRequest): Promise<deployerservicev1_ListTargetsResponse>;
-  // Update a deployment target
-  UpdateTarget(request: deployerservicev1_UpdateTargetRequest): Promise<deployerservicev1_UpdateTargetResponse>;
-  // Delete a deployment target
-  DeleteTarget(request: deployerservicev1_DeleteTargetRequest): Promise<wellKnownEmpty>;
-  // Add configurations to a deployment target
-  AddConfigurations(request: deployerservicev1_AddConfigurationsRequest): Promise<deployerservicev1_AddConfigurationsResponse>;
-  // Remove configurations from a deployment target
-  RemoveConfigurations(request: deployerservicev1_RemoveConfigurationsRequest): Promise<deployerservicev1_RemoveConfigurationsResponse>;
-  // List configurations linked to a deployment target
-  ListTargetConfigurations(request: deployerservicev1_ListTargetConfigurationsRequest): Promise<deployerservicev1_ListTargetConfigurationsResponse>;
-}
-
-export function createDeployerTargetGatewayServiceClient(
-  handler: RequestHandler
-): DeployerTargetGatewayService {
-  return {
-    CreateTarget(request) { // eslint-disable-line @typescript-eslint/no-unused-vars
-      const path = `admin/v1/deployer/targets`; // eslint-disable-line quotes
-      const body = JSON.stringify(request);
-      const queryParams: string[] = [];
-      let uri = path;
-      if (queryParams.length > 0) {
-        uri += `?${queryParams.join("&")}`
-      }
-      return handler({
-        path: uri,
-        method: "POST",
-        body,
-      }, {
-        service: "DeployerTargetGatewayService",
-        method: "CreateTarget",
-      }) as Promise<deployerservicev1_CreateTargetResponse>;
-    },
-    GetTarget(request) { // eslint-disable-line @typescript-eslint/no-unused-vars
-      if (!request.id) {
-        throw new Error("missing required field request.id");
-      }
-      const path = `admin/v1/deployer/targets/${request.id}`; // eslint-disable-line quotes
-      const body = null;
-      const queryParams: string[] = [];
-      if (request.includeConfigurations) {
-        queryParams.push(`includeConfigurations=${encodeURIComponent(request.includeConfigurations.toString())}`)
-      }
-      let uri = path;
-      if (queryParams.length > 0) {
-        uri += `?${queryParams.join("&")}`
-      }
-      return handler({
-        path: uri,
-        method: "GET",
-        body,
-      }, {
-        service: "DeployerTargetGatewayService",
-        method: "GetTarget",
-      }) as Promise<deployerservicev1_GetTargetResponse>;
-    },
-    ListTargets(request) { // eslint-disable-line @typescript-eslint/no-unused-vars
-      const path = `admin/v1/deployer/targets`; // eslint-disable-line quotes
-      const body = null;
-      const queryParams: string[] = [];
-      if (request.tenantId) {
-        queryParams.push(`tenantId=${encodeURIComponent(request.tenantId.toString())}`)
-      }
-      if (request.autoDeployOnRenewal) {
-        queryParams.push(`autoDeployOnRenewal=${encodeURIComponent(request.autoDeployOnRenewal.toString())}`)
-      }
-      if (request.includeConfigurations) {
-        queryParams.push(`includeConfigurations=${encodeURIComponent(request.includeConfigurations.toString())}`)
-      }
-      if (request.page) {
-        queryParams.push(`page=${encodeURIComponent(request.page.toString())}`)
-      }
-      if (request.pageSize) {
-        queryParams.push(`pageSize=${encodeURIComponent(request.pageSize.toString())}`)
-      }
-      let uri = path;
-      if (queryParams.length > 0) {
-        uri += `?${queryParams.join("&")}`
-      }
-      return handler({
-        path: uri,
-        method: "GET",
-        body,
-      }, {
-        service: "DeployerTargetGatewayService",
-        method: "ListTargets",
-      }) as Promise<deployerservicev1_ListTargetsResponse>;
-    },
-    UpdateTarget(request) { // eslint-disable-line @typescript-eslint/no-unused-vars
-      if (!request.id) {
-        throw new Error("missing required field request.id");
-      }
-      const path = `admin/v1/deployer/targets/${request.id}`; // eslint-disable-line quotes
-      const body = JSON.stringify(request);
-      const queryParams: string[] = [];
-      let uri = path;
-      if (queryParams.length > 0) {
-        uri += `?${queryParams.join("&")}`
-      }
-      return handler({
-        path: uri,
-        method: "PUT",
-        body,
-      }, {
-        service: "DeployerTargetGatewayService",
-        method: "UpdateTarget",
-      }) as Promise<deployerservicev1_UpdateTargetResponse>;
-    },
-    DeleteTarget(request) { // eslint-disable-line @typescript-eslint/no-unused-vars
-      if (!request.id) {
-        throw new Error("missing required field request.id");
-      }
-      const path = `admin/v1/deployer/targets/${request.id}`; // eslint-disable-line quotes
-      const body = null;
-      const queryParams: string[] = [];
-      let uri = path;
-      if (queryParams.length > 0) {
-        uri += `?${queryParams.join("&")}`
-      }
-      return handler({
-        path: uri,
-        method: "DELETE",
-        body,
-      }, {
-        service: "DeployerTargetGatewayService",
-        method: "DeleteTarget",
-      }) as Promise<wellKnownEmpty>;
-    },
-    AddConfigurations(request) { // eslint-disable-line @typescript-eslint/no-unused-vars
-      if (!request.id) {
-        throw new Error("missing required field request.id");
-      }
-      const path = `admin/v1/deployer/targets/${request.id}/configurations`; // eslint-disable-line quotes
-      const body = JSON.stringify(request);
-      const queryParams: string[] = [];
-      let uri = path;
-      if (queryParams.length > 0) {
-        uri += `?${queryParams.join("&")}`
-      }
-      return handler({
-        path: uri,
-        method: "POST",
-        body,
-      }, {
-        service: "DeployerTargetGatewayService",
-        method: "AddConfigurations",
-      }) as Promise<deployerservicev1_AddConfigurationsResponse>;
-    },
-    RemoveConfigurations(request) { // eslint-disable-line @typescript-eslint/no-unused-vars
-      if (!request.id) {
-        throw new Error("missing required field request.id");
-      }
-      const path = `admin/v1/deployer/targets/${request.id}/configurations:remove`; // eslint-disable-line quotes
-      const body = JSON.stringify(request);
-      const queryParams: string[] = [];
-      let uri = path;
-      if (queryParams.length > 0) {
-        uri += `?${queryParams.join("&")}`
-      }
-      return handler({
-        path: uri,
-        method: "POST",
-        body,
-      }, {
-        service: "DeployerTargetGatewayService",
-        method: "RemoveConfigurations",
-      }) as Promise<deployerservicev1_RemoveConfigurationsResponse>;
-    },
-    ListTargetConfigurations(request) { // eslint-disable-line @typescript-eslint/no-unused-vars
-      if (!request.id) {
-        throw new Error("missing required field request.id");
-      }
-      const path = `admin/v1/deployer/targets/${request.id}/configurations`; // eslint-disable-line quotes
-      const body = null;
-      const queryParams: string[] = [];
-      if (request.page) {
-        queryParams.push(`page=${encodeURIComponent(request.page.toString())}`)
-      }
-      if (request.pageSize) {
-        queryParams.push(`pageSize=${encodeURIComponent(request.pageSize.toString())}`)
-      }
-      let uri = path;
-      if (queryParams.length > 0) {
-        uri += `?${queryParams.join("&")}`
-      }
-      return handler({
-        path: uri,
-        method: "GET",
-        body,
-      }, {
-        service: "DeployerTargetGatewayService",
-        method: "ListTargetConfigurations",
-      }) as Promise<deployerservicev1_ListTargetConfigurationsResponse>;
-    },
-  };
-}
-// Create a new deployment target (group)
-export type deployerservicev1_CreateTargetRequest = {
-  //
-  // Behaviors: REQUIRED
-  tenantId: number | undefined;
-  //
-  // Behaviors: REQUIRED
-  name: string | undefined;
-  description?: string;
-  autoDeployOnRenewal?: boolean;
-  certificateFilters: deployerservicev1_CertificateFilter[] | undefined;
-  // Optional: link configurations during creation
-  configurationIds: string[] | undefined;
-};
-
-// Certificate filter for auto-deployment
-// All specified fields must match (AND logic). Empty fields are ignored.
-export type deployerservicev1_CertificateFilter = {
-  // Matches the certificate issuer name (exact match)
-  issuerName?: string;
-  // Matches the certificate Common Name (regex pattern)
-  commonNamePattern?: string;
-  // Matches any Subject Alternative Name - DNS names (regex pattern)
-  sanPattern?: string;
-  // Matches the certificate Subject Organization (exact match)
-  subjectOrganization?: string;
-  // Matches the certificate Subject Organizational Unit (exact match)
-  subjectOrgUnit?: string;
-  // Matches the certificate Subject Country (exact match)
-  subjectCountry?: string;
-  // Labels for matching (reserved for future use)
-  labels: string[] | undefined;
-  // Deprecated: Use common_name_pattern and san_pattern instead
-  domainPattern?: string;
-};
-
-export type deployerservicev1_CreateTargetResponse = {
-  target: deployerservicev1_DeploymentTarget | undefined;
-};
-
-// Deployment target entity - represents a GROUP of target configurations
-export type deployerservicev1_DeploymentTarget = {
-  id?: string;
-  tenantId?: number;
-  name?: string;
-  description?: string;
-  autoDeployOnRenewal?: boolean;
-  certificateFilters: deployerservicev1_CertificateFilter[] | undefined;
-  // Linked target configurations (populated when requested)
-  configurations: deployerservicev1_TargetConfiguration[] | undefined;
-  // Count of linked configurations
-  configurationCount?: number;
-  createdBy?: number;
-  updatedBy?: number;
-  createTime?: wellKnownTimestamp;
-  updateTime?: wellKnownTimestamp;
-};
-
-// Target configuration entity - represents a single deployment endpoint
-export type deployerservicev1_TargetConfiguration = {
-  id?: string;
-  tenantId?: number;
-  name?: string;
-  description?: string;
-  providerType?: string;
-  config?: wellKnownStruct;
-  status?: deployerservicev1_ConfigurationStatus;
-  statusMessage?: string;
-  lastDeploymentAt?: wellKnownTimestamp;
-  createdBy?: number;
-  updatedBy?: number;
-  createTime?: wellKnownTimestamp;
-  updateTime?: wellKnownTimestamp;
-};
-
-// Configuration status
-export type deployerservicev1_ConfigurationStatus =
-  | "CONFIG_STATUS_UNSPECIFIED"
-  | "CONFIG_STATUS_ACTIVE"
-  | "CONFIG_STATUS_INACTIVE"
-  | "CONFIG_STATUS_ERROR";
-// Get a deployment target
-export type deployerservicev1_GetTargetRequest = {
-  //
-  // Behaviors: REQUIRED
-  id: string | undefined;
-  // Include linked configurations in the response
-  includeConfigurations?: boolean;
-};
-
-export type deployerservicev1_GetTargetResponse = {
-  target: deployerservicev1_DeploymentTarget | undefined;
-};
-
-// List deployment targets
-export type deployerservicev1_ListTargetsRequest = {
-  tenantId?: number;
-  autoDeployOnRenewal?: boolean;
-  // Include linked configurations in the response
-  includeConfigurations?: boolean;
-  page?: number;
-  pageSize?: number;
-};
-
-export type deployerservicev1_ListTargetsResponse = {
-  items: deployerservicev1_DeploymentTarget[] | undefined;
-  total: number | undefined;
-};
-
-// Update a deployment target
-export type deployerservicev1_UpdateTargetRequest = {
-  //
-  // Behaviors: REQUIRED
-  id: string | undefined;
-  name?: string;
-  description?: string;
-  autoDeployOnRenewal?: boolean;
-  certificateFilters: deployerservicev1_CertificateFilter[] | undefined;
-};
-
-export type deployerservicev1_UpdateTargetResponse = {
-  target: deployerservicev1_DeploymentTarget | undefined;
-};
-
-// Delete a deployment target
-export type deployerservicev1_DeleteTargetRequest = {
-  //
-  // Behaviors: REQUIRED
-  id: string | undefined;
-};
-
-// Add configurations to a deployment target
-export type deployerservicev1_AddConfigurationsRequest = {
-  //
-  // Behaviors: REQUIRED
-  id: string | undefined;
-  //
-  // Behaviors: REQUIRED
-  configurationIds: string[] | undefined;
-};
-
-export type deployerservicev1_AddConfigurationsResponse = {
-  target: deployerservicev1_DeploymentTarget | undefined;
-};
-
-// Remove configurations from a deployment target
-export type deployerservicev1_RemoveConfigurationsRequest = {
-  //
-  // Behaviors: REQUIRED
-  id: string | undefined;
-  //
-  // Behaviors: REQUIRED
-  configurationIds: string[] | undefined;
-};
-
-export type deployerservicev1_RemoveConfigurationsResponse = {
-  target: deployerservicev1_DeploymentTarget | undefined;
-};
-
-// List configurations linked to a deployment target
-export type deployerservicev1_ListTargetConfigurationsRequest = {
-  //
-  // Behaviors: REQUIRED
-  id: string | undefined;
-  page?: number;
-  pageSize?: number;
-};
-
-export type deployerservicev1_ListTargetConfigurationsResponse = {
-  items: deployerservicev1_TargetConfiguration[] | undefined;
-  total: number | undefined;
-};
-
 // Dictionary entry management service
 export interface DictEntryService {
   // Query dictionary entry list with pagination
@@ -2223,22 +1460,11 @@ export function createDictEntryServiceClient(
       if (request.noPaging) {
         queryParams.push(`noPaging=${encodeURIComponent(request.noPaging.toString())}`)
       }
-      if (request.orderBy) {
-        request.orderBy.forEach((x) => {
-          queryParams.push(`orderBy=${encodeURIComponent(x.toString())}`)
-        })
-      }
-      if (request.sorting?.field) {
-        queryParams.push(`sorting.field=${encodeURIComponent(request.sorting.field.toString())}`)
-      }
-      if (request.sorting?.order) {
-        queryParams.push(`sorting.order=${encodeURIComponent(request.sorting.order.toString())}`)
-      }
       if (request.query) {
         queryParams.push(`query=${encodeURIComponent(request.query.toString())}`)
       }
-      if (request.or) {
-        queryParams.push(`or=${encodeURIComponent(request.or.toString())}`)
+      if (request.filter) {
+        queryParams.push(`filter=${encodeURIComponent(request.filter.toString())}`)
       }
       if (request.filterExpr?.type) {
         queryParams.push(`filterExpr.type=${encodeURIComponent(request.filterExpr.type.toString())}`)
@@ -2266,8 +1492,14 @@ export function createDictEntryServiceClient(
       if (request.filterExpr?.conditions?.jsonPath) {
         queryParams.push(`filterExpr.conditions.jsonPath=${encodeURIComponent(request.filterExpr.conditions.jsonPath.toString())}`)
       }
-      if (request.filter) {
-        queryParams.push(`filter=${encodeURIComponent(request.filter.toString())}`)
+      if (request.orderBy) {
+        queryParams.push(`orderBy=${encodeURIComponent(request.orderBy.toString())}`)
+      }
+      if (request.sorting?.field) {
+        queryParams.push(`sorting.field=${encodeURIComponent(request.sorting.field.toString())}`)
+      }
+      if (request.sorting?.direction) {
+        queryParams.push(`sorting.direction=${encodeURIComponent(request.sorting.direction.toString())}`)
       }
       if (request.fieldMask) {
         queryParams.push(`fieldMask=${encodeURIComponent(request.fieldMask.toString())}`)
@@ -2438,22 +1670,11 @@ export function createDictTypeServiceClient(
       if (request.noPaging) {
         queryParams.push(`noPaging=${encodeURIComponent(request.noPaging.toString())}`)
       }
-      if (request.orderBy) {
-        request.orderBy.forEach((x) => {
-          queryParams.push(`orderBy=${encodeURIComponent(x.toString())}`)
-        })
-      }
-      if (request.sorting?.field) {
-        queryParams.push(`sorting.field=${encodeURIComponent(request.sorting.field.toString())}`)
-      }
-      if (request.sorting?.order) {
-        queryParams.push(`sorting.order=${encodeURIComponent(request.sorting.order.toString())}`)
-      }
       if (request.query) {
         queryParams.push(`query=${encodeURIComponent(request.query.toString())}`)
       }
-      if (request.or) {
-        queryParams.push(`or=${encodeURIComponent(request.or.toString())}`)
+      if (request.filter) {
+        queryParams.push(`filter=${encodeURIComponent(request.filter.toString())}`)
       }
       if (request.filterExpr?.type) {
         queryParams.push(`filterExpr.type=${encodeURIComponent(request.filterExpr.type.toString())}`)
@@ -2481,8 +1702,14 @@ export function createDictTypeServiceClient(
       if (request.filterExpr?.conditions?.jsonPath) {
         queryParams.push(`filterExpr.conditions.jsonPath=${encodeURIComponent(request.filterExpr.conditions.jsonPath.toString())}`)
       }
-      if (request.filter) {
-        queryParams.push(`filter=${encodeURIComponent(request.filter.toString())}`)
+      if (request.orderBy) {
+        queryParams.push(`orderBy=${encodeURIComponent(request.orderBy.toString())}`)
+      }
+      if (request.sorting?.field) {
+        queryParams.push(`sorting.field=${encodeURIComponent(request.sorting.field.toString())}`)
+      }
+      if (request.sorting?.direction) {
+        queryParams.push(`sorting.direction=${encodeURIComponent(request.sorting.direction.toString())}`)
       }
       if (request.fieldMask) {
         queryParams.push(`fieldMask=${encodeURIComponent(request.fieldMask.toString())}`)
@@ -2684,22 +1911,11 @@ export function createFileServiceClient(
       if (request.noPaging) {
         queryParams.push(`noPaging=${encodeURIComponent(request.noPaging.toString())}`)
       }
-      if (request.orderBy) {
-        request.orderBy.forEach((x) => {
-          queryParams.push(`orderBy=${encodeURIComponent(x.toString())}`)
-        })
-      }
-      if (request.sorting?.field) {
-        queryParams.push(`sorting.field=${encodeURIComponent(request.sorting.field.toString())}`)
-      }
-      if (request.sorting?.order) {
-        queryParams.push(`sorting.order=${encodeURIComponent(request.sorting.order.toString())}`)
-      }
       if (request.query) {
         queryParams.push(`query=${encodeURIComponent(request.query.toString())}`)
       }
-      if (request.or) {
-        queryParams.push(`or=${encodeURIComponent(request.or.toString())}`)
+      if (request.filter) {
+        queryParams.push(`filter=${encodeURIComponent(request.filter.toString())}`)
       }
       if (request.filterExpr?.type) {
         queryParams.push(`filterExpr.type=${encodeURIComponent(request.filterExpr.type.toString())}`)
@@ -2727,8 +1943,14 @@ export function createFileServiceClient(
       if (request.filterExpr?.conditions?.jsonPath) {
         queryParams.push(`filterExpr.conditions.jsonPath=${encodeURIComponent(request.filterExpr.conditions.jsonPath.toString())}`)
       }
-      if (request.filter) {
-        queryParams.push(`filter=${encodeURIComponent(request.filter.toString())}`)
+      if (request.orderBy) {
+        queryParams.push(`orderBy=${encodeURIComponent(request.orderBy.toString())}`)
+      }
+      if (request.sorting?.field) {
+        queryParams.push(`sorting.field=${encodeURIComponent(request.sorting.field.toString())}`)
+      }
+      if (request.sorting?.direction) {
+        queryParams.push(`sorting.direction=${encodeURIComponent(request.sorting.direction.toString())}`)
       }
       if (request.fieldMask) {
         queryParams.push(`fieldMask=${encodeURIComponent(request.fieldMask.toString())}`)
@@ -3152,22 +2374,11 @@ export function createInternalMessageServiceClient(
       if (request.noPaging) {
         queryParams.push(`noPaging=${encodeURIComponent(request.noPaging.toString())}`)
       }
-      if (request.orderBy) {
-        request.orderBy.forEach((x) => {
-          queryParams.push(`orderBy=${encodeURIComponent(x.toString())}`)
-        })
-      }
-      if (request.sorting?.field) {
-        queryParams.push(`sorting.field=${encodeURIComponent(request.sorting.field.toString())}`)
-      }
-      if (request.sorting?.order) {
-        queryParams.push(`sorting.order=${encodeURIComponent(request.sorting.order.toString())}`)
-      }
       if (request.query) {
         queryParams.push(`query=${encodeURIComponent(request.query.toString())}`)
       }
-      if (request.or) {
-        queryParams.push(`or=${encodeURIComponent(request.or.toString())}`)
+      if (request.filter) {
+        queryParams.push(`filter=${encodeURIComponent(request.filter.toString())}`)
       }
       if (request.filterExpr?.type) {
         queryParams.push(`filterExpr.type=${encodeURIComponent(request.filterExpr.type.toString())}`)
@@ -3195,8 +2406,14 @@ export function createInternalMessageServiceClient(
       if (request.filterExpr?.conditions?.jsonPath) {
         queryParams.push(`filterExpr.conditions.jsonPath=${encodeURIComponent(request.filterExpr.conditions.jsonPath.toString())}`)
       }
-      if (request.filter) {
-        queryParams.push(`filter=${encodeURIComponent(request.filter.toString())}`)
+      if (request.orderBy) {
+        queryParams.push(`orderBy=${encodeURIComponent(request.orderBy.toString())}`)
+      }
+      if (request.sorting?.field) {
+        queryParams.push(`sorting.field=${encodeURIComponent(request.sorting.field.toString())}`)
+      }
+      if (request.sorting?.direction) {
+        queryParams.push(`sorting.direction=${encodeURIComponent(request.sorting.direction.toString())}`)
       }
       if (request.fieldMask) {
         queryParams.push(`fieldMask=${encodeURIComponent(request.fieldMask.toString())}`)
@@ -3434,22 +2651,11 @@ export function createInternalMessageCategoryServiceClient(
       if (request.noPaging) {
         queryParams.push(`noPaging=${encodeURIComponent(request.noPaging.toString())}`)
       }
-      if (request.orderBy) {
-        request.orderBy.forEach((x) => {
-          queryParams.push(`orderBy=${encodeURIComponent(x.toString())}`)
-        })
-      }
-      if (request.sorting?.field) {
-        queryParams.push(`sorting.field=${encodeURIComponent(request.sorting.field.toString())}`)
-      }
-      if (request.sorting?.order) {
-        queryParams.push(`sorting.order=${encodeURIComponent(request.sorting.order.toString())}`)
-      }
       if (request.query) {
         queryParams.push(`query=${encodeURIComponent(request.query.toString())}`)
       }
-      if (request.or) {
-        queryParams.push(`or=${encodeURIComponent(request.or.toString())}`)
+      if (request.filter) {
+        queryParams.push(`filter=${encodeURIComponent(request.filter.toString())}`)
       }
       if (request.filterExpr?.type) {
         queryParams.push(`filterExpr.type=${encodeURIComponent(request.filterExpr.type.toString())}`)
@@ -3477,8 +2683,14 @@ export function createInternalMessageCategoryServiceClient(
       if (request.filterExpr?.conditions?.jsonPath) {
         queryParams.push(`filterExpr.conditions.jsonPath=${encodeURIComponent(request.filterExpr.conditions.jsonPath.toString())}`)
       }
-      if (request.filter) {
-        queryParams.push(`filter=${encodeURIComponent(request.filter.toString())}`)
+      if (request.orderBy) {
+        queryParams.push(`orderBy=${encodeURIComponent(request.orderBy.toString())}`)
+      }
+      if (request.sorting?.field) {
+        queryParams.push(`sorting.field=${encodeURIComponent(request.sorting.field.toString())}`)
+      }
+      if (request.sorting?.direction) {
+        queryParams.push(`sorting.direction=${encodeURIComponent(request.sorting.direction.toString())}`)
       }
       if (request.fieldMask) {
         queryParams.push(`fieldMask=${encodeURIComponent(request.fieldMask.toString())}`)
@@ -3662,22 +2874,11 @@ export function createInternalMessageRecipientServiceClient(
       if (request.noPaging) {
         queryParams.push(`noPaging=${encodeURIComponent(request.noPaging.toString())}`)
       }
-      if (request.orderBy) {
-        request.orderBy.forEach((x) => {
-          queryParams.push(`orderBy=${encodeURIComponent(x.toString())}`)
-        })
-      }
-      if (request.sorting?.field) {
-        queryParams.push(`sorting.field=${encodeURIComponent(request.sorting.field.toString())}`)
-      }
-      if (request.sorting?.order) {
-        queryParams.push(`sorting.order=${encodeURIComponent(request.sorting.order.toString())}`)
-      }
       if (request.query) {
         queryParams.push(`query=${encodeURIComponent(request.query.toString())}`)
       }
-      if (request.or) {
-        queryParams.push(`or=${encodeURIComponent(request.or.toString())}`)
+      if (request.filter) {
+        queryParams.push(`filter=${encodeURIComponent(request.filter.toString())}`)
       }
       if (request.filterExpr?.type) {
         queryParams.push(`filterExpr.type=${encodeURIComponent(request.filterExpr.type.toString())}`)
@@ -3705,8 +2906,14 @@ export function createInternalMessageRecipientServiceClient(
       if (request.filterExpr?.conditions?.jsonPath) {
         queryParams.push(`filterExpr.conditions.jsonPath=${encodeURIComponent(request.filterExpr.conditions.jsonPath.toString())}`)
       }
-      if (request.filter) {
-        queryParams.push(`filter=${encodeURIComponent(request.filter.toString())}`)
+      if (request.orderBy) {
+        queryParams.push(`orderBy=${encodeURIComponent(request.orderBy.toString())}`)
+      }
+      if (request.sorting?.field) {
+        queryParams.push(`sorting.field=${encodeURIComponent(request.sorting.field.toString())}`)
+      }
+      if (request.sorting?.direction) {
+        queryParams.push(`sorting.direction=${encodeURIComponent(request.sorting.direction.toString())}`)
       }
       if (request.fieldMask) {
         queryParams.push(`fieldMask=${encodeURIComponent(request.fieldMask.toString())}`)
@@ -3802,3464 +3009,6 @@ export type internal_messageservicev1_MarkNotificationAsReadRequest = {
   recipientIds: number[] | undefined;
 };
 
-// IPAM Device Gateway Service - HTTP gateway for device management
-export interface IpamDeviceGatewayService {
-  // Create a new device
-  CreateDevice(request: ipamservicev1_CreateDeviceRequest): Promise<ipamservicev1_CreateDeviceResponse>;
-  // Get addresses assigned to a device (must be before GetDevice to avoid route conflict)
-  GetDeviceAddresses(request: ipamservicev1_GetDeviceAddressesRequest): Promise<ipamservicev1_GetDeviceAddressesResponse>;
-  // Get interfaces of a device
-  GetDeviceInterfaces(request: ipamservicev1_GetDeviceInterfacesRequest): Promise<ipamservicev1_GetDeviceInterfacesResponse>;
-  // Create a new interface on a device
-  CreateDeviceInterface(request: ipamservicev1_CreateDeviceInterfaceRequest): Promise<ipamservicev1_CreateDeviceInterfaceResponse>;
-  // Delete an interface
-  DeleteDeviceInterface(request: ipamservicev1_DeleteDeviceInterfaceRequest): Promise<wellKnownEmpty>;
-  // Get a device by ID
-  GetDevice(request: ipamservicev1_GetDeviceRequest): Promise<ipamservicev1_GetDeviceResponse>;
-  // List devices
-  ListDevices(request: ipamservicev1_ListDevicesRequest): Promise<ipamservicev1_ListDevicesResponse>;
-  // Update device metadata
-  UpdateDevice(request: ipamservicev1_UpdateDeviceRequest): Promise<ipamservicev1_UpdateDeviceResponse>;
-  // Delete a device
-  DeleteDevice(request: ipamservicev1_DeleteDeviceRequest): Promise<wellKnownEmpty>;
-}
-
-export function createIpamDeviceGatewayServiceClient(
-  handler: RequestHandler
-): IpamDeviceGatewayService {
-  return {
-    CreateDevice(request) { // eslint-disable-line @typescript-eslint/no-unused-vars
-      const path = `admin/v1/ipam/devices`; // eslint-disable-line quotes
-      const body = JSON.stringify(request);
-      const queryParams: string[] = [];
-      let uri = path;
-      if (queryParams.length > 0) {
-        uri += `?${queryParams.join("&")}`
-      }
-      return handler({
-        path: uri,
-        method: "POST",
-        body,
-      }, {
-        service: "IpamDeviceGatewayService",
-        method: "CreateDevice",
-      }) as Promise<ipamservicev1_CreateDeviceResponse>;
-    },
-    GetDeviceAddresses(request) { // eslint-disable-line @typescript-eslint/no-unused-vars
-      if (!request.id) {
-        throw new Error("missing required field request.id");
-      }
-      const path = `admin/v1/ipam/devices/${request.id}/addresses`; // eslint-disable-line quotes
-      const body = null;
-      const queryParams: string[] = [];
-      let uri = path;
-      if (queryParams.length > 0) {
-        uri += `?${queryParams.join("&")}`
-      }
-      return handler({
-        path: uri,
-        method: "GET",
-        body,
-      }, {
-        service: "IpamDeviceGatewayService",
-        method: "GetDeviceAddresses",
-      }) as Promise<ipamservicev1_GetDeviceAddressesResponse>;
-    },
-    GetDeviceInterfaces(request) { // eslint-disable-line @typescript-eslint/no-unused-vars
-      if (!request.deviceId) {
-        throw new Error("missing required field request.device_id");
-      }
-      const path = `admin/v1/ipam/devices/${request.deviceId}/interfaces`; // eslint-disable-line quotes
-      const body = null;
-      const queryParams: string[] = [];
-      let uri = path;
-      if (queryParams.length > 0) {
-        uri += `?${queryParams.join("&")}`
-      }
-      return handler({
-        path: uri,
-        method: "GET",
-        body,
-      }, {
-        service: "IpamDeviceGatewayService",
-        method: "GetDeviceInterfaces",
-      }) as Promise<ipamservicev1_GetDeviceInterfacesResponse>;
-    },
-    CreateDeviceInterface(request) { // eslint-disable-line @typescript-eslint/no-unused-vars
-      if (!request.deviceId) {
-        throw new Error("missing required field request.device_id");
-      }
-      const path = `admin/v1/ipam/devices/${request.deviceId}/interfaces`; // eslint-disable-line quotes
-      const body = JSON.stringify(request);
-      const queryParams: string[] = [];
-      let uri = path;
-      if (queryParams.length > 0) {
-        uri += `?${queryParams.join("&")}`
-      }
-      return handler({
-        path: uri,
-        method: "POST",
-        body,
-      }, {
-        service: "IpamDeviceGatewayService",
-        method: "CreateDeviceInterface",
-      }) as Promise<ipamservicev1_CreateDeviceInterfaceResponse>;
-    },
-    DeleteDeviceInterface(request) { // eslint-disable-line @typescript-eslint/no-unused-vars
-      if (!request.id) {
-        throw new Error("missing required field request.id");
-      }
-      const path = `admin/v1/ipam/interfaces/${request.id}`; // eslint-disable-line quotes
-      const body = null;
-      const queryParams: string[] = [];
-      if (request.deviceId) {
-        queryParams.push(`deviceId=${encodeURIComponent(request.deviceId.toString())}`)
-      }
-      let uri = path;
-      if (queryParams.length > 0) {
-        uri += `?${queryParams.join("&")}`
-      }
-      return handler({
-        path: uri,
-        method: "DELETE",
-        body,
-      }, {
-        service: "IpamDeviceGatewayService",
-        method: "DeleteDeviceInterface",
-      }) as Promise<wellKnownEmpty>;
-    },
-    GetDevice(request) { // eslint-disable-line @typescript-eslint/no-unused-vars
-      if (!request.id) {
-        throw new Error("missing required field request.id");
-      }
-      const path = `admin/v1/ipam/devices/${request.id}`; // eslint-disable-line quotes
-      const body = null;
-      const queryParams: string[] = [];
-      let uri = path;
-      if (queryParams.length > 0) {
-        uri += `?${queryParams.join("&")}`
-      }
-      return handler({
-        path: uri,
-        method: "GET",
-        body,
-      }, {
-        service: "IpamDeviceGatewayService",
-        method: "GetDevice",
-      }) as Promise<ipamservicev1_GetDeviceResponse>;
-    },
-    ListDevices(request) { // eslint-disable-line @typescript-eslint/no-unused-vars
-      const path = `admin/v1/ipam/devices`; // eslint-disable-line quotes
-      const body = null;
-      const queryParams: string[] = [];
-      if (request.tenantId) {
-        queryParams.push(`tenantId=${encodeURIComponent(request.tenantId.toString())}`)
-      }
-      if (request.page) {
-        queryParams.push(`page=${encodeURIComponent(request.page.toString())}`)
-      }
-      if (request.pageSize) {
-        queryParams.push(`pageSize=${encodeURIComponent(request.pageSize.toString())}`)
-      }
-      if (request.noPaging) {
-        queryParams.push(`noPaging=${encodeURIComponent(request.noPaging.toString())}`)
-      }
-      if (request.query) {
-        queryParams.push(`query=${encodeURIComponent(request.query.toString())}`)
-      }
-      if (request.orderBy) {
-        request.orderBy.forEach((x) => {
-          queryParams.push(`orderBy=${encodeURIComponent(x.toString())}`)
-        })
-      }
-      if (request.fieldMask) {
-        queryParams.push(`fieldMask=${encodeURIComponent(request.fieldMask.toString())}`)
-      }
-      if (request.deviceType) {
-        queryParams.push(`deviceType=${encodeURIComponent(request.deviceType.toString())}`)
-      }
-      if (request.status) {
-        queryParams.push(`status=${encodeURIComponent(request.status.toString())}`)
-      }
-      if (request.locationId) {
-        queryParams.push(`locationId=${encodeURIComponent(request.locationId.toString())}`)
-      }
-      if (request.manufacturer) {
-        queryParams.push(`manufacturer=${encodeURIComponent(request.manufacturer.toString())}`)
-      }
-      if (request.rackId) {
-        queryParams.push(`rackId=${encodeURIComponent(request.rackId.toString())}`)
-      }
-      let uri = path;
-      if (queryParams.length > 0) {
-        uri += `?${queryParams.join("&")}`
-      }
-      return handler({
-        path: uri,
-        method: "GET",
-        body,
-      }, {
-        service: "IpamDeviceGatewayService",
-        method: "ListDevices",
-      }) as Promise<ipamservicev1_ListDevicesResponse>;
-    },
-    UpdateDevice(request) { // eslint-disable-line @typescript-eslint/no-unused-vars
-      if (!request.id) {
-        throw new Error("missing required field request.id");
-      }
-      const path = `admin/v1/ipam/devices/${request.id}`; // eslint-disable-line quotes
-      const body = JSON.stringify(request);
-      const queryParams: string[] = [];
-      let uri = path;
-      if (queryParams.length > 0) {
-        uri += `?${queryParams.join("&")}`
-      }
-      return handler({
-        path: uri,
-        method: "PUT",
-        body,
-      }, {
-        service: "IpamDeviceGatewayService",
-        method: "UpdateDevice",
-      }) as Promise<ipamservicev1_UpdateDeviceResponse>;
-    },
-    DeleteDevice(request) { // eslint-disable-line @typescript-eslint/no-unused-vars
-      if (!request.id) {
-        throw new Error("missing required field request.id");
-      }
-      const path = `admin/v1/ipam/devices/${request.id}`; // eslint-disable-line quotes
-      const body = null;
-      const queryParams: string[] = [];
-      if (request.force) {
-        queryParams.push(`force=${encodeURIComponent(request.force.toString())}`)
-      }
-      let uri = path;
-      if (queryParams.length > 0) {
-        uri += `?${queryParams.join("&")}`
-      }
-      return handler({
-        path: uri,
-        method: "DELETE",
-        body,
-      }, {
-        service: "IpamDeviceGatewayService",
-        method: "DeleteDevice",
-      }) as Promise<wellKnownEmpty>;
-    },
-  };
-}
-// CreateDeviceRequest creates a new device
-export type ipamservicev1_CreateDeviceRequest = {
-  //
-  // Behaviors: REQUIRED
-  tenantId?: number;
-  //
-  // Behaviors: REQUIRED
-  name?: string;
-  deviceType?: ipamservicev1_DeviceType;
-  description?: string;
-  manufacturer?: string;
-  model?: string;
-  serialNumber?: string;
-  assetTag?: string;
-  locationId?: string;
-  rackId?: string;
-  rackPosition?: number;
-  status?: ipamservicev1_DeviceStatus;
-  primaryIp?: string;
-  managementIp?: string;
-  osType?: string;
-  osVersion?: string;
-  contact?: string;
-  tags?: string;
-  metadata?: string;
-  notes?: string;
-  deviceHeightU?: number;
-};
-
-export type ipamservicev1_DeviceType =
-  | "DEVICE_TYPE_UNSPECIFIED"
-  | "DEVICE_TYPE_SERVER"
-  | "DEVICE_TYPE_VM"
-  | "DEVICE_TYPE_ROUTER"
-  | "DEVICE_TYPE_SWITCH"
-  | "DEVICE_TYPE_FIREWALL"
-  | "DEVICE_TYPE_LOAD_BALANCER"
-  | "DEVICE_TYPE_ACCESS_POINT"
-  | "DEVICE_TYPE_STORAGE"
-  | "DEVICE_TYPE_PRINTER"
-  | "DEVICE_TYPE_PHONE"
-  | "DEVICE_TYPE_WORKSTATION"
-  | "DEVICE_TYPE_CONTAINER"
-  | "DEVICE_TYPE_OTHER";
-export type ipamservicev1_DeviceStatus =
-  | "DEVICE_STATUS_UNSPECIFIED"
-  | "DEVICE_STATUS_ACTIVE"
-  | "DEVICE_STATUS_PLANNED"
-  | "DEVICE_STATUS_STAGED"
-  | "DEVICE_STATUS_DECOMMISSIONED"
-  | "DEVICE_STATUS_OFFLINE"
-  | "DEVICE_STATUS_FAILED";
-export type ipamservicev1_CreateDeviceResponse = {
-  device: ipamservicev1_Device | undefined;
-};
-
-// Device represents a network device
-export type ipamservicev1_Device = {
-  // Unique identifier
-  id?: string;
-  // Tenant ID for multi-tenancy
-  tenantId?: number;
-  // Device name/hostname
-  name?: string;
-  // Device type
-  deviceType?: ipamservicev1_DeviceType;
-  // Description
-  description?: string;
-  // Manufacturer/vendor
-  manufacturer?: string;
-  // Model number
-  model?: string;
-  // Serial number
-  serialNumber?: string;
-  // Asset tag
-  assetTag?: string;
-  // Location/site ID
-  locationId?: string;
-  // Rack ID
-  rackId?: string;
-  // Rack position (U)
-  rackPosition?: number;
-  // Device height in rack units (U)
-  deviceHeightU?: number;
-  // Device status
-  status?: ipamservicev1_DeviceStatus;
-  // Primary IP address
-  primaryIp?: string;
-  // Primary IPv6 address
-  primaryIpv6?: string;
-  // Management IP (if different)
-  managementIp?: string;
-  // Operating system
-  osType?: string;
-  // OS version
-  osVersion?: string;
-  // Firmware version
-  firmwareVersion?: string;
-  // Number of interfaces
-  interfaceCount?: number;
-  // Number of assigned IP addresses
-  addressCount?: number;
-  // Contact person
-  contact?: string;
-  // Custom tags (JSON)
-  tags?: string;
-  // Custom metadata (JSON)
-  metadata?: string;
-  // Notes
-  notes?: string;
-  // Last discovered/seen
-  lastSeen?: wellKnownTimestamp;
-  // Creation timestamp
-  createdAt?: wellKnownTimestamp;
-  // Last update timestamp
-  updatedAt?: wellKnownTimestamp;
-  // Creator user ID
-  createdBy?: number;
-  // Last updater user ID
-  updatedBy?: number;
-};
-
-// GetDeviceAddressesRequest gets IP addresses assigned to a device
-export type ipamservicev1_GetDeviceAddressesRequest = {
-  //
-  // Behaviors: REQUIRED
-  id: string | undefined;
-};
-
-export type ipamservicev1_GetDeviceAddressesResponse = {
-  addressIds: string[] | undefined;
-};
-
-// GetDeviceInterfacesRequest gets interfaces of a device
-export type ipamservicev1_GetDeviceInterfacesRequest = {
-  //
-  // Behaviors: REQUIRED
-  deviceId: string | undefined;
-};
-
-export type ipamservicev1_GetDeviceInterfacesResponse = {
-  interfaces: ipamservicev1_DeviceInterface[] | undefined;
-};
-
-// DeviceInterface represents a network interface on a device
-export type ipamservicev1_DeviceInterface = {
-  id?: string;
-  deviceId?: string;
-  name?: string;
-  macAddress?: string;
-  interfaceType?: string;
-  enabled?: boolean;
-  speedMbps?: number;
-  description?: string;
-  createdAt?: wellKnownTimestamp;
-  updatedAt?: wellKnownTimestamp;
-};
-
-// CreateDeviceInterfaceRequest creates a new interface on a device
-export type ipamservicev1_CreateDeviceInterfaceRequest = {
-  //
-  // Behaviors: REQUIRED
-  deviceId: string | undefined;
-  //
-  // Behaviors: REQUIRED
-  name?: string;
-  macAddress?: string;
-  interfaceType?: string;
-  enabled?: boolean;
-  speedMbps?: number;
-  description?: string;
-};
-
-export type ipamservicev1_CreateDeviceInterfaceResponse = {
-  interface: ipamservicev1_DeviceInterface | undefined;
-};
-
-// DeleteDeviceInterfaceRequest deletes an interface
-export type ipamservicev1_DeleteDeviceInterfaceRequest = {
-  //
-  // Behaviors: REQUIRED
-  deviceId: string | undefined;
-  //
-  // Behaviors: REQUIRED
-  id: string | undefined;
-};
-
-// GetDeviceRequest retrieves a device by ID
-export type ipamservicev1_GetDeviceRequest = {
-  //
-  // Behaviors: REQUIRED
-  id: string | undefined;
-};
-
-export type ipamservicev1_GetDeviceResponse = {
-  device: ipamservicev1_Device | undefined;
-};
-
-// ListDevicesRequest lists devices with filtering
-export type ipamservicev1_ListDevicesRequest = {
-  tenantId?: number;
-  page?: number;
-  pageSize?: number;
-  noPaging?: boolean;
-  query?: string;
-  orderBy: string[] | undefined;
-  fieldMask?: string;
-  // Filter by device type
-  deviceType?: ipamservicev1_DeviceType;
-  // Filter by status
-  status?: ipamservicev1_DeviceStatus;
-  // Filter by location
-  locationId?: string;
-  // Filter by manufacturer
-  manufacturer?: string;
-  // Filter by rack
-  rackId?: string;
-};
-
-export type ipamservicev1_ListDevicesResponse = {
-  items: ipamservicev1_Device[] | undefined;
-  total?: number;
-};
-
-// UpdateDeviceRequest updates a device
-export type ipamservicev1_UpdateDeviceRequest = {
-  //
-  // Behaviors: REQUIRED
-  id: string | undefined;
-  data?: ipamservicev1_Device;
-  updateMask: wellKnownFieldMask | undefined;
-};
-
-export type ipamservicev1_UpdateDeviceResponse = {
-  device: ipamservicev1_Device | undefined;
-};
-
-// DeleteDeviceRequest deletes a device
-export type ipamservicev1_DeleteDeviceRequest = {
-  //
-  // Behaviors: REQUIRED
-  id: string | undefined;
-  // Force delete even if device has IP addresses
-  force?: boolean;
-};
-
-// IPAM Host Group Gateway Service - HTTP gateway for host group management
-export interface IpamHostGroupGatewayService {
-  // Create a new host group
-  CreateHostGroup(request: ipamservicev1_CreateHostGroupRequest): Promise<ipamservicev1_CreateHostGroupResponse>;
-  // Get a host group by ID
-  GetHostGroup(request: ipamservicev1_GetHostGroupRequest): Promise<ipamservicev1_GetHostGroupResponse>;
-  // List host groups
-  ListHostGroups(request: ipamservicev1_ListHostGroupsRequest): Promise<ipamservicev1_ListHostGroupsResponse>;
-  // Update a host group
-  UpdateHostGroup(request: ipamservicev1_UpdateHostGroupRequest): Promise<ipamservicev1_UpdateHostGroupResponse>;
-  // Delete a host group
-  DeleteHostGroup(request: ipamservicev1_DeleteHostGroupRequest): Promise<wellKnownEmpty>;
-  // Add a device to a host group
-  AddHostGroupMember(request: ipamservicev1_AddHostGroupMemberRequest): Promise<ipamservicev1_AddHostGroupMemberResponse>;
-  // Remove a device from a host group
-  RemoveHostGroupMember(request: ipamservicev1_RemoveHostGroupMemberRequest): Promise<wellKnownEmpty>;
-  // List members of a host group
-  ListHostGroupMembers(request: ipamservicev1_ListHostGroupMembersRequest): Promise<ipamservicev1_ListHostGroupMembersResponse>;
-  // Update a member in a host group
-  UpdateHostGroupMember(request: ipamservicev1_UpdateHostGroupMemberRequest): Promise<ipamservicev1_UpdateHostGroupMemberResponse>;
-  // List all groups a device belongs to
-  ListDeviceHostGroups(request: ipamservicev1_ListDeviceHostGroupsRequest): Promise<ipamservicev1_ListDeviceHostGroupsResponse>;
-}
-
-export function createIpamHostGroupGatewayServiceClient(
-  handler: RequestHandler
-): IpamHostGroupGatewayService {
-  return {
-    CreateHostGroup(request) { // eslint-disable-line @typescript-eslint/no-unused-vars
-      const path = `admin/v1/ipam/host-groups`; // eslint-disable-line quotes
-      const body = JSON.stringify(request);
-      const queryParams: string[] = [];
-      let uri = path;
-      if (queryParams.length > 0) {
-        uri += `?${queryParams.join("&")}`
-      }
-      return handler({
-        path: uri,
-        method: "POST",
-        body,
-      }, {
-        service: "IpamHostGroupGatewayService",
-        method: "CreateHostGroup",
-      }) as Promise<ipamservicev1_CreateHostGroupResponse>;
-    },
-    GetHostGroup(request) { // eslint-disable-line @typescript-eslint/no-unused-vars
-      if (!request.id) {
-        throw new Error("missing required field request.id");
-      }
-      const path = `admin/v1/ipam/host-groups/${request.id}`; // eslint-disable-line quotes
-      const body = null;
-      const queryParams: string[] = [];
-      if (request.includeMembers) {
-        queryParams.push(`includeMembers=${encodeURIComponent(request.includeMembers.toString())}`)
-      }
-      let uri = path;
-      if (queryParams.length > 0) {
-        uri += `?${queryParams.join("&")}`
-      }
-      return handler({
-        path: uri,
-        method: "GET",
-        body,
-      }, {
-        service: "IpamHostGroupGatewayService",
-        method: "GetHostGroup",
-      }) as Promise<ipamservicev1_GetHostGroupResponse>;
-    },
-    ListHostGroups(request) { // eslint-disable-line @typescript-eslint/no-unused-vars
-      const path = `admin/v1/ipam/host-groups`; // eslint-disable-line quotes
-      const body = null;
-      const queryParams: string[] = [];
-      if (request.tenantId) {
-        queryParams.push(`tenantId=${encodeURIComponent(request.tenantId.toString())}`)
-      }
-      if (request.page) {
-        queryParams.push(`page=${encodeURIComponent(request.page.toString())}`)
-      }
-      if (request.pageSize) {
-        queryParams.push(`pageSize=${encodeURIComponent(request.pageSize.toString())}`)
-      }
-      if (request.noPaging) {
-        queryParams.push(`noPaging=${encodeURIComponent(request.noPaging.toString())}`)
-      }
-      if (request.query) {
-        queryParams.push(`query=${encodeURIComponent(request.query.toString())}`)
-      }
-      if (request.orderBy) {
-        request.orderBy.forEach((x) => {
-          queryParams.push(`orderBy=${encodeURIComponent(x.toString())}`)
-        })
-      }
-      if (request.fieldMask) {
-        queryParams.push(`fieldMask=${encodeURIComponent(request.fieldMask.toString())}`)
-      }
-      if (request.status) {
-        queryParams.push(`status=${encodeURIComponent(request.status.toString())}`)
-      }
-      let uri = path;
-      if (queryParams.length > 0) {
-        uri += `?${queryParams.join("&")}`
-      }
-      return handler({
-        path: uri,
-        method: "GET",
-        body,
-      }, {
-        service: "IpamHostGroupGatewayService",
-        method: "ListHostGroups",
-      }) as Promise<ipamservicev1_ListHostGroupsResponse>;
-    },
-    UpdateHostGroup(request) { // eslint-disable-line @typescript-eslint/no-unused-vars
-      if (!request.id) {
-        throw new Error("missing required field request.id");
-      }
-      const path = `admin/v1/ipam/host-groups/${request.id}`; // eslint-disable-line quotes
-      const body = JSON.stringify(request);
-      const queryParams: string[] = [];
-      let uri = path;
-      if (queryParams.length > 0) {
-        uri += `?${queryParams.join("&")}`
-      }
-      return handler({
-        path: uri,
-        method: "PUT",
-        body,
-      }, {
-        service: "IpamHostGroupGatewayService",
-        method: "UpdateHostGroup",
-      }) as Promise<ipamservicev1_UpdateHostGroupResponse>;
-    },
-    DeleteHostGroup(request) { // eslint-disable-line @typescript-eslint/no-unused-vars
-      if (!request.id) {
-        throw new Error("missing required field request.id");
-      }
-      const path = `admin/v1/ipam/host-groups/${request.id}`; // eslint-disable-line quotes
-      const body = null;
-      const queryParams: string[] = [];
-      let uri = path;
-      if (queryParams.length > 0) {
-        uri += `?${queryParams.join("&")}`
-      }
-      return handler({
-        path: uri,
-        method: "DELETE",
-        body,
-      }, {
-        service: "IpamHostGroupGatewayService",
-        method: "DeleteHostGroup",
-      }) as Promise<wellKnownEmpty>;
-    },
-    AddHostGroupMember(request) { // eslint-disable-line @typescript-eslint/no-unused-vars
-      if (!request.hostGroupId) {
-        throw new Error("missing required field request.host_group_id");
-      }
-      const path = `admin/v1/ipam/host-groups/${request.hostGroupId}/members`; // eslint-disable-line quotes
-      const body = JSON.stringify(request);
-      const queryParams: string[] = [];
-      let uri = path;
-      if (queryParams.length > 0) {
-        uri += `?${queryParams.join("&")}`
-      }
-      return handler({
-        path: uri,
-        method: "POST",
-        body,
-      }, {
-        service: "IpamHostGroupGatewayService",
-        method: "AddHostGroupMember",
-      }) as Promise<ipamservicev1_AddHostGroupMemberResponse>;
-    },
-    RemoveHostGroupMember(request) { // eslint-disable-line @typescript-eslint/no-unused-vars
-      if (!request.hostGroupId) {
-        throw new Error("missing required field request.host_group_id");
-      }
-      if (!request.memberId) {
-        throw new Error("missing required field request.member_id");
-      }
-      const path = `admin/v1/ipam/host-groups/${request.hostGroupId}/members/${request.memberId}`; // eslint-disable-line quotes
-      const body = null;
-      const queryParams: string[] = [];
-      let uri = path;
-      if (queryParams.length > 0) {
-        uri += `?${queryParams.join("&")}`
-      }
-      return handler({
-        path: uri,
-        method: "DELETE",
-        body,
-      }, {
-        service: "IpamHostGroupGatewayService",
-        method: "RemoveHostGroupMember",
-      }) as Promise<wellKnownEmpty>;
-    },
-    ListHostGroupMembers(request) { // eslint-disable-line @typescript-eslint/no-unused-vars
-      if (!request.hostGroupId) {
-        throw new Error("missing required field request.host_group_id");
-      }
-      const path = `admin/v1/ipam/host-groups/${request.hostGroupId}/members`; // eslint-disable-line quotes
-      const body = null;
-      const queryParams: string[] = [];
-      if (request.page) {
-        queryParams.push(`page=${encodeURIComponent(request.page.toString())}`)
-      }
-      if (request.pageSize) {
-        queryParams.push(`pageSize=${encodeURIComponent(request.pageSize.toString())}`)
-      }
-      if (request.noPaging) {
-        queryParams.push(`noPaging=${encodeURIComponent(request.noPaging.toString())}`)
-      }
-      let uri = path;
-      if (queryParams.length > 0) {
-        uri += `?${queryParams.join("&")}`
-      }
-      return handler({
-        path: uri,
-        method: "GET",
-        body,
-      }, {
-        service: "IpamHostGroupGatewayService",
-        method: "ListHostGroupMembers",
-      }) as Promise<ipamservicev1_ListHostGroupMembersResponse>;
-    },
-    UpdateHostGroupMember(request) { // eslint-disable-line @typescript-eslint/no-unused-vars
-      if (!request.hostGroupId) {
-        throw new Error("missing required field request.host_group_id");
-      }
-      if (!request.memberId) {
-        throw new Error("missing required field request.member_id");
-      }
-      const path = `admin/v1/ipam/host-groups/${request.hostGroupId}/members/${request.memberId}`; // eslint-disable-line quotes
-      const body = JSON.stringify(request);
-      const queryParams: string[] = [];
-      let uri = path;
-      if (queryParams.length > 0) {
-        uri += `?${queryParams.join("&")}`
-      }
-      return handler({
-        path: uri,
-        method: "PUT",
-        body,
-      }, {
-        service: "IpamHostGroupGatewayService",
-        method: "UpdateHostGroupMember",
-      }) as Promise<ipamservicev1_UpdateHostGroupMemberResponse>;
-    },
-    ListDeviceHostGroups(request) { // eslint-disable-line @typescript-eslint/no-unused-vars
-      if (!request.deviceId) {
-        throw new Error("missing required field request.device_id");
-      }
-      const path = `admin/v1/ipam/devices/${request.deviceId}/host-groups`; // eslint-disable-line quotes
-      const body = null;
-      const queryParams: string[] = [];
-      if (request.tenantId) {
-        queryParams.push(`tenantId=${encodeURIComponent(request.tenantId.toString())}`)
-      }
-      let uri = path;
-      if (queryParams.length > 0) {
-        uri += `?${queryParams.join("&")}`
-      }
-      return handler({
-        path: uri,
-        method: "GET",
-        body,
-      }, {
-        service: "IpamHostGroupGatewayService",
-        method: "ListDeviceHostGroups",
-      }) as Promise<ipamservicev1_ListDeviceHostGroupsResponse>;
-    },
-  };
-}
-// CreateHostGroupRequest creates a new host group
-export type ipamservicev1_CreateHostGroupRequest = {
-  //
-  // Behaviors: REQUIRED
-  tenantId?: number;
-  //
-  // Behaviors: REQUIRED
-  name?: string;
-  description?: string;
-  status?: ipamservicev1_HostGroupStatus;
-  tags?: string;
-  metadata?: string;
-  // Initial device IDs to add to the group
-  deviceIds: string[] | undefined;
-};
-
-// HostGroupStatus defines the status of a host group
-export type ipamservicev1_HostGroupStatus =
-  | "HOST_GROUP_STATUS_UNSPECIFIED"
-  | "HOST_GROUP_STATUS_ACTIVE"
-  | "HOST_GROUP_STATUS_INACTIVE";
-export type ipamservicev1_CreateHostGroupResponse = {
-  hostGroup: ipamservicev1_HostGroup | undefined;
-};
-
-// HostGroup represents a logical grouping of devices by function or purpose
-export type ipamservicev1_HostGroup = {
-  // Unique identifier
-  id?: string;
-  // Tenant ID for multi-tenancy
-  tenantId?: number;
-  // Human-readable name
-  name?: string;
-  // Optional description
-  description?: string;
-  // Group status
-  status?: ipamservicev1_HostGroupStatus;
-  // Number of members in this group (computed)
-  memberCount?: number;
-  // Custom tags (JSON)
-  tags?: string;
-  // Custom metadata (JSON)
-  metadata?: string;
-  // Creation timestamp
-  createdAt?: wellKnownTimestamp;
-  // Last update timestamp
-  updatedAt?: wellKnownTimestamp;
-  // Creator user ID
-  createdBy?: number;
-  // Last updater user ID
-  updatedBy?: number;
-};
-
-// GetHostGroupRequest retrieves a host group by ID
-export type ipamservicev1_GetHostGroupRequest = {
-  //
-  // Behaviors: REQUIRED
-  id: string | undefined;
-  // Include members in response
-  includeMembers?: boolean;
-};
-
-export type ipamservicev1_GetHostGroupResponse = {
-  hostGroup: ipamservicev1_HostGroup | undefined;
-  members: ipamservicev1_HostGroupMember[] | undefined;
-};
-
-// HostGroupMember represents a device member of a host group
-export type ipamservicev1_HostGroupMember = {
-  // Unique identifier
-  id?: string;
-  // Host Group ID
-  hostGroupId?: string;
-  // Device ID
-  deviceId?: string;
-  // Device name (populated from device)
-  deviceName?: string;
-  // Device type (populated from device)
-  deviceType?: number;
-  // Device status (populated from device)
-  deviceStatus?: number;
-  // Device primary IP (populated from device)
-  devicePrimaryIp?: string;
-  // Order/sequence in the group
-  sequence?: number;
-  // Creation timestamp
-  createdAt?: wellKnownTimestamp;
-  // Last update timestamp
-  updatedAt?: wellKnownTimestamp;
-};
-
-// ListHostGroupsRequest lists host groups with filtering
-export type ipamservicev1_ListHostGroupsRequest = {
-  tenantId?: number;
-  page?: number;
-  pageSize?: number;
-  noPaging?: boolean;
-  query?: string;
-  orderBy: string[] | undefined;
-  fieldMask?: string;
-  // Filter by status
-  status?: ipamservicev1_HostGroupStatus;
-};
-
-export type ipamservicev1_ListHostGroupsResponse = {
-  items: ipamservicev1_HostGroup[] | undefined;
-  total?: number;
-};
-
-// UpdateHostGroupRequest updates a host group
-export type ipamservicev1_UpdateHostGroupRequest = {
-  //
-  // Behaviors: REQUIRED
-  id: string | undefined;
-  data?: ipamservicev1_HostGroup;
-  updateMask: wellKnownFieldMask | undefined;
-};
-
-export type ipamservicev1_UpdateHostGroupResponse = {
-  hostGroup: ipamservicev1_HostGroup | undefined;
-};
-
-// DeleteHostGroupRequest deletes a host group
-export type ipamservicev1_DeleteHostGroupRequest = {
-  //
-  // Behaviors: REQUIRED
-  id: string | undefined;
-};
-
-// AddHostGroupMemberRequest adds a device to a host group
-export type ipamservicev1_AddHostGroupMemberRequest = {
-  //
-  // Behaviors: REQUIRED
-  hostGroupId: string | undefined;
-  //
-  // Behaviors: REQUIRED
-  deviceId: string | undefined;
-  sequence?: number;
-};
-
-export type ipamservicev1_AddHostGroupMemberResponse = {
-  member: ipamservicev1_HostGroupMember | undefined;
-};
-
-// RemoveHostGroupMemberRequest removes a device from a host group
-export type ipamservicev1_RemoveHostGroupMemberRequest = {
-  //
-  // Behaviors: REQUIRED
-  hostGroupId: string | undefined;
-  //
-  // Behaviors: REQUIRED
-  memberId: string | undefined;
-};
-
-// ListHostGroupMembersRequest lists members of a host group
-export type ipamservicev1_ListHostGroupMembersRequest = {
-  //
-  // Behaviors: REQUIRED
-  hostGroupId: string | undefined;
-  page?: number;
-  pageSize?: number;
-  noPaging?: boolean;
-};
-
-export type ipamservicev1_ListHostGroupMembersResponse = {
-  items: ipamservicev1_HostGroupMember[] | undefined;
-  total?: number;
-};
-
-// UpdateHostGroupMemberRequest updates a member's sequence in a host group
-export type ipamservicev1_UpdateHostGroupMemberRequest = {
-  //
-  // Behaviors: REQUIRED
-  hostGroupId: string | undefined;
-  //
-  // Behaviors: REQUIRED
-  memberId: string | undefined;
-  sequence?: number;
-};
-
-export type ipamservicev1_UpdateHostGroupMemberResponse = {
-  member: ipamservicev1_HostGroupMember | undefined;
-};
-
-// ListDeviceHostGroupsRequest lists all groups a device belongs to
-export type ipamservicev1_ListDeviceHostGroupsRequest = {
-  //
-  // Behaviors: REQUIRED
-  deviceId: string | undefined;
-  tenantId?: number;
-};
-
-export type ipamservicev1_ListDeviceHostGroupsResponse = {
-  groups: ipamservicev1_HostGroup[] | undefined;
-};
-
-// IPAM IP Address Gateway Service - HTTP gateway for IP address management
-export interface IpamIpAddressGatewayService {
-  // Create a new IP address
-  CreateIpAddress(request: ipamservicev1_CreateIpAddressRequest): Promise<ipamservicev1_CreateIpAddressResponse>;
-  // Allocate next available address in a subnet
-  AllocateNextAddress(request: ipamservicev1_AllocateNextAddressRequest): Promise<ipamservicev1_AllocateNextAddressResponse>;
-  // Bulk allocate multiple addresses
-  BulkAllocateAddresses(request: ipamservicev1_BulkAllocateAddressesRequest): Promise<ipamservicev1_BulkAllocateAddressesResponse>;
-  // Find address by IP
-  FindAddress(request: ipamservicev1_FindAddressRequest): Promise<ipamservicev1_FindAddressResponse>;
-  // Get an IP address by ID
-  GetIpAddress(request: ipamservicev1_GetIpAddressRequest): Promise<ipamservicev1_GetIpAddressResponse>;
-  // List IP addresses
-  ListIpAddresses(request: ipamservicev1_ListIpAddressesRequest): Promise<ipamservicev1_ListIpAddressesResponse>;
-  // Update IP address metadata
-  UpdateIpAddress(request: ipamservicev1_UpdateIpAddressRequest): Promise<ipamservicev1_UpdateIpAddressResponse>;
-  // Delete an IP address
-  DeleteIpAddress(request: ipamservicev1_DeleteIpAddressRequest): Promise<wellKnownEmpty>;
-  // Ping an address to check reachability
-  PingAddress(request: ipamservicev1_PingAddressRequest): Promise<ipamservicev1_PingAddressResponse>;
-}
-
-export function createIpamIpAddressGatewayServiceClient(
-  handler: RequestHandler
-): IpamIpAddressGatewayService {
-  return {
-    CreateIpAddress(request) { // eslint-disable-line @typescript-eslint/no-unused-vars
-      const path = `admin/v1/ipam/addresses`; // eslint-disable-line quotes
-      const body = JSON.stringify(request);
-      const queryParams: string[] = [];
-      let uri = path;
-      if (queryParams.length > 0) {
-        uri += `?${queryParams.join("&")}`
-      }
-      return handler({
-        path: uri,
-        method: "POST",
-        body,
-      }, {
-        service: "IpamIpAddressGatewayService",
-        method: "CreateIpAddress",
-      }) as Promise<ipamservicev1_CreateIpAddressResponse>;
-    },
-    AllocateNextAddress(request) { // eslint-disable-line @typescript-eslint/no-unused-vars
-      const path = `admin/v1/ipam/addresses:allocate-next`; // eslint-disable-line quotes
-      const body = JSON.stringify(request);
-      const queryParams: string[] = [];
-      let uri = path;
-      if (queryParams.length > 0) {
-        uri += `?${queryParams.join("&")}`
-      }
-      return handler({
-        path: uri,
-        method: "POST",
-        body,
-      }, {
-        service: "IpamIpAddressGatewayService",
-        method: "AllocateNextAddress",
-      }) as Promise<ipamservicev1_AllocateNextAddressResponse>;
-    },
-    BulkAllocateAddresses(request) { // eslint-disable-line @typescript-eslint/no-unused-vars
-      const path = `admin/v1/ipam/addresses:bulk-allocate`; // eslint-disable-line quotes
-      const body = JSON.stringify(request);
-      const queryParams: string[] = [];
-      let uri = path;
-      if (queryParams.length > 0) {
-        uri += `?${queryParams.join("&")}`
-      }
-      return handler({
-        path: uri,
-        method: "POST",
-        body,
-      }, {
-        service: "IpamIpAddressGatewayService",
-        method: "BulkAllocateAddresses",
-      }) as Promise<ipamservicev1_BulkAllocateAddressesResponse>;
-    },
-    FindAddress(request) { // eslint-disable-line @typescript-eslint/no-unused-vars
-      const path = `admin/v1/ipam/addresses:find`; // eslint-disable-line quotes
-      const body = null;
-      const queryParams: string[] = [];
-      if (request.tenantId) {
-        queryParams.push(`tenantId=${encodeURIComponent(request.tenantId.toString())}`)
-      }
-      if (request.address) {
-        queryParams.push(`address=${encodeURIComponent(request.address.toString())}`)
-      }
-      let uri = path;
-      if (queryParams.length > 0) {
-        uri += `?${queryParams.join("&")}`
-      }
-      return handler({
-        path: uri,
-        method: "GET",
-        body,
-      }, {
-        service: "IpamIpAddressGatewayService",
-        method: "FindAddress",
-      }) as Promise<ipamservicev1_FindAddressResponse>;
-    },
-    GetIpAddress(request) { // eslint-disable-line @typescript-eslint/no-unused-vars
-      if (!request.id) {
-        throw new Error("missing required field request.id");
-      }
-      const path = `admin/v1/ipam/addresses/${request.id}`; // eslint-disable-line quotes
-      const body = null;
-      const queryParams: string[] = [];
-      let uri = path;
-      if (queryParams.length > 0) {
-        uri += `?${queryParams.join("&")}`
-      }
-      return handler({
-        path: uri,
-        method: "GET",
-        body,
-      }, {
-        service: "IpamIpAddressGatewayService",
-        method: "GetIpAddress",
-      }) as Promise<ipamservicev1_GetIpAddressResponse>;
-    },
-    ListIpAddresses(request) { // eslint-disable-line @typescript-eslint/no-unused-vars
-      const path = `admin/v1/ipam/addresses`; // eslint-disable-line quotes
-      const body = null;
-      const queryParams: string[] = [];
-      if (request.tenantId) {
-        queryParams.push(`tenantId=${encodeURIComponent(request.tenantId.toString())}`)
-      }
-      if (request.page) {
-        queryParams.push(`page=${encodeURIComponent(request.page.toString())}`)
-      }
-      if (request.pageSize) {
-        queryParams.push(`pageSize=${encodeURIComponent(request.pageSize.toString())}`)
-      }
-      if (request.noPaging) {
-        queryParams.push(`noPaging=${encodeURIComponent(request.noPaging.toString())}`)
-      }
-      if (request.query) {
-        queryParams.push(`query=${encodeURIComponent(request.query.toString())}`)
-      }
-      if (request.orderBy) {
-        request.orderBy.forEach((x) => {
-          queryParams.push(`orderBy=${encodeURIComponent(x.toString())}`)
-        })
-      }
-      if (request.fieldMask) {
-        queryParams.push(`fieldMask=${encodeURIComponent(request.fieldMask.toString())}`)
-      }
-      if (request.subnetId) {
-        queryParams.push(`subnetId=${encodeURIComponent(request.subnetId.toString())}`)
-      }
-      if (request.deviceId) {
-        queryParams.push(`deviceId=${encodeURIComponent(request.deviceId.toString())}`)
-      }
-      if (request.status) {
-        queryParams.push(`status=${encodeURIComponent(request.status.toString())}`)
-      }
-      if (request.addressType) {
-        queryParams.push(`addressType=${encodeURIComponent(request.addressType.toString())}`)
-      }
-      if (request.addressPrefix) {
-        queryParams.push(`addressPrefix=${encodeURIComponent(request.addressPrefix.toString())}`)
-      }
-      if (request.hostnamePattern) {
-        queryParams.push(`hostnamePattern=${encodeURIComponent(request.hostnamePattern.toString())}`)
-      }
-      let uri = path;
-      if (queryParams.length > 0) {
-        uri += `?${queryParams.join("&")}`
-      }
-      return handler({
-        path: uri,
-        method: "GET",
-        body,
-      }, {
-        service: "IpamIpAddressGatewayService",
-        method: "ListIpAddresses",
-      }) as Promise<ipamservicev1_ListIpAddressesResponse>;
-    },
-    UpdateIpAddress(request) { // eslint-disable-line @typescript-eslint/no-unused-vars
-      if (!request.id) {
-        throw new Error("missing required field request.id");
-      }
-      const path = `admin/v1/ipam/addresses/${request.id}`; // eslint-disable-line quotes
-      const body = JSON.stringify(request);
-      const queryParams: string[] = [];
-      let uri = path;
-      if (queryParams.length > 0) {
-        uri += `?${queryParams.join("&")}`
-      }
-      return handler({
-        path: uri,
-        method: "PUT",
-        body,
-      }, {
-        service: "IpamIpAddressGatewayService",
-        method: "UpdateIpAddress",
-      }) as Promise<ipamservicev1_UpdateIpAddressResponse>;
-    },
-    DeleteIpAddress(request) { // eslint-disable-line @typescript-eslint/no-unused-vars
-      if (!request.id) {
-        throw new Error("missing required field request.id");
-      }
-      const path = `admin/v1/ipam/addresses/${request.id}`; // eslint-disable-line quotes
-      const body = null;
-      const queryParams: string[] = [];
-      let uri = path;
-      if (queryParams.length > 0) {
-        uri += `?${queryParams.join("&")}`
-      }
-      return handler({
-        path: uri,
-        method: "DELETE",
-        body,
-      }, {
-        service: "IpamIpAddressGatewayService",
-        method: "DeleteIpAddress",
-      }) as Promise<wellKnownEmpty>;
-    },
-    PingAddress(request) { // eslint-disable-line @typescript-eslint/no-unused-vars
-      if (!request.id) {
-        throw new Error("missing required field request.id");
-      }
-      const path = `admin/v1/ipam/addresses/${request.id}:ping`; // eslint-disable-line quotes
-      const body = JSON.stringify(request);
-      const queryParams: string[] = [];
-      let uri = path;
-      if (queryParams.length > 0) {
-        uri += `?${queryParams.join("&")}`
-      }
-      return handler({
-        path: uri,
-        method: "POST",
-        body,
-      }, {
-        service: "IpamIpAddressGatewayService",
-        method: "PingAddress",
-      }) as Promise<ipamservicev1_PingAddressResponse>;
-    },
-  };
-}
-// CreateIpAddressRequest creates a new IP address entry
-export type ipamservicev1_CreateIpAddressRequest = {
-  //
-  // Behaviors: REQUIRED
-  tenantId?: number;
-  //
-  // Behaviors: REQUIRED
-  address?: string;
-  //
-  // Behaviors: REQUIRED
-  subnetId?: string;
-  hostname?: string;
-  macAddress?: string;
-  description?: string;
-  deviceId?: string;
-  interfaceName?: string;
-  status?: ipamservicev1_IpAddressStatus;
-  addressType?: ipamservicev1_IpAddressType;
-  isPrimary?: boolean;
-  ptrRecord?: string;
-  dnsName?: string;
-  owner?: string;
-  tags?: string;
-  metadata?: string;
-  note?: string;
-};
-
-export type ipamservicev1_IpAddressStatus =
-  | "IP_ADDRESS_STATUS_UNSPECIFIED"
-  | "IP_ADDRESS_STATUS_ACTIVE"
-  | "IP_ADDRESS_STATUS_RESERVED"
-  | "IP_ADDRESS_STATUS_DHCP"
-  | "IP_ADDRESS_STATUS_DEPRECATED"
-  | "IP_ADDRESS_STATUS_OFFLINE";
-export type ipamservicev1_IpAddressType =
-  | "IP_ADDRESS_TYPE_UNSPECIFIED"
-  | "IP_ADDRESS_TYPE_HOST"
-  | "IP_ADDRESS_TYPE_GATEWAY"
-  | "IP_ADDRESS_TYPE_BROADCAST"
-  | "IP_ADDRESS_TYPE_NETWORK"
-  | "IP_ADDRESS_TYPE_VIRTUAL"
-  | "IP_ADDRESS_TYPE_ANYCAST";
-export type ipamservicev1_CreateIpAddressResponse = {
-  ipAddress: ipamservicev1_IpAddress | undefined;
-};
-
-// IpAddress represents a single IP address
-export type ipamservicev1_IpAddress = {
-  // Unique identifier
-  id?: string;
-  // Tenant ID for multi-tenancy
-  tenantId?: number;
-  // IP address (e.g., "192.168.1.10")
-  address?: string;
-  // Subnet ID this address belongs to
-  subnetId?: string;
-  // Hostname or FQDN
-  hostname?: string;
-  // MAC address
-  macAddress?: string;
-  // Description
-  description?: string;
-  // Associated device ID
-  deviceId?: string;
-  // Interface name on device
-  interfaceName?: string;
-  // Address status
-  status?: ipamservicev1_IpAddressStatus;
-  // Address type
-  addressType?: ipamservicev1_IpAddressType;
-  // Is this the primary address for the device
-  isPrimary?: boolean;
-  // PTR record for reverse DNS
-  ptrRecord?: string;
-  // DNS name
-  dnsName?: string;
-  // Owner/contact
-  owner?: string;
-  // Last seen timestamp (from network scan)
-  lastSeen?: wellKnownTimestamp;
-  // Lease expiry (for DHCP)
-  leaseExpiry?: wellKnownTimestamp;
-  // Whether this IP has a valid reverse DNS record
-  hasReverseDns?: boolean;
-  // Custom tags (JSON)
-  tags?: string;
-  // Custom metadata (JSON)
-  metadata?: string;
-  // Note/comment
-  note?: string;
-  // Creation timestamp
-  createdAt?: wellKnownTimestamp;
-  // Last update timestamp
-  updatedAt?: wellKnownTimestamp;
-  // Creator user ID
-  createdBy?: number;
-  // Last updater user ID
-  updatedBy?: number;
-};
-
-// AllocateNextAddressRequest allocates the next available address in a subnet
-export type ipamservicev1_AllocateNextAddressRequest = {
-  //
-  // Behaviors: REQUIRED
-  tenantId?: number;
-  //
-  // Behaviors: REQUIRED
-  subnetId: string | undefined;
-  hostname?: string;
-  description?: string;
-  deviceId?: string;
-  status?: ipamservicev1_IpAddressStatus;
-  owner?: string;
-  // Skip these addresses (already reserved externally)
-  skipAddresses: string[] | undefined;
-  // Start from this address
-  startFrom?: string;
-};
-
-export type ipamservicev1_AllocateNextAddressResponse = {
-  ipAddress: ipamservicev1_IpAddress | undefined;
-};
-
-// BulkAllocateAddressesRequest allocates multiple addresses
-export type ipamservicev1_BulkAllocateAddressesRequest = {
-  tenantId?: number;
-  subnetId: string | undefined;
-  count: number | undefined;
-  hostnamePrefix?: string;
-  status?: ipamservicev1_IpAddressStatus;
-};
-
-export type ipamservicev1_BulkAllocateAddressesResponse = {
-  ipAddresses: ipamservicev1_IpAddress[] | undefined;
-};
-
-// FindAddressRequest finds an address by IP
-export type ipamservicev1_FindAddressRequest = {
-  tenantId?: number;
-  //
-  // Behaviors: REQUIRED
-  address: string | undefined;
-};
-
-export type ipamservicev1_FindAddressResponse = {
-  ipAddress: ipamservicev1_IpAddress | undefined;
-};
-
-// GetIpAddressRequest retrieves an IP address by ID
-export type ipamservicev1_GetIpAddressRequest = {
-  //
-  // Behaviors: REQUIRED
-  id: string | undefined;
-};
-
-export type ipamservicev1_GetIpAddressResponse = {
-  ipAddress: ipamservicev1_IpAddress | undefined;
-};
-
-// ListIpAddressesRequest lists IP addresses with filtering
-export type ipamservicev1_ListIpAddressesRequest = {
-  tenantId?: number;
-  page?: number;
-  pageSize?: number;
-  noPaging?: boolean;
-  query?: string;
-  orderBy: string[] | undefined;
-  fieldMask?: string;
-  // Filter by subnet
-  subnetId?: string;
-  // Filter by device
-  deviceId?: string;
-  // Filter by status
-  status?: ipamservicev1_IpAddressStatus;
-  // Filter by address type
-  addressType?: ipamservicev1_IpAddressType;
-  // Search by address prefix
-  addressPrefix?: string;
-  // Search by hostname
-  hostnamePattern?: string;
-};
-
-export type ipamservicev1_ListIpAddressesResponse = {
-  items: ipamservicev1_IpAddress[] | undefined;
-  total?: number;
-};
-
-// UpdateIpAddressRequest updates an IP address
-export type ipamservicev1_UpdateIpAddressRequest = {
-  //
-  // Behaviors: REQUIRED
-  id: string | undefined;
-  data?: ipamservicev1_IpAddress;
-  updateMask: wellKnownFieldMask | undefined;
-};
-
-export type ipamservicev1_UpdateIpAddressResponse = {
-  ipAddress: ipamservicev1_IpAddress | undefined;
-};
-
-// DeleteIpAddressRequest deletes an IP address
-export type ipamservicev1_DeleteIpAddressRequest = {
-  //
-  // Behaviors: REQUIRED
-  id: string | undefined;
-};
-
-// PingAddressRequest checks if an address is reachable
-export type ipamservicev1_PingAddressRequest = {
-  id: string | undefined;
-};
-
-export type ipamservicev1_PingAddressResponse = {
-  reachable: boolean | undefined;
-  latencyMs?: number;
-  checkedAt?: wellKnownTimestamp;
-};
-
-// IPAM IP Group Gateway Service - HTTP gateway for IP group management
-export interface IpamIpGroupGatewayService {
-  // Create a new IP group
-  CreateIpGroup(request: ipamservicev1_CreateIpGroupRequest): Promise<ipamservicev1_CreateIpGroupResponse>;
-  // Get an IP group by ID
-  GetIpGroup(request: ipamservicev1_GetIpGroupRequest): Promise<ipamservicev1_GetIpGroupResponse>;
-  // List IP groups
-  ListIpGroups(request: ipamservicev1_ListIpGroupsRequest): Promise<ipamservicev1_ListIpGroupsResponse>;
-  // Update an IP group
-  UpdateIpGroup(request: ipamservicev1_UpdateIpGroupRequest): Promise<ipamservicev1_UpdateIpGroupResponse>;
-  // Delete an IP group
-  DeleteIpGroup(request: ipamservicev1_DeleteIpGroupRequest): Promise<wellKnownEmpty>;
-  // Add a member to an IP group
-  AddIpGroupMember(request: ipamservicev1_AddIpGroupMemberRequest): Promise<ipamservicev1_AddIpGroupMemberResponse>;
-  // Remove a member from an IP group
-  RemoveIpGroupMember(request: ipamservicev1_RemoveIpGroupMemberRequest): Promise<wellKnownEmpty>;
-  // List members of an IP group
-  ListIpGroupMembers(request: ipamservicev1_ListIpGroupMembersRequest): Promise<ipamservicev1_ListIpGroupMembersResponse>;
-  // Update a member in an IP group
-  UpdateIpGroupMember(request: ipamservicev1_UpdateIpGroupMemberRequest): Promise<ipamservicev1_UpdateIpGroupMemberResponse>;
-  // Check if an IP address is contained in any group
-  CheckIpInGroup(request: ipamservicev1_CheckIpInGroupRequest): Promise<ipamservicev1_CheckIpInGroupResponse>;
-}
-
-export function createIpamIpGroupGatewayServiceClient(
-  handler: RequestHandler
-): IpamIpGroupGatewayService {
-  return {
-    CreateIpGroup(request) { // eslint-disable-line @typescript-eslint/no-unused-vars
-      const path = `admin/v1/ipam/ip-groups`; // eslint-disable-line quotes
-      const body = JSON.stringify(request);
-      const queryParams: string[] = [];
-      let uri = path;
-      if (queryParams.length > 0) {
-        uri += `?${queryParams.join("&")}`
-      }
-      return handler({
-        path: uri,
-        method: "POST",
-        body,
-      }, {
-        service: "IpamIpGroupGatewayService",
-        method: "CreateIpGroup",
-      }) as Promise<ipamservicev1_CreateIpGroupResponse>;
-    },
-    GetIpGroup(request) { // eslint-disable-line @typescript-eslint/no-unused-vars
-      if (!request.id) {
-        throw new Error("missing required field request.id");
-      }
-      const path = `admin/v1/ipam/ip-groups/${request.id}`; // eslint-disable-line quotes
-      const body = null;
-      const queryParams: string[] = [];
-      if (request.includeMembers) {
-        queryParams.push(`includeMembers=${encodeURIComponent(request.includeMembers.toString())}`)
-      }
-      let uri = path;
-      if (queryParams.length > 0) {
-        uri += `?${queryParams.join("&")}`
-      }
-      return handler({
-        path: uri,
-        method: "GET",
-        body,
-      }, {
-        service: "IpamIpGroupGatewayService",
-        method: "GetIpGroup",
-      }) as Promise<ipamservicev1_GetIpGroupResponse>;
-    },
-    ListIpGroups(request) { // eslint-disable-line @typescript-eslint/no-unused-vars
-      const path = `admin/v1/ipam/ip-groups`; // eslint-disable-line quotes
-      const body = null;
-      const queryParams: string[] = [];
-      if (request.tenantId) {
-        queryParams.push(`tenantId=${encodeURIComponent(request.tenantId.toString())}`)
-      }
-      if (request.page) {
-        queryParams.push(`page=${encodeURIComponent(request.page.toString())}`)
-      }
-      if (request.pageSize) {
-        queryParams.push(`pageSize=${encodeURIComponent(request.pageSize.toString())}`)
-      }
-      if (request.noPaging) {
-        queryParams.push(`noPaging=${encodeURIComponent(request.noPaging.toString())}`)
-      }
-      if (request.query) {
-        queryParams.push(`query=${encodeURIComponent(request.query.toString())}`)
-      }
-      if (request.orderBy) {
-        request.orderBy.forEach((x) => {
-          queryParams.push(`orderBy=${encodeURIComponent(x.toString())}`)
-        })
-      }
-      if (request.fieldMask) {
-        queryParams.push(`fieldMask=${encodeURIComponent(request.fieldMask.toString())}`)
-      }
-      if (request.status) {
-        queryParams.push(`status=${encodeURIComponent(request.status.toString())}`)
-      }
-      let uri = path;
-      if (queryParams.length > 0) {
-        uri += `?${queryParams.join("&")}`
-      }
-      return handler({
-        path: uri,
-        method: "GET",
-        body,
-      }, {
-        service: "IpamIpGroupGatewayService",
-        method: "ListIpGroups",
-      }) as Promise<ipamservicev1_ListIpGroupsResponse>;
-    },
-    UpdateIpGroup(request) { // eslint-disable-line @typescript-eslint/no-unused-vars
-      if (!request.id) {
-        throw new Error("missing required field request.id");
-      }
-      const path = `admin/v1/ipam/ip-groups/${request.id}`; // eslint-disable-line quotes
-      const body = JSON.stringify(request);
-      const queryParams: string[] = [];
-      let uri = path;
-      if (queryParams.length > 0) {
-        uri += `?${queryParams.join("&")}`
-      }
-      return handler({
-        path: uri,
-        method: "PUT",
-        body,
-      }, {
-        service: "IpamIpGroupGatewayService",
-        method: "UpdateIpGroup",
-      }) as Promise<ipamservicev1_UpdateIpGroupResponse>;
-    },
-    DeleteIpGroup(request) { // eslint-disable-line @typescript-eslint/no-unused-vars
-      if (!request.id) {
-        throw new Error("missing required field request.id");
-      }
-      const path = `admin/v1/ipam/ip-groups/${request.id}`; // eslint-disable-line quotes
-      const body = null;
-      const queryParams: string[] = [];
-      let uri = path;
-      if (queryParams.length > 0) {
-        uri += `?${queryParams.join("&")}`
-      }
-      return handler({
-        path: uri,
-        method: "DELETE",
-        body,
-      }, {
-        service: "IpamIpGroupGatewayService",
-        method: "DeleteIpGroup",
-      }) as Promise<wellKnownEmpty>;
-    },
-    AddIpGroupMember(request) { // eslint-disable-line @typescript-eslint/no-unused-vars
-      if (!request.ipGroupId) {
-        throw new Error("missing required field request.ip_group_id");
-      }
-      const path = `admin/v1/ipam/ip-groups/${request.ipGroupId}/members`; // eslint-disable-line quotes
-      const body = JSON.stringify(request);
-      const queryParams: string[] = [];
-      let uri = path;
-      if (queryParams.length > 0) {
-        uri += `?${queryParams.join("&")}`
-      }
-      return handler({
-        path: uri,
-        method: "POST",
-        body,
-      }, {
-        service: "IpamIpGroupGatewayService",
-        method: "AddIpGroupMember",
-      }) as Promise<ipamservicev1_AddIpGroupMemberResponse>;
-    },
-    RemoveIpGroupMember(request) { // eslint-disable-line @typescript-eslint/no-unused-vars
-      if (!request.ipGroupId) {
-        throw new Error("missing required field request.ip_group_id");
-      }
-      if (!request.memberId) {
-        throw new Error("missing required field request.member_id");
-      }
-      const path = `admin/v1/ipam/ip-groups/${request.ipGroupId}/members/${request.memberId}`; // eslint-disable-line quotes
-      const body = null;
-      const queryParams: string[] = [];
-      let uri = path;
-      if (queryParams.length > 0) {
-        uri += `?${queryParams.join("&")}`
-      }
-      return handler({
-        path: uri,
-        method: "DELETE",
-        body,
-      }, {
-        service: "IpamIpGroupGatewayService",
-        method: "RemoveIpGroupMember",
-      }) as Promise<wellKnownEmpty>;
-    },
-    ListIpGroupMembers(request) { // eslint-disable-line @typescript-eslint/no-unused-vars
-      if (!request.ipGroupId) {
-        throw new Error("missing required field request.ip_group_id");
-      }
-      const path = `admin/v1/ipam/ip-groups/${request.ipGroupId}/members`; // eslint-disable-line quotes
-      const body = null;
-      const queryParams: string[] = [];
-      if (request.page) {
-        queryParams.push(`page=${encodeURIComponent(request.page.toString())}`)
-      }
-      if (request.pageSize) {
-        queryParams.push(`pageSize=${encodeURIComponent(request.pageSize.toString())}`)
-      }
-      if (request.noPaging) {
-        queryParams.push(`noPaging=${encodeURIComponent(request.noPaging.toString())}`)
-      }
-      let uri = path;
-      if (queryParams.length > 0) {
-        uri += `?${queryParams.join("&")}`
-      }
-      return handler({
-        path: uri,
-        method: "GET",
-        body,
-      }, {
-        service: "IpamIpGroupGatewayService",
-        method: "ListIpGroupMembers",
-      }) as Promise<ipamservicev1_ListIpGroupMembersResponse>;
-    },
-    UpdateIpGroupMember(request) { // eslint-disable-line @typescript-eslint/no-unused-vars
-      if (!request.ipGroupId) {
-        throw new Error("missing required field request.ip_group_id");
-      }
-      if (!request.memberId) {
-        throw new Error("missing required field request.member_id");
-      }
-      const path = `admin/v1/ipam/ip-groups/${request.ipGroupId}/members/${request.memberId}`; // eslint-disable-line quotes
-      const body = JSON.stringify(request);
-      const queryParams: string[] = [];
-      let uri = path;
-      if (queryParams.length > 0) {
-        uri += `?${queryParams.join("&")}`
-      }
-      return handler({
-        path: uri,
-        method: "PUT",
-        body,
-      }, {
-        service: "IpamIpGroupGatewayService",
-        method: "UpdateIpGroupMember",
-      }) as Promise<ipamservicev1_UpdateIpGroupMemberResponse>;
-    },
-    CheckIpInGroup(request) { // eslint-disable-line @typescript-eslint/no-unused-vars
-      const path = `admin/v1/ipam/ip-groups:check`; // eslint-disable-line quotes
-      const body = null;
-      const queryParams: string[] = [];
-      if (request.tenantId) {
-        queryParams.push(`tenantId=${encodeURIComponent(request.tenantId.toString())}`)
-      }
-      if (request.ipAddress) {
-        queryParams.push(`ipAddress=${encodeURIComponent(request.ipAddress.toString())}`)
-      }
-      if (request.groupIds) {
-        request.groupIds.forEach((x) => {
-          queryParams.push(`groupIds=${encodeURIComponent(x.toString())}`)
-        })
-      }
-      let uri = path;
-      if (queryParams.length > 0) {
-        uri += `?${queryParams.join("&")}`
-      }
-      return handler({
-        path: uri,
-        method: "GET",
-        body,
-      }, {
-        service: "IpamIpGroupGatewayService",
-        method: "CheckIpInGroup",
-      }) as Promise<ipamservicev1_CheckIpInGroupResponse>;
-    },
-  };
-}
-// CreateIpGroupRequest creates a new IP group
-export type ipamservicev1_CreateIpGroupRequest = {
-  //
-  // Behaviors: REQUIRED
-  tenantId?: number;
-  //
-  // Behaviors: REQUIRED
-  name?: string;
-  description?: string;
-  status?: ipamservicev1_IpGroupStatus;
-  tags?: string;
-  metadata?: string;
-  // Initial members to add to the group
-  members: ipamservicev1_IpGroupMemberInput[] | undefined;
-};
-
-// IpGroupStatus defines the status of an IP group
-export type ipamservicev1_IpGroupStatus =
-  | "IP_GROUP_STATUS_UNSPECIFIED"
-  | "IP_GROUP_STATUS_ACTIVE"
-  | "IP_GROUP_STATUS_INACTIVE";
-// IpGroupMemberInput is used for adding members to a group
-export type ipamservicev1_IpGroupMemberInput = {
-  //
-  // Behaviors: REQUIRED
-  memberType?: ipamservicev1_IpGroupMemberType;
-  //
-  // Behaviors: REQUIRED
-  value?: string;
-  description?: string;
-  sequence?: number;
-};
-
-// IpGroupMemberType defines the type of member in an IP group
-export type ipamservicev1_IpGroupMemberType =
-  | "IP_GROUP_MEMBER_TYPE_UNSPECIFIED"
-  | "IP_GROUP_MEMBER_TYPE_ADDRESS"
-  | "IP_GROUP_MEMBER_TYPE_RANGE"
-  | "IP_GROUP_MEMBER_TYPE_SUBNET";
-export type ipamservicev1_CreateIpGroupResponse = {
-  ipGroup: ipamservicev1_IpGroup | undefined;
-};
-
-// IpGroup represents a logical grouping of IP addresses, ranges, or subnets
-export type ipamservicev1_IpGroup = {
-  // Unique identifier
-  id?: string;
-  // Tenant ID for multi-tenancy
-  tenantId?: number;
-  // Human-readable name
-  name?: string;
-  // Optional description
-  description?: string;
-  // Group status
-  status?: ipamservicev1_IpGroupStatus;
-  // Number of members in this group (computed)
-  memberCount?: number;
-  // Custom tags (JSON)
-  tags?: string;
-  // Custom metadata (JSON)
-  metadata?: string;
-  // Creation timestamp
-  createdAt?: wellKnownTimestamp;
-  // Last update timestamp
-  updatedAt?: wellKnownTimestamp;
-  // Creator user ID
-  createdBy?: number;
-  // Last updater user ID
-  updatedBy?: number;
-};
-
-// GetIpGroupRequest retrieves an IP group by ID
-export type ipamservicev1_GetIpGroupRequest = {
-  //
-  // Behaviors: REQUIRED
-  id: string | undefined;
-  // Include members in response
-  includeMembers?: boolean;
-};
-
-export type ipamservicev1_GetIpGroupResponse = {
-  ipGroup: ipamservicev1_IpGroup | undefined;
-  members: ipamservicev1_IpGroupMember[] | undefined;
-};
-
-// IpGroupMember represents a member of an IP group
-export type ipamservicev1_IpGroupMember = {
-  // Unique identifier
-  id?: string;
-  // IP Group ID
-  ipGroupId?: string;
-  // Member type (address, range, or subnet)
-  memberType?: ipamservicev1_IpGroupMemberType;
-  // Value based on member_type:
-  // - ADDRESS: "192.168.0.1"
-  // - RANGE: "192.168.1.10-192.168.1.20"
-  // - SUBNET: "10.0.0.0/24"
-  value?: string;
-  // Optional description/label for this member
-  description?: string;
-  // Order/sequence in the group
-  sequence?: number;
-  // Creation timestamp
-  createdAt?: wellKnownTimestamp;
-  // Last update timestamp
-  updatedAt?: wellKnownTimestamp;
-};
-
-// ListIpGroupsRequest lists IP groups with filtering
-export type ipamservicev1_ListIpGroupsRequest = {
-  tenantId?: number;
-  page?: number;
-  pageSize?: number;
-  noPaging?: boolean;
-  query?: string;
-  orderBy: string[] | undefined;
-  fieldMask?: string;
-  // Filter by status
-  status?: ipamservicev1_IpGroupStatus;
-};
-
-export type ipamservicev1_ListIpGroupsResponse = {
-  items: ipamservicev1_IpGroup[] | undefined;
-  total?: number;
-};
-
-// UpdateIpGroupRequest updates an IP group
-export type ipamservicev1_UpdateIpGroupRequest = {
-  //
-  // Behaviors: REQUIRED
-  id: string | undefined;
-  data?: ipamservicev1_IpGroup;
-  updateMask: wellKnownFieldMask | undefined;
-};
-
-export type ipamservicev1_UpdateIpGroupResponse = {
-  ipGroup: ipamservicev1_IpGroup | undefined;
-};
-
-// DeleteIpGroupRequest deletes an IP group
-export type ipamservicev1_DeleteIpGroupRequest = {
-  //
-  // Behaviors: REQUIRED
-  id: string | undefined;
-};
-
-// AddIpGroupMemberRequest adds a member to an IP group
-export type ipamservicev1_AddIpGroupMemberRequest = {
-  //
-  // Behaviors: REQUIRED
-  ipGroupId: string | undefined;
-  //
-  // Behaviors: REQUIRED
-  memberType?: ipamservicev1_IpGroupMemberType;
-  //
-  // Behaviors: REQUIRED
-  value?: string;
-  description?: string;
-  sequence?: number;
-};
-
-export type ipamservicev1_AddIpGroupMemberResponse = {
-  member: ipamservicev1_IpGroupMember | undefined;
-};
-
-// RemoveIpGroupMemberRequest removes a member from an IP group
-export type ipamservicev1_RemoveIpGroupMemberRequest = {
-  //
-  // Behaviors: REQUIRED
-  ipGroupId: string | undefined;
-  //
-  // Behaviors: REQUIRED
-  memberId: string | undefined;
-};
-
-// ListIpGroupMembersRequest lists members of an IP group
-export type ipamservicev1_ListIpGroupMembersRequest = {
-  //
-  // Behaviors: REQUIRED
-  ipGroupId: string | undefined;
-  page?: number;
-  pageSize?: number;
-  noPaging?: boolean;
-};
-
-export type ipamservicev1_ListIpGroupMembersResponse = {
-  items: ipamservicev1_IpGroupMember[] | undefined;
-  total?: number;
-};
-
-// UpdateIpGroupMemberRequest updates a member in an IP group
-export type ipamservicev1_UpdateIpGroupMemberRequest = {
-  //
-  // Behaviors: REQUIRED
-  ipGroupId: string | undefined;
-  //
-  // Behaviors: REQUIRED
-  memberId: string | undefined;
-  description?: string;
-  sequence?: number;
-};
-
-export type ipamservicev1_UpdateIpGroupMemberResponse = {
-  member: ipamservicev1_IpGroupMember | undefined;
-};
-
-// CheckIpInGroupRequest checks if an IP address is contained in any group
-export type ipamservicev1_CheckIpInGroupRequest = {
-  tenantId?: number;
-  //
-  // Behaviors: REQUIRED
-  ipAddress: string | undefined;
-  // Optional: check only specific group IDs
-  groupIds: string[] | undefined;
-};
-
-export type ipamservicev1_CheckIpInGroupResponse = {
-  // Groups that contain the IP address
-  matchingGroups: ipamservicev1_IpGroup[] | undefined;
-};
-
-// IPAM IP Scan Gateway Service - HTTP gateway for IP address scanning
-export interface IpamIpScanGatewayService {
-  // Start a new scan for a subnet
-  StartScan(request: ipamservicev1_StartScanRequest): Promise<ipamservicev1_StartScanResponse>;
-  // Get a scan job by ID
-  GetScanJob(request: ipamservicev1_GetScanJobRequest): Promise<ipamservicev1_GetScanJobResponse>;
-  // List scan jobs
-  ListScanJobs(request: ipamservicev1_ListScanJobsRequest): Promise<ipamservicev1_ListScanJobsResponse>;
-  // Cancel a running or pending scan
-  CancelScan(request: ipamservicev1_CancelScanRequest): Promise<ipamservicev1_CancelScanResponse>;
-}
-
-export function createIpamIpScanGatewayServiceClient(
-  handler: RequestHandler
-): IpamIpScanGatewayService {
-  return {
-    StartScan(request) { // eslint-disable-line @typescript-eslint/no-unused-vars
-      const path = `admin/v1/ipam/scans`; // eslint-disable-line quotes
-      const body = JSON.stringify(request);
-      const queryParams: string[] = [];
-      let uri = path;
-      if (queryParams.length > 0) {
-        uri += `?${queryParams.join("&")}`
-      }
-      return handler({
-        path: uri,
-        method: "POST",
-        body,
-      }, {
-        service: "IpamIpScanGatewayService",
-        method: "StartScan",
-      }) as Promise<ipamservicev1_StartScanResponse>;
-    },
-    GetScanJob(request) { // eslint-disable-line @typescript-eslint/no-unused-vars
-      if (!request.id) {
-        throw new Error("missing required field request.id");
-      }
-      const path = `admin/v1/ipam/scans/${request.id}`; // eslint-disable-line quotes
-      const body = null;
-      const queryParams: string[] = [];
-      let uri = path;
-      if (queryParams.length > 0) {
-        uri += `?${queryParams.join("&")}`
-      }
-      return handler({
-        path: uri,
-        method: "GET",
-        body,
-      }, {
-        service: "IpamIpScanGatewayService",
-        method: "GetScanJob",
-      }) as Promise<ipamservicev1_GetScanJobResponse>;
-    },
-    ListScanJobs(request) { // eslint-disable-line @typescript-eslint/no-unused-vars
-      const path = `admin/v1/ipam/scans`; // eslint-disable-line quotes
-      const body = null;
-      const queryParams: string[] = [];
-      if (request.tenantId) {
-        queryParams.push(`tenantId=${encodeURIComponent(request.tenantId.toString())}`)
-      }
-      if (request.page) {
-        queryParams.push(`page=${encodeURIComponent(request.page.toString())}`)
-      }
-      if (request.pageSize) {
-        queryParams.push(`pageSize=${encodeURIComponent(request.pageSize.toString())}`)
-      }
-      if (request.subnetId) {
-        queryParams.push(`subnetId=${encodeURIComponent(request.subnetId.toString())}`)
-      }
-      if (request.status) {
-        queryParams.push(`status=${encodeURIComponent(request.status.toString())}`)
-      }
-      let uri = path;
-      if (queryParams.length > 0) {
-        uri += `?${queryParams.join("&")}`
-      }
-      return handler({
-        path: uri,
-        method: "GET",
-        body,
-      }, {
-        service: "IpamIpScanGatewayService",
-        method: "ListScanJobs",
-      }) as Promise<ipamservicev1_ListScanJobsResponse>;
-    },
-    CancelScan(request) { // eslint-disable-line @typescript-eslint/no-unused-vars
-      if (!request.id) {
-        throw new Error("missing required field request.id");
-      }
-      const path = `admin/v1/ipam/scans/${request.id}:cancel`; // eslint-disable-line quotes
-      const body = JSON.stringify(request);
-      const queryParams: string[] = [];
-      let uri = path;
-      if (queryParams.length > 0) {
-        uri += `?${queryParams.join("&")}`
-      }
-      return handler({
-        path: uri,
-        method: "POST",
-        body,
-      }, {
-        service: "IpamIpScanGatewayService",
-        method: "CancelScan",
-      }) as Promise<ipamservicev1_CancelScanResponse>;
-    },
-  };
-}
-// StartScanRequest starts a new scan for a subnet
-export type ipamservicev1_StartScanRequest = {
-  //
-  // Behaviors: REQUIRED
-  tenantId?: number;
-  //
-  // Behaviors: REQUIRED
-  subnetId: string | undefined;
-  // Scan configuration
-  scanConfig?: ipamservicev1_ScanConfig;
-};
-
-// ScanConfig configures how subnet scanning is performed
-export type ipamservicev1_ScanConfig = {
-  // TCP probe timeout in milliseconds (default: 1000)
-  timeoutMs?: number;
-  // Number of parallel probes (default: 50)
-  concurrency?: number;
-  // Skip reverse DNS lookup (default: false)
-  skipReverseDns?: boolean;
-  // Comma-separated list of TCP ports to probe (default: "22,80,443,3389,445")
-  tcpProbePorts?: string;
-};
-
-export type ipamservicev1_StartScanResponse = {
-  job: ipamservicev1_IpScanJob | undefined;
-};
-
-// IpScanJob represents a network scan job for discovering IP addresses
-export type ipamservicev1_IpScanJob = {
-  // Unique identifier
-  id?: string;
-  // Tenant ID for multi-tenancy
-  tenantId?: number;
-  // Subnet ID to scan
-  subnetId?: string;
-  // Job status
-  status?: ipamservicev1_IpScanJobStatus;
-  // Progress percentage (0-100)
-  progress?: number;
-  // Status message or error description
-  statusMessage?: string;
-  // Total number of addresses to scan
-  totalAddresses?: number;
-  // Number of addresses scanned so far
-  scannedCount?: number;
-  // Number of addresses that responded
-  aliveCount?: number;
-  // Number of newly discovered addresses
-  newCount?: number;
-  // Number of existing addresses updated
-  updatedCount?: number;
-  // How the scan was triggered
-  triggeredBy?: ipamservicev1_IpScanJobTrigger;
-  // Number of retry attempts
-  retryCount?: number;
-  // Maximum number of retry attempts
-  maxRetries?: number;
-  // TCP probe timeout in milliseconds
-  timeoutMs?: number;
-  // Number of parallel probes
-  concurrency?: number;
-  // Skip reverse DNS lookup
-  skipReverseDns?: boolean;
-  // Comma-separated list of TCP ports to probe
-  tcpProbePorts?: string;
-  // When the scan started
-  startedAt?: wellKnownTimestamp;
-  // When the scan completed
-  completedAt?: wellKnownTimestamp;
-  // Creation timestamp
-  createdAt?: wellKnownTimestamp;
-  // Last update timestamp
-  updatedAt?: wellKnownTimestamp;
-  // Creator user ID
-  createdBy?: number;
-};
-
-// IpScanJobStatus represents the status of a scan job
-export type ipamservicev1_IpScanJobStatus =
-  | "IP_SCAN_JOB_STATUS_UNSPECIFIED"
-  | "IP_SCAN_JOB_STATUS_PENDING"
-  | "IP_SCAN_JOB_STATUS_SCANNING"
-  | "IP_SCAN_JOB_STATUS_COMPLETED"
-  | "IP_SCAN_JOB_STATUS_FAILED"
-  | "IP_SCAN_JOB_STATUS_CANCELLED";
-// IpScanJobTrigger represents how the scan was triggered
-export type ipamservicev1_IpScanJobTrigger =
-  | "IP_SCAN_JOB_TRIGGER_UNSPECIFIED"
-  | "IP_SCAN_JOB_TRIGGER_AUTO"
-  | "IP_SCAN_JOB_TRIGGER_MANUAL";
-// GetScanJobRequest retrieves a scan job by ID
-export type ipamservicev1_GetScanJobRequest = {
-  //
-  // Behaviors: REQUIRED
-  id: string | undefined;
-};
-
-export type ipamservicev1_GetScanJobResponse = {
-  job: ipamservicev1_IpScanJob | undefined;
-};
-
-// ListScanJobsRequest lists scan jobs for a subnet
-export type ipamservicev1_ListScanJobsRequest = {
-  tenantId?: number;
-  page?: number;
-  pageSize?: number;
-  // Filter by subnet
-  subnetId?: string;
-  // Filter by status
-  status?: ipamservicev1_IpScanJobStatus;
-};
-
-export type ipamservicev1_ListScanJobsResponse = {
-  items: ipamservicev1_IpScanJob[] | undefined;
-  total?: number;
-};
-
-// CancelScanRequest cancels a running or pending scan
-export type ipamservicev1_CancelScanRequest = {
-  //
-  // Behaviors: REQUIRED
-  id: string | undefined;
-};
-
-export type ipamservicev1_CancelScanResponse = {
-  job: ipamservicev1_IpScanJob | undefined;
-};
-
-// IPAM Location Gateway Service - HTTP gateway for location management
-export interface IpamLocationGatewayService {
-  // Create a new location
-  CreateLocation(request: ipamservicev1_CreateLocationRequest): Promise<ipamservicev1_CreateLocationResponse>;
-  // Get location tree structure (must be before GetLocation to avoid route conflict)
-  GetLocationTree(request: ipamservicev1_GetLocationTreeRequest): Promise<ipamservicev1_GetLocationTreeResponse>;
-  // Get a location by ID
-  GetLocation(request: ipamservicev1_GetLocationRequest): Promise<ipamservicev1_GetLocationResponse>;
-  // List locations
-  ListLocations(request: ipamservicev1_ListLocationsRequest): Promise<ipamservicev1_ListLocationsResponse>;
-  // Update location metadata
-  UpdateLocation(request: ipamservicev1_UpdateLocationRequest): Promise<ipamservicev1_UpdateLocationResponse>;
-  // Delete a location
-  DeleteLocation(request: ipamservicev1_DeleteLocationRequest): Promise<wellKnownEmpty>;
-}
-
-export function createIpamLocationGatewayServiceClient(
-  handler: RequestHandler
-): IpamLocationGatewayService {
-  return {
-    CreateLocation(request) { // eslint-disable-line @typescript-eslint/no-unused-vars
-      const path = `admin/v1/ipam/locations`; // eslint-disable-line quotes
-      const body = JSON.stringify(request);
-      const queryParams: string[] = [];
-      let uri = path;
-      if (queryParams.length > 0) {
-        uri += `?${queryParams.join("&")}`
-      }
-      return handler({
-        path: uri,
-        method: "POST",
-        body,
-      }, {
-        service: "IpamLocationGatewayService",
-        method: "CreateLocation",
-      }) as Promise<ipamservicev1_CreateLocationResponse>;
-    },
-    GetLocationTree(request) { // eslint-disable-line @typescript-eslint/no-unused-vars
-      const path = `admin/v1/ipam/locations/tree`; // eslint-disable-line quotes
-      const body = null;
-      const queryParams: string[] = [];
-      if (request.tenantId) {
-        queryParams.push(`tenantId=${encodeURIComponent(request.tenantId.toString())}`)
-      }
-      if (request.rootId) {
-        queryParams.push(`rootId=${encodeURIComponent(request.rootId.toString())}`)
-      }
-      if (request.maxDepth) {
-        queryParams.push(`maxDepth=${encodeURIComponent(request.maxDepth.toString())}`)
-      }
-      if (request.includeCounts) {
-        queryParams.push(`includeCounts=${encodeURIComponent(request.includeCounts.toString())}`)
-      }
-      let uri = path;
-      if (queryParams.length > 0) {
-        uri += `?${queryParams.join("&")}`
-      }
-      return handler({
-        path: uri,
-        method: "GET",
-        body,
-      }, {
-        service: "IpamLocationGatewayService",
-        method: "GetLocationTree",
-      }) as Promise<ipamservicev1_GetLocationTreeResponse>;
-    },
-    GetLocation(request) { // eslint-disable-line @typescript-eslint/no-unused-vars
-      if (!request.id) {
-        throw new Error("missing required field request.id");
-      }
-      const path = `admin/v1/ipam/locations/${request.id}`; // eslint-disable-line quotes
-      const body = null;
-      const queryParams: string[] = [];
-      let uri = path;
-      if (queryParams.length > 0) {
-        uri += `?${queryParams.join("&")}`
-      }
-      return handler({
-        path: uri,
-        method: "GET",
-        body,
-      }, {
-        service: "IpamLocationGatewayService",
-        method: "GetLocation",
-      }) as Promise<ipamservicev1_GetLocationResponse>;
-    },
-    ListLocations(request) { // eslint-disable-line @typescript-eslint/no-unused-vars
-      const path = `admin/v1/ipam/locations`; // eslint-disable-line quotes
-      const body = null;
-      const queryParams: string[] = [];
-      if (request.tenantId) {
-        queryParams.push(`tenantId=${encodeURIComponent(request.tenantId.toString())}`)
-      }
-      if (request.page) {
-        queryParams.push(`page=${encodeURIComponent(request.page.toString())}`)
-      }
-      if (request.pageSize) {
-        queryParams.push(`pageSize=${encodeURIComponent(request.pageSize.toString())}`)
-      }
-      if (request.noPaging) {
-        queryParams.push(`noPaging=${encodeURIComponent(request.noPaging.toString())}`)
-      }
-      if (request.query) {
-        queryParams.push(`query=${encodeURIComponent(request.query.toString())}`)
-      }
-      if (request.orderBy) {
-        request.orderBy.forEach((x) => {
-          queryParams.push(`orderBy=${encodeURIComponent(x.toString())}`)
-        })
-      }
-      if (request.fieldMask) {
-        queryParams.push(`fieldMask=${encodeURIComponent(request.fieldMask.toString())}`)
-      }
-      if (request.parentId) {
-        queryParams.push(`parentId=${encodeURIComponent(request.parentId.toString())}`)
-      }
-      if (request.locationType) {
-        queryParams.push(`locationType=${encodeURIComponent(request.locationType.toString())}`)
-      }
-      if (request.country) {
-        queryParams.push(`country=${encodeURIComponent(request.country.toString())}`)
-      }
-      if (request.status) {
-        queryParams.push(`status=${encodeURIComponent(request.status.toString())}`)
-      }
-      let uri = path;
-      if (queryParams.length > 0) {
-        uri += `?${queryParams.join("&")}`
-      }
-      return handler({
-        path: uri,
-        method: "GET",
-        body,
-      }, {
-        service: "IpamLocationGatewayService",
-        method: "ListLocations",
-      }) as Promise<ipamservicev1_ListLocationsResponse>;
-    },
-    UpdateLocation(request) { // eslint-disable-line @typescript-eslint/no-unused-vars
-      if (!request.id) {
-        throw new Error("missing required field request.id");
-      }
-      const path = `admin/v1/ipam/locations/${request.id}`; // eslint-disable-line quotes
-      const body = JSON.stringify(request);
-      const queryParams: string[] = [];
-      let uri = path;
-      if (queryParams.length > 0) {
-        uri += `?${queryParams.join("&")}`
-      }
-      return handler({
-        path: uri,
-        method: "PUT",
-        body,
-      }, {
-        service: "IpamLocationGatewayService",
-        method: "UpdateLocation",
-      }) as Promise<ipamservicev1_UpdateLocationResponse>;
-    },
-    DeleteLocation(request) { // eslint-disable-line @typescript-eslint/no-unused-vars
-      if (!request.id) {
-        throw new Error("missing required field request.id");
-      }
-      const path = `admin/v1/ipam/locations/${request.id}`; // eslint-disable-line quotes
-      const body = null;
-      const queryParams: string[] = [];
-      if (request.force) {
-        queryParams.push(`force=${encodeURIComponent(request.force.toString())}`)
-      }
-      let uri = path;
-      if (queryParams.length > 0) {
-        uri += `?${queryParams.join("&")}`
-      }
-      return handler({
-        path: uri,
-        method: "DELETE",
-        body,
-      }, {
-        service: "IpamLocationGatewayService",
-        method: "DeleteLocation",
-      }) as Promise<wellKnownEmpty>;
-    },
-  };
-}
-// CreateLocationRequest creates a new location
-export type ipamservicev1_CreateLocationRequest = {
-  //
-  // Behaviors: REQUIRED
-  tenantId?: number;
-  //
-  // Behaviors: REQUIRED
-  name?: string;
-  code?: string;
-  locationType?: ipamservicev1_LocationType;
-  description?: string;
-  parentId?: string;
-  address?: string;
-  city?: string;
-  state?: string;
-  country?: string;
-  postalCode?: string;
-  latitude?: number;
-  longitude?: number;
-  contact?: string;
-  phone?: string;
-  email?: string;
-  status?: ipamservicev1_LocationStatus;
-  tags?: string;
-  metadata?: string;
-  rackSizeU?: number;
-};
-
-export type ipamservicev1_LocationType =
-  | "LOCATION_TYPE_UNSPECIFIED"
-  | "LOCATION_TYPE_REGION"
-  | "LOCATION_TYPE_COUNTRY"
-  | "LOCATION_TYPE_CITY"
-  | "LOCATION_TYPE_DATACENTER"
-  | "LOCATION_TYPE_BUILDING"
-  | "LOCATION_TYPE_FLOOR"
-  | "LOCATION_TYPE_ROOM"
-  | "LOCATION_TYPE_RACK"
-  | "LOCATION_TYPE_SITE"
-  | "LOCATION_TYPE_BRANCH";
-export type ipamservicev1_LocationStatus =
-  | "LOCATION_STATUS_UNSPECIFIED"
-  | "LOCATION_STATUS_ACTIVE"
-  | "LOCATION_STATUS_PLANNED"
-  | "LOCATION_STATUS_DECOMMISSIONED";
-export type ipamservicev1_CreateLocationResponse = {
-  location: ipamservicev1_Location | undefined;
-};
-
-// Location represents a physical site/datacenter/building
-export type ipamservicev1_Location = {
-  // Unique identifier
-  id?: string;
-  // Tenant ID for multi-tenancy
-  tenantId?: number;
-  // Location name
-  name?: string;
-  // Location code (short identifier)
-  code?: string;
-  // Location type
-  locationType?: ipamservicev1_LocationType;
-  // Description
-  description?: string;
-  // Parent location ID (for hierarchy)
-  parentId?: string;
-  // Full path (e.g., "Region/Country/City/DC")
-  path?: string;
-  // Physical address
-  address?: string;
-  // City
-  city?: string;
-  // State/Province
-  state?: string;
-  // Country
-  country?: string;
-  // Postal code
-  postalCode?: string;
-  // Latitude
-  latitude?: number;
-  // Longitude
-  longitude?: number;
-  // Contact person
-  contact?: string;
-  // Contact phone
-  phone?: string;
-  // Contact email
-  email?: string;
-  // Number of child locations
-  childCount?: number;
-  // Number of devices at this location
-  deviceCount?: number;
-  // Number of subnets at this location
-  subnetCount?: number;
-  // Number of VLANs at this location
-  vlanCount?: number;
-  // Location status
-  status?: ipamservicev1_LocationStatus;
-  // Custom tags (JSON)
-  tags?: string;
-  // Custom metadata (JSON)
-  metadata?: string;
-  // Rack size in U (only applicable when location_type is RACK)
-  rackSizeU?: number;
-  // Creation timestamp
-  createdAt?: wellKnownTimestamp;
-  // Last update timestamp
-  updatedAt?: wellKnownTimestamp;
-  // Creator user ID
-  createdBy?: number;
-  // Last updater user ID
-  updatedBy?: number;
-};
-
-// GetLocationTreeRequest retrieves location hierarchy
-export type ipamservicev1_GetLocationTreeRequest = {
-  tenantId?: number;
-  rootId?: string;
-  maxDepth?: number;
-  includeCounts?: boolean;
-};
-
-export type ipamservicev1_GetLocationTreeResponse = {
-  nodes: ipamservicev1_LocationTreeNode[] | undefined;
-};
-
-export type ipamservicev1_LocationTreeNode = {
-  location: ipamservicev1_Location | undefined;
-  children: ipamservicev1_LocationTreeNode[] | undefined;
-};
-
-// GetLocationRequest retrieves a location by ID
-export type ipamservicev1_GetLocationRequest = {
-  //
-  // Behaviors: REQUIRED
-  id: string | undefined;
-};
-
-export type ipamservicev1_GetLocationResponse = {
-  location: ipamservicev1_Location | undefined;
-};
-
-// ListLocationsRequest lists locations with filtering
-export type ipamservicev1_ListLocationsRequest = {
-  tenantId?: number;
-  page?: number;
-  pageSize?: number;
-  noPaging?: boolean;
-  query?: string;
-  orderBy: string[] | undefined;
-  fieldMask?: string;
-  // Filter by parent
-  parentId?: string;
-  // Filter by type
-  locationType?: ipamservicev1_LocationType;
-  // Filter by country
-  country?: string;
-  // Filter by status
-  status?: ipamservicev1_LocationStatus;
-};
-
-export type ipamservicev1_ListLocationsResponse = {
-  items: ipamservicev1_Location[] | undefined;
-  total?: number;
-};
-
-// UpdateLocationRequest updates a location
-export type ipamservicev1_UpdateLocationRequest = {
-  //
-  // Behaviors: REQUIRED
-  id: string | undefined;
-  data?: ipamservicev1_Location;
-  updateMask: wellKnownFieldMask | undefined;
-};
-
-export type ipamservicev1_UpdateLocationResponse = {
-  location: ipamservicev1_Location | undefined;
-};
-
-// DeleteLocationRequest deletes a location
-export type ipamservicev1_DeleteLocationRequest = {
-  //
-  // Behaviors: REQUIRED
-  id: string | undefined;
-  // Force delete even if location has children
-  force?: boolean;
-};
-
-// IPAM Subnet Gateway Service - HTTP gateway for subnet management
-export interface IpamSubnetGatewayService {
-  // Create a new subnet
-  CreateSubnet(request: ipamservicev1_CreateSubnetRequest): Promise<ipamservicev1_CreateSubnetResponse>;
-  // Get subnet tree structure (must be before GetSubnet to avoid route conflict)
-  GetSubnetTree(request: ipamservicev1_GetSubnetTreeRequest): Promise<ipamservicev1_GetSubnetTreeResponse>;
-  // Get subnet statistics
-  GetSubnetStats(request: ipamservicev1_GetSubnetStatsRequest): Promise<ipamservicev1_GetSubnetStatsResponse>;
-  // Get a subnet by ID
-  GetSubnet(request: ipamservicev1_GetSubnetRequest): Promise<ipamservicev1_GetSubnetResponse>;
-  // List subnets
-  ListSubnets(request: ipamservicev1_ListSubnetsRequest): Promise<ipamservicev1_ListSubnetsResponse>;
-  // Update subnet metadata
-  UpdateSubnet(request: ipamservicev1_UpdateSubnetRequest): Promise<ipamservicev1_UpdateSubnetResponse>;
-  // Delete a subnet
-  DeleteSubnet(request: ipamservicev1_DeleteSubnetRequest): Promise<wellKnownEmpty>;
-  // Scan subnet for active hosts
-  ScanSubnet(request: ipamservicev1_ScanSubnetRequest): Promise<ipamservicev1_ScanSubnetResponse>;
-}
-
-export function createIpamSubnetGatewayServiceClient(
-  handler: RequestHandler
-): IpamSubnetGatewayService {
-  return {
-    CreateSubnet(request) { // eslint-disable-line @typescript-eslint/no-unused-vars
-      const path = `admin/v1/ipam/subnets`; // eslint-disable-line quotes
-      const body = JSON.stringify(request);
-      const queryParams: string[] = [];
-      let uri = path;
-      if (queryParams.length > 0) {
-        uri += `?${queryParams.join("&")}`
-      }
-      return handler({
-        path: uri,
-        method: "POST",
-        body,
-      }, {
-        service: "IpamSubnetGatewayService",
-        method: "CreateSubnet",
-      }) as Promise<ipamservicev1_CreateSubnetResponse>;
-    },
-    GetSubnetTree(request) { // eslint-disable-line @typescript-eslint/no-unused-vars
-      const path = `admin/v1/ipam/subnets/tree`; // eslint-disable-line quotes
-      const body = null;
-      const queryParams: string[] = [];
-      if (request.tenantId) {
-        queryParams.push(`tenantId=${encodeURIComponent(request.tenantId.toString())}`)
-      }
-      if (request.rootId) {
-        queryParams.push(`rootId=${encodeURIComponent(request.rootId.toString())}`)
-      }
-      if (request.maxDepth) {
-        queryParams.push(`maxDepth=${encodeURIComponent(request.maxDepth.toString())}`)
-      }
-      if (request.includeStats) {
-        queryParams.push(`includeStats=${encodeURIComponent(request.includeStats.toString())}`)
-      }
-      let uri = path;
-      if (queryParams.length > 0) {
-        uri += `?${queryParams.join("&")}`
-      }
-      return handler({
-        path: uri,
-        method: "GET",
-        body,
-      }, {
-        service: "IpamSubnetGatewayService",
-        method: "GetSubnetTree",
-      }) as Promise<ipamservicev1_GetSubnetTreeResponse>;
-    },
-    GetSubnetStats(request) { // eslint-disable-line @typescript-eslint/no-unused-vars
-      if (!request.id) {
-        throw new Error("missing required field request.id");
-      }
-      const path = `admin/v1/ipam/subnets/${request.id}/stats`; // eslint-disable-line quotes
-      const body = null;
-      const queryParams: string[] = [];
-      let uri = path;
-      if (queryParams.length > 0) {
-        uri += `?${queryParams.join("&")}`
-      }
-      return handler({
-        path: uri,
-        method: "GET",
-        body,
-      }, {
-        service: "IpamSubnetGatewayService",
-        method: "GetSubnetStats",
-      }) as Promise<ipamservicev1_GetSubnetStatsResponse>;
-    },
-    GetSubnet(request) { // eslint-disable-line @typescript-eslint/no-unused-vars
-      if (!request.id) {
-        throw new Error("missing required field request.id");
-      }
-      const path = `admin/v1/ipam/subnets/${request.id}`; // eslint-disable-line quotes
-      const body = null;
-      const queryParams: string[] = [];
-      let uri = path;
-      if (queryParams.length > 0) {
-        uri += `?${queryParams.join("&")}`
-      }
-      return handler({
-        path: uri,
-        method: "GET",
-        body,
-      }, {
-        service: "IpamSubnetGatewayService",
-        method: "GetSubnet",
-      }) as Promise<ipamservicev1_GetSubnetResponse>;
-    },
-    ListSubnets(request) { // eslint-disable-line @typescript-eslint/no-unused-vars
-      const path = `admin/v1/ipam/subnets`; // eslint-disable-line quotes
-      const body = null;
-      const queryParams: string[] = [];
-      if (request.tenantId) {
-        queryParams.push(`tenantId=${encodeURIComponent(request.tenantId.toString())}`)
-      }
-      if (request.page) {
-        queryParams.push(`page=${encodeURIComponent(request.page.toString())}`)
-      }
-      if (request.pageSize) {
-        queryParams.push(`pageSize=${encodeURIComponent(request.pageSize.toString())}`)
-      }
-      if (request.noPaging) {
-        queryParams.push(`noPaging=${encodeURIComponent(request.noPaging.toString())}`)
-      }
-      if (request.query) {
-        queryParams.push(`query=${encodeURIComponent(request.query.toString())}`)
-      }
-      if (request.orderBy) {
-        request.orderBy.forEach((x) => {
-          queryParams.push(`orderBy=${encodeURIComponent(x.toString())}`)
-        })
-      }
-      if (request.fieldMask) {
-        queryParams.push(`fieldMask=${encodeURIComponent(request.fieldMask.toString())}`)
-      }
-      if (request.vlanId) {
-        queryParams.push(`vlanId=${encodeURIComponent(request.vlanId.toString())}`)
-      }
-      if (request.parentId) {
-        queryParams.push(`parentId=${encodeURIComponent(request.parentId.toString())}`)
-      }
-      if (request.locationId) {
-        queryParams.push(`locationId=${encodeURIComponent(request.locationId.toString())}`)
-      }
-      if (request.status) {
-        queryParams.push(`status=${encodeURIComponent(request.status.toString())}`)
-      }
-      if (request.ipVersion) {
-        queryParams.push(`ipVersion=${encodeURIComponent(request.ipVersion.toString())}`)
-      }
-      let uri = path;
-      if (queryParams.length > 0) {
-        uri += `?${queryParams.join("&")}`
-      }
-      return handler({
-        path: uri,
-        method: "GET",
-        body,
-      }, {
-        service: "IpamSubnetGatewayService",
-        method: "ListSubnets",
-      }) as Promise<ipamservicev1_ListSubnetsResponse>;
-    },
-    UpdateSubnet(request) { // eslint-disable-line @typescript-eslint/no-unused-vars
-      if (!request.id) {
-        throw new Error("missing required field request.id");
-      }
-      const path = `admin/v1/ipam/subnets/${request.id}`; // eslint-disable-line quotes
-      const body = JSON.stringify(request);
-      const queryParams: string[] = [];
-      let uri = path;
-      if (queryParams.length > 0) {
-        uri += `?${queryParams.join("&")}`
-      }
-      return handler({
-        path: uri,
-        method: "PUT",
-        body,
-      }, {
-        service: "IpamSubnetGatewayService",
-        method: "UpdateSubnet",
-      }) as Promise<ipamservicev1_UpdateSubnetResponse>;
-    },
-    DeleteSubnet(request) { // eslint-disable-line @typescript-eslint/no-unused-vars
-      if (!request.id) {
-        throw new Error("missing required field request.id");
-      }
-      const path = `admin/v1/ipam/subnets/${request.id}`; // eslint-disable-line quotes
-      const body = null;
-      const queryParams: string[] = [];
-      if (request.force) {
-        queryParams.push(`force=${encodeURIComponent(request.force.toString())}`)
-      }
-      let uri = path;
-      if (queryParams.length > 0) {
-        uri += `?${queryParams.join("&")}`
-      }
-      return handler({
-        path: uri,
-        method: "DELETE",
-        body,
-      }, {
-        service: "IpamSubnetGatewayService",
-        method: "DeleteSubnet",
-      }) as Promise<wellKnownEmpty>;
-    },
-    ScanSubnet(request) { // eslint-disable-line @typescript-eslint/no-unused-vars
-      if (!request.id) {
-        throw new Error("missing required field request.id");
-      }
-      const path = `admin/v1/ipam/subnets/${request.id}:scan`; // eslint-disable-line quotes
-      const body = JSON.stringify(request);
-      const queryParams: string[] = [];
-      let uri = path;
-      if (queryParams.length > 0) {
-        uri += `?${queryParams.join("&")}`
-      }
-      return handler({
-        path: uri,
-        method: "POST",
-        body,
-      }, {
-        service: "IpamSubnetGatewayService",
-        method: "ScanSubnet",
-      }) as Promise<ipamservicev1_ScanSubnetResponse>;
-    },
-  };
-}
-// CreateSubnetRequest creates a new subnet
-export type ipamservicev1_CreateSubnetRequest = {
-  //
-  // Behaviors: REQUIRED
-  tenantId?: number;
-  //
-  // Behaviors: REQUIRED
-  name?: string;
-  //
-  // Behaviors: REQUIRED
-  cidr?: string;
-  description?: string;
-  gateway?: string;
-  dnsServers?: string;
-  vlanId?: string;
-  parentId?: string;
-  locationId?: string;
-  status?: ipamservicev1_SubnetStatus;
-  tags?: string;
-  metadata?: string;
-  // Auto-scan the subnet for active hosts after creation
-  autoScan?: boolean;
-  // Scan configuration (used when auto_scan is true)
-  scanConfig?: ipamservicev1_ScanConfig;
-};
-
-export type ipamservicev1_SubnetStatus =
-  | "SUBNET_STATUS_UNSPECIFIED"
-  | "SUBNET_STATUS_ACTIVE"
-  | "SUBNET_STATUS_RESERVED"
-  | "SUBNET_STATUS_DEPRECATED"
-  | "SUBNET_STATUS_DELETED";
-export type ipamservicev1_CreateSubnetResponse = {
-  subnet: ipamservicev1_Subnet | undefined;
-};
-
-// Subnet represents a network subnet (CIDR block)
-export type ipamservicev1_Subnet = {
-  // Unique identifier
-  id?: string;
-  // Tenant ID for multi-tenancy
-  tenantId?: number;
-  // Human-readable name
-  name?: string;
-  // CIDR notation (e.g., "192.168.1.0/24")
-  cidr?: string;
-  // Optional description
-  description?: string;
-  // Gateway IP address
-  gateway?: string;
-  // DNS servers (comma-separated)
-  dnsServers?: string;
-  // Associated VLAN ID
-  vlanId?: string;
-  // Parent subnet ID (for hierarchical subnets)
-  parentId?: string;
-  // Location/site ID
-  locationId?: string;
-  // Subnet status
-  status?: ipamservicev1_SubnetStatus;
-  // IP version (4 or 6)
-  ipVersion?: number;
-  // Network address
-  networkAddress?: string;
-  // Broadcast address
-  broadcastAddress?: string;
-  // Subnet mask
-  mask?: string;
-  // Prefix length
-  prefixLength?: number;
-  // Total number of addresses
-  totalAddresses?: number;
-  // Number of used addresses
-  usedAddresses?: number;
-  // Number of available addresses
-  availableAddresses?: number;
-  // Utilization percentage
-  utilization?: number;
-  // Custom tags (JSON)
-  tags?: string;
-  // Custom metadata (JSON)
-  metadata?: string;
-  // Creation timestamp
-  createdAt?: wellKnownTimestamp;
-  // Last update timestamp
-  updatedAt?: wellKnownTimestamp;
-  // Creator user ID
-  createdBy?: number;
-  // Last updater user ID
-  updatedBy?: number;
-};
-
-// GetSubnetTreeRequest retrieves subnet hierarchy
-export type ipamservicev1_GetSubnetTreeRequest = {
-  tenantId?: number;
-  rootId?: string;
-  maxDepth?: number;
-  includeStats?: boolean;
-};
-
-export type ipamservicev1_GetSubnetTreeResponse = {
-  nodes: ipamservicev1_SubnetTreeNode[] | undefined;
-};
-
-export type ipamservicev1_SubnetTreeNode = {
-  subnet: ipamservicev1_Subnet | undefined;
-  children: ipamservicev1_SubnetTreeNode[] | undefined;
-};
-
-// GetSubnetStatsRequest gets utilization statistics
-export type ipamservicev1_GetSubnetStatsRequest = {
-  //
-  // Behaviors: REQUIRED
-  id: string | undefined;
-};
-
-export type ipamservicev1_GetSubnetStatsResponse = {
-  totalAddresses: number | undefined;
-  usedAddresses: number | undefined;
-  availableAddresses: number | undefined;
-  reservedAddresses: number | undefined;
-  utilization: number | undefined;
-};
-
-// GetSubnetRequest retrieves a subnet by ID
-export type ipamservicev1_GetSubnetRequest = {
-  //
-  // Behaviors: REQUIRED
-  id: string | undefined;
-};
-
-export type ipamservicev1_GetSubnetResponse = {
-  subnet: ipamservicev1_Subnet | undefined;
-};
-
-// ListSubnetsRequest lists subnets with filtering
-export type ipamservicev1_ListSubnetsRequest = {
-  tenantId?: number;
-  page?: number;
-  pageSize?: number;
-  noPaging?: boolean;
-  query?: string;
-  orderBy: string[] | undefined;
-  fieldMask?: string;
-  // Filter by VLAN
-  vlanId?: string;
-  // Filter by parent subnet
-  parentId?: string;
-  // Filter by location
-  locationId?: string;
-  // Filter by status
-  status?: ipamservicev1_SubnetStatus;
-  // Filter by IP version
-  ipVersion?: number;
-};
-
-export type ipamservicev1_ListSubnetsResponse = {
-  items: ipamservicev1_Subnet[] | undefined;
-  total?: number;
-};
-
-// UpdateSubnetRequest updates a subnet
-export type ipamservicev1_UpdateSubnetRequest = {
-  //
-  // Behaviors: REQUIRED
-  id: string | undefined;
-  data?: ipamservicev1_Subnet;
-  updateMask: wellKnownFieldMask | undefined;
-};
-
-export type ipamservicev1_UpdateSubnetResponse = {
-  subnet: ipamservicev1_Subnet | undefined;
-};
-
-// DeleteSubnetRequest deletes a subnet
-export type ipamservicev1_DeleteSubnetRequest = {
-  //
-  // Behaviors: REQUIRED
-  id: string | undefined;
-  // Force delete even if subnet has addresses
-  force?: boolean;
-};
-
-// ScanSubnetRequest scans a subnet for active hosts
-export type ipamservicev1_ScanSubnetRequest = {
-  //
-  // Behaviors: REQUIRED
-  id: string | undefined;
-};
-
-export type ipamservicev1_ScanSubnetResponse = {
-  discoveredAddresses: string[] | undefined;
-  newAddresses: number | undefined;
-};
-
-// IPAM System Gateway Service - HTTP gateway for system operations
-export interface IpamSystemGatewayService {
-  // Health check
-  HealthCheck(request: ipamservicev1_HealthCheckRequest): Promise<ipamservicev1_HealthCheckResponse>;
-  // Get overall IPAM statistics
-  GetStats(request: ipamservicev1_GetStatsRequest): Promise<ipamservicev1_GetStatsResponse>;
-  // Get DNS configuration for reverse DNS lookups
-  GetDnsConfig(request: ipamservicev1_GetDnsConfigRequest): Promise<ipamservicev1_GetDnsConfigResponse>;
-  // Update DNS configuration
-  UpdateDnsConfig(request: ipamservicev1_UpdateDnsConfigRequest): Promise<ipamservicev1_UpdateDnsConfigResponse>;
-  // Test DNS configuration
-  TestDnsConfig(request: ipamservicev1_TestDnsConfigRequest): Promise<ipamservicev1_TestDnsConfigResponse>;
-}
-
-export function createIpamSystemGatewayServiceClient(
-  handler: RequestHandler
-): IpamSystemGatewayService {
-  return {
-    HealthCheck(request) { // eslint-disable-line @typescript-eslint/no-unused-vars
-      const path = `admin/v1/ipam/health`; // eslint-disable-line quotes
-      const body = null;
-      const queryParams: string[] = [];
-      let uri = path;
-      if (queryParams.length > 0) {
-        uri += `?${queryParams.join("&")}`
-      }
-      return handler({
-        path: uri,
-        method: "GET",
-        body,
-      }, {
-        service: "IpamSystemGatewayService",
-        method: "HealthCheck",
-      }) as Promise<ipamservicev1_HealthCheckResponse>;
-    },
-    GetStats(request) { // eslint-disable-line @typescript-eslint/no-unused-vars
-      const path = `admin/v1/ipam/stats`; // eslint-disable-line quotes
-      const body = null;
-      const queryParams: string[] = [];
-      if (request.tenantId) {
-        queryParams.push(`tenantId=${encodeURIComponent(request.tenantId.toString())}`)
-      }
-      let uri = path;
-      if (queryParams.length > 0) {
-        uri += `?${queryParams.join("&")}`
-      }
-      return handler({
-        path: uri,
-        method: "GET",
-        body,
-      }, {
-        service: "IpamSystemGatewayService",
-        method: "GetStats",
-      }) as Promise<ipamservicev1_GetStatsResponse>;
-    },
-    GetDnsConfig(request) { // eslint-disable-line @typescript-eslint/no-unused-vars
-      const path = `admin/v1/ipam/dns-config`; // eslint-disable-line quotes
-      const body = null;
-      const queryParams: string[] = [];
-      if (request.tenantId) {
-        queryParams.push(`tenantId=${encodeURIComponent(request.tenantId.toString())}`)
-      }
-      let uri = path;
-      if (queryParams.length > 0) {
-        uri += `?${queryParams.join("&")}`
-      }
-      return handler({
-        path: uri,
-        method: "GET",
-        body,
-      }, {
-        service: "IpamSystemGatewayService",
-        method: "GetDnsConfig",
-      }) as Promise<ipamservicev1_GetDnsConfigResponse>;
-    },
-    UpdateDnsConfig(request) { // eslint-disable-line @typescript-eslint/no-unused-vars
-      const path = `admin/v1/ipam/dns-config`; // eslint-disable-line quotes
-      const body = JSON.stringify(request);
-      const queryParams: string[] = [];
-      let uri = path;
-      if (queryParams.length > 0) {
-        uri += `?${queryParams.join("&")}`
-      }
-      return handler({
-        path: uri,
-        method: "PUT",
-        body,
-      }, {
-        service: "IpamSystemGatewayService",
-        method: "UpdateDnsConfig",
-      }) as Promise<ipamservicev1_UpdateDnsConfigResponse>;
-    },
-    TestDnsConfig(request) { // eslint-disable-line @typescript-eslint/no-unused-vars
-      const path = `admin/v1/ipam/dns-config/test`; // eslint-disable-line quotes
-      const body = JSON.stringify(request);
-      const queryParams: string[] = [];
-      let uri = path;
-      if (queryParams.length > 0) {
-        uri += `?${queryParams.join("&")}`
-      }
-      return handler({
-        path: uri,
-        method: "POST",
-        body,
-      }, {
-        service: "IpamSystemGatewayService",
-        method: "TestDnsConfig",
-      }) as Promise<ipamservicev1_TestDnsConfigResponse>;
-    },
-  };
-}
-// HealthCheckRequest for health checks
-export type ipamservicev1_HealthCheckRequest = {
-};
-
-export type ipamservicev1_HealthCheckResponse = {
-  status: string | undefined;
-  version: string | undefined;
-  timestamp: wellKnownTimestamp | undefined;
-};
-
-// GetStatsRequest retrieves overall IPAM statistics
-export type ipamservicev1_GetStatsRequest = {
-  tenantId?: number;
-};
-
-export type ipamservicev1_GetStatsResponse = {
-  totalSubnets: number | undefined;
-  totalAddresses: number | undefined;
-  usedAddresses: number | undefined;
-  availableAddresses: number | undefined;
-  totalVlans: number | undefined;
-  totalDevices: number | undefined;
-  totalLocations: number | undefined;
-  overallUtilization: number | undefined;
-};
-
-// GetDnsConfigRequest retrieves DNS configuration for a tenant
-export type ipamservicev1_GetDnsConfigRequest = {
-  //
-  // Behaviors: REQUIRED
-  tenantId?: number;
-};
-
-export type ipamservicev1_GetDnsConfigResponse = {
-  config: ipamservicev1_DnsConfig | undefined;
-};
-
-// DnsConfig holds DNS server configuration for reverse DNS lookups
-export type ipamservicev1_DnsConfig = {
-  // Unique identifier
-  id?: string;
-  // Tenant ID
-  tenantId?: number;
-  // List of DNS server addresses (e.g., "8.8.8.8", "1.1.1.1")
-  dnsServers: string[] | undefined;
-  // Timeout for DNS queries in milliseconds (default 5000)
-  timeoutMs?: number;
-  // Whether to use system DNS as fallback
-  useSystemDnsFallback?: boolean;
-  // Whether reverse DNS lookup is enabled
-  reverseDnsEnabled?: boolean;
-  // Creation timestamp
-  createdAt?: wellKnownTimestamp;
-  // Last update timestamp
-  updatedAt?: wellKnownTimestamp;
-};
-
-// UpdateDnsConfigRequest updates DNS configuration
-export type ipamservicev1_UpdateDnsConfigRequest = {
-  //
-  // Behaviors: REQUIRED
-  tenantId?: number;
-  // DNS server addresses
-  dnsServers: string[] | undefined;
-  // Timeout for DNS queries in milliseconds
-  timeoutMs?: number;
-  // Whether to use system DNS as fallback
-  useSystemDnsFallback?: boolean;
-  // Whether reverse DNS lookup is enabled
-  reverseDnsEnabled?: boolean;
-};
-
-export type ipamservicev1_UpdateDnsConfigResponse = {
-  config: ipamservicev1_DnsConfig | undefined;
-};
-
-// TestDnsConfigRequest tests DNS configuration by performing a sample lookup
-export type ipamservicev1_TestDnsConfigRequest = {
-  tenantId?: number;
-  // Test IP address to perform reverse DNS lookup
-  //
-  // Behaviors: REQUIRED
-  testIp: string | undefined;
-  // Optional: override DNS servers for this test
-  dnsServers: string[] | undefined;
-};
-
-export type ipamservicev1_TestDnsConfigResponse = {
-  success: boolean | undefined;
-  hostname?: string;
-  errorMessage?: string;
-  latencyMs?: number;
-};
-
-// IPAM VLAN Gateway Service - HTTP gateway for VLAN management
-export interface IpamVlanGatewayService {
-  // Create a new VLAN
-  CreateVlan(request: ipamservicev1_CreateVlanRequest): Promise<ipamservicev1_CreateVlanResponse>;
-  // Get subnets associated with a VLAN (must be before GetVlan to avoid route conflict)
-  GetVlanSubnets(request: ipamservicev1_GetVlanSubnetsRequest): Promise<ipamservicev1_GetVlanSubnetsResponse>;
-  // Get a VLAN by ID
-  GetVlan(request: ipamservicev1_GetVlanRequest): Promise<ipamservicev1_GetVlanResponse>;
-  // List VLANs
-  ListVlans(request: ipamservicev1_ListVlansRequest): Promise<ipamservicev1_ListVlansResponse>;
-  // Update VLAN metadata
-  UpdateVlan(request: ipamservicev1_UpdateVlanRequest): Promise<ipamservicev1_UpdateVlanResponse>;
-  // Delete a VLAN
-  DeleteVlan(request: ipamservicev1_DeleteVlanRequest): Promise<wellKnownEmpty>;
-}
-
-export function createIpamVlanGatewayServiceClient(
-  handler: RequestHandler
-): IpamVlanGatewayService {
-  return {
-    CreateVlan(request) { // eslint-disable-line @typescript-eslint/no-unused-vars
-      const path = `admin/v1/ipam/vlans`; // eslint-disable-line quotes
-      const body = JSON.stringify(request);
-      const queryParams: string[] = [];
-      let uri = path;
-      if (queryParams.length > 0) {
-        uri += `?${queryParams.join("&")}`
-      }
-      return handler({
-        path: uri,
-        method: "POST",
-        body,
-      }, {
-        service: "IpamVlanGatewayService",
-        method: "CreateVlan",
-      }) as Promise<ipamservicev1_CreateVlanResponse>;
-    },
-    GetVlanSubnets(request) { // eslint-disable-line @typescript-eslint/no-unused-vars
-      if (!request.id) {
-        throw new Error("missing required field request.id");
-      }
-      const path = `admin/v1/ipam/vlans/${request.id}/subnets`; // eslint-disable-line quotes
-      const body = null;
-      const queryParams: string[] = [];
-      let uri = path;
-      if (queryParams.length > 0) {
-        uri += `?${queryParams.join("&")}`
-      }
-      return handler({
-        path: uri,
-        method: "GET",
-        body,
-      }, {
-        service: "IpamVlanGatewayService",
-        method: "GetVlanSubnets",
-      }) as Promise<ipamservicev1_GetVlanSubnetsResponse>;
-    },
-    GetVlan(request) { // eslint-disable-line @typescript-eslint/no-unused-vars
-      if (!request.id) {
-        throw new Error("missing required field request.id");
-      }
-      const path = `admin/v1/ipam/vlans/${request.id}`; // eslint-disable-line quotes
-      const body = null;
-      const queryParams: string[] = [];
-      let uri = path;
-      if (queryParams.length > 0) {
-        uri += `?${queryParams.join("&")}`
-      }
-      return handler({
-        path: uri,
-        method: "GET",
-        body,
-      }, {
-        service: "IpamVlanGatewayService",
-        method: "GetVlan",
-      }) as Promise<ipamservicev1_GetVlanResponse>;
-    },
-    ListVlans(request) { // eslint-disable-line @typescript-eslint/no-unused-vars
-      const path = `admin/v1/ipam/vlans`; // eslint-disable-line quotes
-      const body = null;
-      const queryParams: string[] = [];
-      if (request.tenantId) {
-        queryParams.push(`tenantId=${encodeURIComponent(request.tenantId.toString())}`)
-      }
-      if (request.page) {
-        queryParams.push(`page=${encodeURIComponent(request.page.toString())}`)
-      }
-      if (request.pageSize) {
-        queryParams.push(`pageSize=${encodeURIComponent(request.pageSize.toString())}`)
-      }
-      if (request.noPaging) {
-        queryParams.push(`noPaging=${encodeURIComponent(request.noPaging.toString())}`)
-      }
-      if (request.query) {
-        queryParams.push(`query=${encodeURIComponent(request.query.toString())}`)
-      }
-      if (request.orderBy) {
-        request.orderBy.forEach((x) => {
-          queryParams.push(`orderBy=${encodeURIComponent(x.toString())}`)
-        })
-      }
-      if (request.fieldMask) {
-        queryParams.push(`fieldMask=${encodeURIComponent(request.fieldMask.toString())}`)
-      }
-      if (request.locationId) {
-        queryParams.push(`locationId=${encodeURIComponent(request.locationId.toString())}`)
-      }
-      if (request.domain) {
-        queryParams.push(`domain=${encodeURIComponent(request.domain.toString())}`)
-      }
-      if (request.status) {
-        queryParams.push(`status=${encodeURIComponent(request.status.toString())}`)
-      }
-      if (request.vlanIdMin) {
-        queryParams.push(`vlanIdMin=${encodeURIComponent(request.vlanIdMin.toString())}`)
-      }
-      if (request.vlanIdMax) {
-        queryParams.push(`vlanIdMax=${encodeURIComponent(request.vlanIdMax.toString())}`)
-      }
-      let uri = path;
-      if (queryParams.length > 0) {
-        uri += `?${queryParams.join("&")}`
-      }
-      return handler({
-        path: uri,
-        method: "GET",
-        body,
-      }, {
-        service: "IpamVlanGatewayService",
-        method: "ListVlans",
-      }) as Promise<ipamservicev1_ListVlansResponse>;
-    },
-    UpdateVlan(request) { // eslint-disable-line @typescript-eslint/no-unused-vars
-      if (!request.id) {
-        throw new Error("missing required field request.id");
-      }
-      const path = `admin/v1/ipam/vlans/${request.id}`; // eslint-disable-line quotes
-      const body = JSON.stringify(request);
-      const queryParams: string[] = [];
-      let uri = path;
-      if (queryParams.length > 0) {
-        uri += `?${queryParams.join("&")}`
-      }
-      return handler({
-        path: uri,
-        method: "PUT",
-        body,
-      }, {
-        service: "IpamVlanGatewayService",
-        method: "UpdateVlan",
-      }) as Promise<ipamservicev1_UpdateVlanResponse>;
-    },
-    DeleteVlan(request) { // eslint-disable-line @typescript-eslint/no-unused-vars
-      if (!request.id) {
-        throw new Error("missing required field request.id");
-      }
-      const path = `admin/v1/ipam/vlans/${request.id}`; // eslint-disable-line quotes
-      const body = null;
-      const queryParams: string[] = [];
-      if (request.force) {
-        queryParams.push(`force=${encodeURIComponent(request.force.toString())}`)
-      }
-      let uri = path;
-      if (queryParams.length > 0) {
-        uri += `?${queryParams.join("&")}`
-      }
-      return handler({
-        path: uri,
-        method: "DELETE",
-        body,
-      }, {
-        service: "IpamVlanGatewayService",
-        method: "DeleteVlan",
-      }) as Promise<wellKnownEmpty>;
-    },
-  };
-}
-// CreateVlanRequest creates a new VLAN
-export type ipamservicev1_CreateVlanRequest = {
-  //
-  // Behaviors: REQUIRED
-  tenantId?: number;
-  //
-  // Behaviors: REQUIRED
-  vlanId?: number;
-  //
-  // Behaviors: REQUIRED
-  name?: string;
-  description?: string;
-  domain?: string;
-  locationId?: string;
-  status?: ipamservicev1_VlanStatus;
-  tags?: string;
-  metadata?: string;
-};
-
-export type ipamservicev1_VlanStatus =
-  | "VLAN_STATUS_UNSPECIFIED"
-  | "VLAN_STATUS_ACTIVE"
-  | "VLAN_STATUS_RESERVED"
-  | "VLAN_STATUS_DEPRECATED";
-export type ipamservicev1_CreateVlanResponse = {
-  vlan: ipamservicev1_Vlan | undefined;
-};
-
-// Vlan represents a Virtual LAN
-export type ipamservicev1_Vlan = {
-  // Unique identifier
-  id?: string;
-  // Tenant ID for multi-tenancy
-  tenantId?: number;
-  // VLAN ID (1-4094)
-  vlanId?: number;
-  // Human-readable name
-  name?: string;
-  // Description
-  description?: string;
-  // Domain/VTP domain
-  domain?: string;
-  // Location/site ID
-  locationId?: string;
-  // VLAN status
-  status?: ipamservicev1_VlanStatus;
-  // Number of associated subnets
-  subnetCount?: number;
-  // Custom tags (JSON)
-  tags?: string;
-  // Custom metadata (JSON)
-  metadata?: string;
-  // Creation timestamp
-  createdAt?: wellKnownTimestamp;
-  // Last update timestamp
-  updatedAt?: wellKnownTimestamp;
-  // Creator user ID
-  createdBy?: number;
-  // Last updater user ID
-  updatedBy?: number;
-};
-
-// GetVlanSubnetsRequest gets subnets associated with a VLAN
-export type ipamservicev1_GetVlanSubnetsRequest = {
-  //
-  // Behaviors: REQUIRED
-  id: string | undefined;
-};
-
-export type ipamservicev1_GetVlanSubnetsResponse = {
-  subnetIds: string[] | undefined;
-};
-
-// GetVlanRequest retrieves a VLAN by ID
-export type ipamservicev1_GetVlanRequest = {
-  //
-  // Behaviors: REQUIRED
-  id: string | undefined;
-};
-
-export type ipamservicev1_GetVlanResponse = {
-  vlan: ipamservicev1_Vlan | undefined;
-};
-
-// ListVlansRequest lists VLANs with filtering
-export type ipamservicev1_ListVlansRequest = {
-  tenantId?: number;
-  page?: number;
-  pageSize?: number;
-  noPaging?: boolean;
-  query?: string;
-  orderBy: string[] | undefined;
-  fieldMask?: string;
-  // Filter by location
-  locationId?: string;
-  // Filter by domain
-  domain?: string;
-  // Filter by status
-  status?: ipamservicev1_VlanStatus;
-  // Filter by VLAN ID range
-  vlanIdMin?: number;
-  vlanIdMax?: number;
-};
-
-export type ipamservicev1_ListVlansResponse = {
-  items: ipamservicev1_Vlan[] | undefined;
-  total?: number;
-};
-
-// UpdateVlanRequest updates a VLAN
-export type ipamservicev1_UpdateVlanRequest = {
-  //
-  // Behaviors: REQUIRED
-  id: string | undefined;
-  data?: ipamservicev1_Vlan;
-  updateMask: wellKnownFieldMask | undefined;
-};
-
-export type ipamservicev1_UpdateVlanResponse = {
-  vlan: ipamservicev1_Vlan | undefined;
-};
-
-// DeleteVlanRequest deletes a VLAN
-export type ipamservicev1_DeleteVlanRequest = {
-  //
-  // Behaviors: REQUIRED
-  id: string | undefined;
-  // Force delete even if VLAN has subnets
-  force?: boolean;
-};
-
 // Language management service
 export interface LanguageService {
   // Query language list with pagination
@@ -7302,22 +3051,11 @@ export function createLanguageServiceClient(
       if (request.noPaging) {
         queryParams.push(`noPaging=${encodeURIComponent(request.noPaging.toString())}`)
       }
-      if (request.orderBy) {
-        request.orderBy.forEach((x) => {
-          queryParams.push(`orderBy=${encodeURIComponent(x.toString())}`)
-        })
-      }
-      if (request.sorting?.field) {
-        queryParams.push(`sorting.field=${encodeURIComponent(request.sorting.field.toString())}`)
-      }
-      if (request.sorting?.order) {
-        queryParams.push(`sorting.order=${encodeURIComponent(request.sorting.order.toString())}`)
-      }
       if (request.query) {
         queryParams.push(`query=${encodeURIComponent(request.query.toString())}`)
       }
-      if (request.or) {
-        queryParams.push(`or=${encodeURIComponent(request.or.toString())}`)
+      if (request.filter) {
+        queryParams.push(`filter=${encodeURIComponent(request.filter.toString())}`)
       }
       if (request.filterExpr?.type) {
         queryParams.push(`filterExpr.type=${encodeURIComponent(request.filterExpr.type.toString())}`)
@@ -7345,8 +3083,14 @@ export function createLanguageServiceClient(
       if (request.filterExpr?.conditions?.jsonPath) {
         queryParams.push(`filterExpr.conditions.jsonPath=${encodeURIComponent(request.filterExpr.conditions.jsonPath.toString())}`)
       }
-      if (request.filter) {
-        queryParams.push(`filter=${encodeURIComponent(request.filter.toString())}`)
+      if (request.orderBy) {
+        queryParams.push(`orderBy=${encodeURIComponent(request.orderBy.toString())}`)
+      }
+      if (request.sorting?.field) {
+        queryParams.push(`sorting.field=${encodeURIComponent(request.sorting.field.toString())}`)
+      }
+      if (request.sorting?.direction) {
+        queryParams.push(`sorting.direction=${encodeURIComponent(request.sorting.direction.toString())}`)
       }
       if (request.fieldMask) {
         queryParams.push(`fieldMask=${encodeURIComponent(request.fieldMask.toString())}`)
@@ -7518,1772 +3262,6 @@ export type dictservicev1_BatchCreateLanguagesRequest = {
   data: dictservicev1_Language[] | undefined;
 };
 
-// LCM Audit Log Gateway Service - HTTP gateway for LCM audit log access
-export interface LcmAuditLogGatewayService {
-  // List audit logs with filtering and pagination
-  ListAuditLogs(request: lcmservicev1_ListAuditLogsRequest): Promise<lcmservicev1_ListAuditLogsResponse>;
-  // Get a single audit log by database ID
-  GetAuditLog(request: lcmservicev1_GetAuditLogRequest): Promise<lcmservicev1_GetAuditLogResponse>;
-  // Get a single audit log by audit ID (UUID)
-  GetAuditLogByAuditId(request: lcmservicev1_GetAuditLogByAuditIdRequest): Promise<lcmservicev1_GetAuditLogByAuditIdResponse>;
-  // Get audit statistics
-  GetAuditStats(request: lcmservicev1_GetAuditStatsRequest): Promise<lcmservicev1_GetAuditStatsResponse>;
-}
-
-export function createLcmAuditLogGatewayServiceClient(
-  handler: RequestHandler
-): LcmAuditLogGatewayService {
-  return {
-    ListAuditLogs(request) { // eslint-disable-line @typescript-eslint/no-unused-vars
-      const path = `admin/v1/lcm/audit-logs`; // eslint-disable-line quotes
-      const body = null;
-      const queryParams: string[] = [];
-      if (request.tenantId) {
-        queryParams.push(`tenantId=${encodeURIComponent(request.tenantId.toString())}`)
-      }
-      if (request.clientId) {
-        queryParams.push(`clientId=${encodeURIComponent(request.clientId.toString())}`)
-      }
-      if (request.operation) {
-        queryParams.push(`operation=${encodeURIComponent(request.operation.toString())}`)
-      }
-      if (request.success) {
-        queryParams.push(`success=${encodeURIComponent(request.success.toString())}`)
-      }
-      if (request.peerAddress) {
-        queryParams.push(`peerAddress=${encodeURIComponent(request.peerAddress.toString())}`)
-      }
-      if (request.startTime) {
-        queryParams.push(`startTime=${encodeURIComponent(request.startTime.toString())}`)
-      }
-      if (request.endTime) {
-        queryParams.push(`endTime=${encodeURIComponent(request.endTime.toString())}`)
-      }
-      if (request.page) {
-        queryParams.push(`page=${encodeURIComponent(request.page.toString())}`)
-      }
-      if (request.pageSize) {
-        queryParams.push(`pageSize=${encodeURIComponent(request.pageSize.toString())}`)
-      }
-      let uri = path;
-      if (queryParams.length > 0) {
-        uri += `?${queryParams.join("&")}`
-      }
-      return handler({
-        path: uri,
-        method: "GET",
-        body,
-      }, {
-        service: "LcmAuditLogGatewayService",
-        method: "ListAuditLogs",
-      }) as Promise<lcmservicev1_ListAuditLogsResponse>;
-    },
-    GetAuditLog(request) { // eslint-disable-line @typescript-eslint/no-unused-vars
-      if (!request.id) {
-        throw new Error("missing required field request.id");
-      }
-      const path = `admin/v1/lcm/audit-logs/${request.id}`; // eslint-disable-line quotes
-      const body = null;
-      const queryParams: string[] = [];
-      let uri = path;
-      if (queryParams.length > 0) {
-        uri += `?${queryParams.join("&")}`
-      }
-      return handler({
-        path: uri,
-        method: "GET",
-        body,
-      }, {
-        service: "LcmAuditLogGatewayService",
-        method: "GetAuditLog",
-      }) as Promise<lcmservicev1_GetAuditLogResponse>;
-    },
-    GetAuditLogByAuditId(request) { // eslint-disable-line @typescript-eslint/no-unused-vars
-      if (!request.auditId) {
-        throw new Error("missing required field request.audit_id");
-      }
-      const path = `admin/v1/lcm/audit-logs/by-audit-id/${request.auditId}`; // eslint-disable-line quotes
-      const body = null;
-      const queryParams: string[] = [];
-      let uri = path;
-      if (queryParams.length > 0) {
-        uri += `?${queryParams.join("&")}`
-      }
-      return handler({
-        path: uri,
-        method: "GET",
-        body,
-      }, {
-        service: "LcmAuditLogGatewayService",
-        method: "GetAuditLogByAuditId",
-      }) as Promise<lcmservicev1_GetAuditLogByAuditIdResponse>;
-    },
-    GetAuditStats(request) { // eslint-disable-line @typescript-eslint/no-unused-vars
-      const path = `admin/v1/lcm/audit-logs:stats`; // eslint-disable-line quotes
-      const body = null;
-      const queryParams: string[] = [];
-      if (request.tenantId) {
-        queryParams.push(`tenantId=${encodeURIComponent(request.tenantId.toString())}`)
-      }
-      if (request.startTime) {
-        queryParams.push(`startTime=${encodeURIComponent(request.startTime.toString())}`)
-      }
-      if (request.endTime) {
-        queryParams.push(`endTime=${encodeURIComponent(request.endTime.toString())}`)
-      }
-      let uri = path;
-      if (queryParams.length > 0) {
-        uri += `?${queryParams.join("&")}`
-      }
-      return handler({
-        path: uri,
-        method: "GET",
-        body,
-      }, {
-        service: "LcmAuditLogGatewayService",
-        method: "GetAuditStats",
-      }) as Promise<lcmservicev1_GetAuditStatsResponse>;
-    },
-  };
-}
-// List audit logs request
-export type lcmservicev1_ListAuditLogsRequest = {
-  // Filter by tenant ID
-  tenantId?: number;
-  // Filter by client ID
-  clientId?: string;
-  // Filter by operation (partial match)
-  operation?: string;
-  // Filter by success status
-  success?: boolean;
-  // Filter by peer address
-  peerAddress?: string;
-  // Filter by start time
-  startTime?: wellKnownTimestamp;
-  // Filter by end time
-  endTime?: wellKnownTimestamp;
-  // Pagination
-  page?: number;
-  pageSize?: number;
-};
-
-export type lcmservicev1_ListAuditLogsResponse = {
-  items: lcmservicev1_AuditLog[] | undefined;
-  total: number | undefined;
-};
-
-// AuditLog represents an audit log entry for LCM operations
-export type lcmservicev1_AuditLog = {
-  // Database ID
-  id?: number;
-  // Unique audit log identifier (UUID)
-  auditId?: string;
-  // Request ID from metadata
-  requestId?: string;
-  // Tenant ID
-  tenantId?: number;
-  // Operation info
-  operation?: string;
-  serviceName?: string;
-  // Client info (from mTLS)
-  clientId?: string;
-  clientCommonName?: string;
-  clientOrganization?: string;
-  clientSerialNumber?: string;
-  isAuthenticated?: boolean;
-  // Request/Response
-  success?: boolean;
-  errorCode?: number;
-  errorMessage?: string;
-  // Timing
-  latencyMs?: number;
-  // Network info
-  peerAddress?: string;
-  // Cryptographic integrity
-  logHash?: string;
-  // Timestamps
-  createdAt?: wellKnownTimestamp;
-};
-
-// Get a single audit log by ID
-export type lcmservicev1_GetAuditLogRequest = {
-  //
-  // Behaviors: REQUIRED
-  id: number | undefined;
-};
-
-export type lcmservicev1_GetAuditLogResponse = {
-  auditLog: lcmservicev1_AuditLog | undefined;
-};
-
-// Get audit log by audit ID (UUID)
-export type lcmservicev1_GetAuditLogByAuditIdRequest = {
-  //
-  // Behaviors: REQUIRED
-  auditId: string | undefined;
-};
-
-export type lcmservicev1_GetAuditLogByAuditIdResponse = {
-  auditLog: lcmservicev1_AuditLog | undefined;
-};
-
-// Get audit statistics
-export type lcmservicev1_GetAuditStatsRequest = {
-  // Filter by tenant ID
-  tenantId?: number;
-  // Filter by start time
-  startTime?: wellKnownTimestamp;
-  // Filter by end time
-  endTime?: wellKnownTimestamp;
-};
-
-export type lcmservicev1_GetAuditStatsResponse = {
-  // Total number of operations
-  totalOperations: number | undefined;
-  // Number of successful operations
-  successfulOperations: number | undefined;
-  // Number of failed operations
-  failedOperations: number | undefined;
-  // Average latency in milliseconds
-  avgLatencyMs: number | undefined;
-  // Unique clients count
-  uniqueClients: number | undefined;
-  // Operations breakdown by operation type
-  operationsByType: { [key: string]: number } | undefined;
-};
-
-export type ListCertificateJobsRequest = {
-  tenantId?: number;
-  status?: lcmservicev1_CertificateJobStatus;
-  issuerName?: string;
-  page?: number;
-  pageSize?: number;
-};
-
-// Job status enumeration
-export type lcmservicev1_CertificateJobStatus =
-  | "CERTIFICATE_JOB_STATUS_UNSPECIFIED"
-  | "CERTIFICATE_JOB_STATUS_PENDING"
-  | "CERTIFICATE_JOB_STATUS_PROCESSING"
-  | "CERTIFICATE_JOB_STATUS_COMPLETED"
-  | "CERTIFICATE_JOB_STATUS_FAILED"
-  | "CERTIFICATE_JOB_STATUS_CANCELLED";
-// LCM Certificate Gateway Service - HTTP gateway for certificate job management
-export interface LcmCertificateGatewayService {
-  // Request a new certificate (async)
-  RequestCertificate(request: lcmservicev1_RequestCertificateRequest): Promise<lcmservicev1_RequestCertificateResponse>;
-  // Get certificate job status
-  GetJobStatus(request: lcmservicev1_GetJobStatusRequest): Promise<lcmservicev1_GetJobStatusResponse>;
-  // Get certificate job result
-  GetJobResult(request: lcmservicev1_GetJobResultRequest): Promise<lcmservicev1_GetJobResultResponse>;
-  // List certificate jobs
-  ListJobs(request: ListCertificateJobsRequest): Promise<lcmservicev1_ListJobsResponse>;
-  // Cancel a pending certificate job
-  CancelJob(request: lcmservicev1_CancelJobRequest): Promise<wellKnownEmpty>;
-}
-
-export function createLcmCertificateGatewayServiceClient(
-  handler: RequestHandler
-): LcmCertificateGatewayService {
-  return {
-    RequestCertificate(request) { // eslint-disable-line @typescript-eslint/no-unused-vars
-      const path = `admin/v1/lcm/certificates:request`; // eslint-disable-line quotes
-      const body = JSON.stringify(request);
-      const queryParams: string[] = [];
-      let uri = path;
-      if (queryParams.length > 0) {
-        uri += `?${queryParams.join("&")}`
-      }
-      return handler({
-        path: uri,
-        method: "POST",
-        body,
-      }, {
-        service: "LcmCertificateGatewayService",
-        method: "RequestCertificate",
-      }) as Promise<lcmservicev1_RequestCertificateResponse>;
-    },
-    GetJobStatus(request) { // eslint-disable-line @typescript-eslint/no-unused-vars
-      if (!request.jobId) {
-        throw new Error("missing required field request.job_id");
-      }
-      const path = `admin/v1/lcm/jobs/${request.jobId}`; // eslint-disable-line quotes
-      const body = null;
-      const queryParams: string[] = [];
-      let uri = path;
-      if (queryParams.length > 0) {
-        uri += `?${queryParams.join("&")}`
-      }
-      return handler({
-        path: uri,
-        method: "GET",
-        body,
-      }, {
-        service: "LcmCertificateGatewayService",
-        method: "GetJobStatus",
-      }) as Promise<lcmservicev1_GetJobStatusResponse>;
-    },
-    GetJobResult(request) { // eslint-disable-line @typescript-eslint/no-unused-vars
-      if (!request.jobId) {
-        throw new Error("missing required field request.job_id");
-      }
-      const path = `admin/v1/lcm/jobs/${request.jobId}/result`; // eslint-disable-line quotes
-      const body = null;
-      const queryParams: string[] = [];
-      if (request.includePrivateKey) {
-        queryParams.push(`includePrivateKey=${encodeURIComponent(request.includePrivateKey.toString())}`)
-      }
-      let uri = path;
-      if (queryParams.length > 0) {
-        uri += `?${queryParams.join("&")}`
-      }
-      return handler({
-        path: uri,
-        method: "GET",
-        body,
-      }, {
-        service: "LcmCertificateGatewayService",
-        method: "GetJobResult",
-      }) as Promise<lcmservicev1_GetJobResultResponse>;
-    },
-    ListJobs(request) { // eslint-disable-line @typescript-eslint/no-unused-vars
-      const path = `admin/v1/lcm/jobs`; // eslint-disable-line quotes
-      const body = null;
-      const queryParams: string[] = [];
-      if (request.tenantId) {
-        queryParams.push(`tenantId=${encodeURIComponent(request.tenantId.toString())}`)
-      }
-      if (request.status) {
-        queryParams.push(`status=${encodeURIComponent(request.status.toString())}`)
-      }
-      if (request.issuerName) {
-        queryParams.push(`issuerName=${encodeURIComponent(request.issuerName.toString())}`)
-      }
-      if (request.page) {
-        queryParams.push(`page=${encodeURIComponent(request.page.toString())}`)
-      }
-      if (request.pageSize) {
-        queryParams.push(`pageSize=${encodeURIComponent(request.pageSize.toString())}`)
-      }
-      let uri = path;
-      if (queryParams.length > 0) {
-        uri += `?${queryParams.join("&")}`
-      }
-      return handler({
-        path: uri,
-        method: "GET",
-        body,
-      }, {
-        service: "LcmCertificateGatewayService",
-        method: "ListJobs",
-      }) as Promise<lcmservicev1_ListJobsResponse>;
-    },
-    CancelJob(request) { // eslint-disable-line @typescript-eslint/no-unused-vars
-      if (!request.jobId) {
-        throw new Error("missing required field request.job_id");
-      }
-      const path = `admin/v1/lcm/jobs/${request.jobId}:cancel`; // eslint-disable-line quotes
-      const body = JSON.stringify(request);
-      const queryParams: string[] = [];
-      let uri = path;
-      if (queryParams.length > 0) {
-        uri += `?${queryParams.join("&")}`
-      }
-      return handler({
-        path: uri,
-        method: "POST",
-        body,
-      }, {
-        service: "LcmCertificateGatewayService",
-        method: "CancelJob",
-      }) as Promise<wellKnownEmpty>;
-    },
-  };
-}
-// Request to create a new certificate
-export type lcmservicev1_RequestCertificateRequest = {
-  // Issuer to use for certificate generation
-  //
-  // Behaviors: REQUIRED
-  issuerName: string | undefined;
-  // Common name for the certificate
-  //
-  // Behaviors: REQUIRED
-  commonName: string | undefined;
-  // DNS names for Subject Alternative Names
-  dnsNames: string[] | undefined;
-  // IP addresses for Subject Alternative Names
-  ipAddresses: string[] | undefined;
-  // Optional CSR (if not provided, key will be generated)
-  csrPem?: string;
-  // Key type (only used if CSR is not provided)
-  keyType?: string;
-  // Key size in bits (only used if CSR is not provided)
-  keySize?: number;
-  // Certificate validity in days
-  validityDays?: number;
-  // Custom metadata
-  metadata: { [key: string]: string } | undefined;
-};
-
-// Response with job ID for tracking
-export type lcmservicev1_RequestCertificateResponse = {
-  jobId: string | undefined;
-  status: lcmservicev1_CertificateJobStatus | undefined;
-  message: string | undefined;
-};
-
-// Request to get job status
-export type lcmservicev1_GetJobStatusRequest = {
-  //
-  // Behaviors: REQUIRED
-  jobId: string | undefined;
-};
-
-// Job status response
-export type lcmservicev1_GetJobStatusResponse = {
-  jobId: string | undefined;
-  status: lcmservicev1_CertificateJobStatus | undefined;
-  issuerName: string | undefined;
-  issuerType: string | undefined;
-  commonName: string | undefined;
-  dnsNames: string[] | undefined;
-  ipAddresses: string[] | undefined;
-  errorMessage?: string;
-  createdAt: wellKnownTimestamp | undefined;
-  completedAt?: wellKnownTimestamp;
-};
-
-// Request to get job result
-export type lcmservicev1_GetJobResultRequest = {
-  //
-  // Behaviors: REQUIRED
-  jobId: string | undefined;
-  // Whether to include the private key in the response
-  includePrivateKey?: boolean;
-};
-
-// Job result response
-export type lcmservicev1_GetJobResultResponse = {
-  jobId: string | undefined;
-  status: lcmservicev1_CertificateJobStatus | undefined;
-  // Certificate data (only present if job is completed)
-  certificatePem?: string;
-  caCertificatePem?: string;
-  privateKeyPem?: string;
-  serialNumber?: string;
-  expiresAt?: wellKnownTimestamp;
-  issuedAt?: wellKnownTimestamp;
-  // Error info (only present if job failed)
-  errorMessage?: string;
-  // Certificate request data
-  csrPem?: string;
-  keyType?: string;
-  keySize?: number;
-  serverGeneratedKey?: boolean;
-};
-
-// List jobs response
-export type lcmservicev1_ListJobsResponse = {
-  jobs: lcmservicev1_CertificateJobInfo[] | undefined;
-  total: number | undefined;
-};
-
-// Job summary info for listing
-export type lcmservicev1_CertificateJobInfo = {
-  jobId: string | undefined;
-  status: lcmservicev1_CertificateJobStatus | undefined;
-  issuerName: string | undefined;
-  issuerType: string | undefined;
-  commonName: string | undefined;
-  createdAt: wellKnownTimestamp | undefined;
-  completedAt?: wellKnownTimestamp;
-  errorMessage?: string;
-};
-
-// Request to cancel a job
-export type lcmservicev1_CancelJobRequest = {
-  //
-  // Behaviors: REQUIRED
-  jobId: string | undefined;
-};
-
-// Request to grant permission (admin)
-export type AdminGrantPermissionRequest = {
-  tenantId?: number;
-  certificateId: string | undefined;
-  granteeClientId: string | undefined;
-  permissionType: lcmservicev1_PermissionType | undefined;
-  expiresAt?: wellKnownTimestamp;
-  grantedBy?: string;
-};
-
-// Permission type enumeration
-export type lcmservicev1_PermissionType =
-  | "PERMISSION_TYPE_UNSPECIFIED"
-  | "PERMISSION_TYPE_READ"
-  | "PERMISSION_TYPE_DOWNLOAD"
-  | "PERMISSION_TYPE_FULL";
-// Request to revoke permission (admin)
-export type AdminRevokePermissionRequest = {
-  tenantId?: number;
-  certificateId: string | undefined;
-  granteeClientId: string | undefined;
-};
-
-// Request to list permissions for a certificate (admin)
-export type AdminListPermissionsRequest = {
-  tenantId?: number;
-  certificateId: string | undefined;
-};
-
-// Request to list all permissions (admin)
-export type AdminListAllPermissionsRequest = {
-  tenantId?: number;
-  certificateId?: string;
-  granteeClientId?: string;
-  grantedBy?: string;
-  permissionType?: lcmservicev1_PermissionType;
-  includeExpired?: boolean;
-  page?: number;
-  pageSize?: number;
-};
-
-// Response listing all permissions (admin)
-export type AdminListAllPermissionsResponse = {
-  permissions: lcmservicev1_CertificatePermission[] | undefined;
-  total: number | undefined;
-  page?: number;
-  pageSize?: number;
-};
-
-// CertificatePermission represents a permission grant
-export type lcmservicev1_CertificatePermission = {
-  id: number | undefined;
-  certificateId: string | undefined;
-  granteeClientId: number | undefined;
-  granteeClientName: string | undefined;
-  permissionType: lcmservicev1_PermissionType | undefined;
-  grantedBy: string | undefined;
-  expiresAt?: wellKnownTimestamp;
-  createdAt: wellKnownTimestamp | undefined;
-  updatedAt?: wellKnownTimestamp;
-};
-
-// Request to get permission details (admin)
-export type AdminGetPermissionRequest = {
-  tenantId?: number;
-  certificateId: string | undefined;
-  granteeClientId: string | undefined;
-};
-
-// LCM Certificate Permission Gateway Service - HTTP gateway for managing certificate permissions
-export interface LcmCertificatePermissionGatewayService {
-  // Grant permission to a client to access a certificate
-  GrantPermission(request: AdminGrantPermissionRequest): Promise<lcmservicev1_GrantPermissionResponse>;
-  // Revoke a permission
-  RevokePermission(request: AdminRevokePermissionRequest): Promise<wellKnownEmpty>;
-  // List permissions for a certificate
-  ListPermissions(request: AdminListPermissionsRequest): Promise<lcmservicev1_ListPermissionsResponse>;
-  // List all permissions (admin view)
-  ListAllPermissions(request: AdminListAllPermissionsRequest): Promise<AdminListAllPermissionsResponse>;
-  // Get permission details
-  GetPermission(request: AdminGetPermissionRequest): Promise<lcmservicev1_CertificatePermission>;
-}
-
-export function createLcmCertificatePermissionGatewayServiceClient(
-  handler: RequestHandler
-): LcmCertificatePermissionGatewayService {
-  return {
-    GrantPermission(request) { // eslint-disable-line @typescript-eslint/no-unused-vars
-      const path = `admin/v1/lcm/certificate-permissions`; // eslint-disable-line quotes
-      const body = JSON.stringify(request);
-      const queryParams: string[] = [];
-      let uri = path;
-      if (queryParams.length > 0) {
-        uri += `?${queryParams.join("&")}`
-      }
-      return handler({
-        path: uri,
-        method: "POST",
-        body,
-      }, {
-        service: "LcmCertificatePermissionGatewayService",
-        method: "GrantPermission",
-      }) as Promise<lcmservicev1_GrantPermissionResponse>;
-    },
-    RevokePermission(request) { // eslint-disable-line @typescript-eslint/no-unused-vars
-      if (!request.certificateId) {
-        throw new Error("missing required field request.certificate_id");
-      }
-      if (!request.granteeClientId) {
-        throw new Error("missing required field request.grantee_client_id");
-      }
-      const path = `admin/v1/lcm/certificate-permissions/${request.certificateId}/${request.granteeClientId}`; // eslint-disable-line quotes
-      const body = null;
-      const queryParams: string[] = [];
-      if (request.tenantId) {
-        queryParams.push(`tenantId=${encodeURIComponent(request.tenantId.toString())}`)
-      }
-      let uri = path;
-      if (queryParams.length > 0) {
-        uri += `?${queryParams.join("&")}`
-      }
-      return handler({
-        path: uri,
-        method: "DELETE",
-        body,
-      }, {
-        service: "LcmCertificatePermissionGatewayService",
-        method: "RevokePermission",
-      }) as Promise<wellKnownEmpty>;
-    },
-    ListPermissions(request) { // eslint-disable-line @typescript-eslint/no-unused-vars
-      if (!request.certificateId) {
-        throw new Error("missing required field request.certificate_id");
-      }
-      const path = `admin/v1/lcm/certificates/${request.certificateId}/permissions`; // eslint-disable-line quotes
-      const body = null;
-      const queryParams: string[] = [];
-      if (request.tenantId) {
-        queryParams.push(`tenantId=${encodeURIComponent(request.tenantId.toString())}`)
-      }
-      let uri = path;
-      if (queryParams.length > 0) {
-        uri += `?${queryParams.join("&")}`
-      }
-      return handler({
-        path: uri,
-        method: "GET",
-        body,
-      }, {
-        service: "LcmCertificatePermissionGatewayService",
-        method: "ListPermissions",
-      }) as Promise<lcmservicev1_ListPermissionsResponse>;
-    },
-    ListAllPermissions(request) { // eslint-disable-line @typescript-eslint/no-unused-vars
-      const path = `admin/v1/lcm/certificate-permissions`; // eslint-disable-line quotes
-      const body = null;
-      const queryParams: string[] = [];
-      if (request.tenantId) {
-        queryParams.push(`tenantId=${encodeURIComponent(request.tenantId.toString())}`)
-      }
-      if (request.certificateId) {
-        queryParams.push(`certificateId=${encodeURIComponent(request.certificateId.toString())}`)
-      }
-      if (request.granteeClientId) {
-        queryParams.push(`granteeClientId=${encodeURIComponent(request.granteeClientId.toString())}`)
-      }
-      if (request.grantedBy) {
-        queryParams.push(`grantedBy=${encodeURIComponent(request.grantedBy.toString())}`)
-      }
-      if (request.permissionType) {
-        queryParams.push(`permissionType=${encodeURIComponent(request.permissionType.toString())}`)
-      }
-      if (request.includeExpired) {
-        queryParams.push(`includeExpired=${encodeURIComponent(request.includeExpired.toString())}`)
-      }
-      if (request.page) {
-        queryParams.push(`page=${encodeURIComponent(request.page.toString())}`)
-      }
-      if (request.pageSize) {
-        queryParams.push(`pageSize=${encodeURIComponent(request.pageSize.toString())}`)
-      }
-      let uri = path;
-      if (queryParams.length > 0) {
-        uri += `?${queryParams.join("&")}`
-      }
-      return handler({
-        path: uri,
-        method: "GET",
-        body,
-      }, {
-        service: "LcmCertificatePermissionGatewayService",
-        method: "ListAllPermissions",
-      }) as Promise<AdminListAllPermissionsResponse>;
-    },
-    GetPermission(request) { // eslint-disable-line @typescript-eslint/no-unused-vars
-      if (!request.certificateId) {
-        throw new Error("missing required field request.certificate_id");
-      }
-      if (!request.granteeClientId) {
-        throw new Error("missing required field request.grantee_client_id");
-      }
-      const path = `admin/v1/lcm/certificate-permissions/${request.certificateId}/${request.granteeClientId}`; // eslint-disable-line quotes
-      const body = null;
-      const queryParams: string[] = [];
-      if (request.tenantId) {
-        queryParams.push(`tenantId=${encodeURIComponent(request.tenantId.toString())}`)
-      }
-      let uri = path;
-      if (queryParams.length > 0) {
-        uri += `?${queryParams.join("&")}`
-      }
-      return handler({
-        path: uri,
-        method: "GET",
-        body,
-      }, {
-        service: "LcmCertificatePermissionGatewayService",
-        method: "GetPermission",
-      }) as Promise<lcmservicev1_CertificatePermission>;
-    },
-  };
-}
-// Response after granting permission
-export type lcmservicev1_GrantPermissionResponse = {
-  permission: lcmservicev1_CertificatePermission | undefined;
-};
-
-// Response listing all permissions for a certificate
-export type lcmservicev1_ListPermissionsResponse = {
-  permissions: lcmservicev1_CertificatePermission[] | undefined;
-  total: number | undefined;
-};
-
-export type ListCertificatesRequest = {
-  tenantId?: number;
-  clientId?: string;
-  issuerName?: string;
-  commonName?: string;
-  status?: lcmservicev1_MtlsCertificateStatus;
-  includeExpired?: boolean;
-  includeRevoked?: boolean;
-  page?: number;
-  pageSize?: number;
-};
-
-// mTLS Certificate Status (for issued certificates)
-export type lcmservicev1_MtlsCertificateStatus =
-  | "MTLS_CERTIFICATE_STATUS_UNSPECIFIED"
-  | "MTLS_CERTIFICATE_STATUS_ACTIVE"
-  | "MTLS_CERTIFICATE_STATUS_EXPIRED"
-  | "MTLS_CERTIFICATE_STATUS_REVOKED"
-  | "MTLS_CERTIFICATE_STATUS_SUSPENDED";
-export type GetCertificateRequest = {
-  serialNumber: string | undefined;
-};
-
-export type RevokeCertificateRequest = {
-  serialNumber: string | undefined;
-  reason: lcmservicev1_MtlsCertificateRevocationReason | undefined;
-  notes?: string;
-};
-
-// mTLS Certificate Revocation Reason (RFC 5280)
-export type lcmservicev1_MtlsCertificateRevocationReason =
-  | "MTLS_CERT_REVOCATION_REASON_UNSPECIFIED"
-  | "MTLS_CERT_REVOCATION_REASON_KEY_COMPROMISE"
-  | "MTLS_CERT_REVOCATION_REASON_CA_COMPROMISE"
-  | "MTLS_CERT_REVOCATION_REASON_AFFILIATION_CHANGED"
-  | "MTLS_CERT_REVOCATION_REASON_SUPERSEDED"
-  | "MTLS_CERT_REVOCATION_REASON_CESSATION_OF_OPERATION"
-  | "MTLS_CERT_REVOCATION_REASON_CERTIFICATE_HOLD"
-  | "MTLS_CERT_REVOCATION_REASON_PRIVILEGE_WITHDRAWN"
-  | "MTLS_CERT_REVOCATION_REASON_AA_COMPROMISE";
-export type DownloadCertificateRequest = {
-  serialNumber: string | undefined;
-  includeChain?: boolean;
-};
-
-// LCM Client Gateway Service - HTTP gateway for LCM certificate management
-export interface LcmClientGatewayService {
-  // List all mTLS certificates
-  ListCertificates(request: ListCertificatesRequest): Promise<lcmservicev1_ListMtlsCertificatesResponse>;
-  // Download mTLS certificate PEM (MUST be before GetCertificate for route priority)
-  DownloadCertificate(request: DownloadCertificateRequest): Promise<lcmservicev1_DownloadMtlsCertificateResponse>;
-  // Revoke mTLS certificate (MUST be before GetCertificate for route priority)
-  RevokeCertificate(request: RevokeCertificateRequest): Promise<lcmservicev1_RevokeMtlsCertificateResponse>;
-  // Get mTLS certificate details by serial number
-  GetCertificate(request: GetCertificateRequest): Promise<lcmservicev1_GetMtlsCertificateResponse>;
-}
-
-export function createLcmClientGatewayServiceClient(
-  handler: RequestHandler
-): LcmClientGatewayService {
-  return {
-    ListCertificates(request) { // eslint-disable-line @typescript-eslint/no-unused-vars
-      const path = `admin/v1/lcm/certificates`; // eslint-disable-line quotes
-      const body = null;
-      const queryParams: string[] = [];
-      if (request.tenantId) {
-        queryParams.push(`tenantId=${encodeURIComponent(request.tenantId.toString())}`)
-      }
-      if (request.clientId) {
-        queryParams.push(`clientId=${encodeURIComponent(request.clientId.toString())}`)
-      }
-      if (request.issuerName) {
-        queryParams.push(`issuerName=${encodeURIComponent(request.issuerName.toString())}`)
-      }
-      if (request.commonName) {
-        queryParams.push(`commonName=${encodeURIComponent(request.commonName.toString())}`)
-      }
-      if (request.status) {
-        queryParams.push(`status=${encodeURIComponent(request.status.toString())}`)
-      }
-      if (request.includeExpired) {
-        queryParams.push(`includeExpired=${encodeURIComponent(request.includeExpired.toString())}`)
-      }
-      if (request.includeRevoked) {
-        queryParams.push(`includeRevoked=${encodeURIComponent(request.includeRevoked.toString())}`)
-      }
-      if (request.page) {
-        queryParams.push(`page=${encodeURIComponent(request.page.toString())}`)
-      }
-      if (request.pageSize) {
-        queryParams.push(`pageSize=${encodeURIComponent(request.pageSize.toString())}`)
-      }
-      let uri = path;
-      if (queryParams.length > 0) {
-        uri += `?${queryParams.join("&")}`
-      }
-      return handler({
-        path: uri,
-        method: "GET",
-        body,
-      }, {
-        service: "LcmClientGatewayService",
-        method: "ListCertificates",
-      }) as Promise<lcmservicev1_ListMtlsCertificatesResponse>;
-    },
-    DownloadCertificate(request) { // eslint-disable-line @typescript-eslint/no-unused-vars
-      if (!request.serialNumber) {
-        throw new Error("missing required field request.serial_number");
-      }
-      const path = `admin/v1/lcm/certificates/${request.serialNumber}:download`; // eslint-disable-line quotes
-      const body = null;
-      const queryParams: string[] = [];
-      if (request.includeChain) {
-        queryParams.push(`includeChain=${encodeURIComponent(request.includeChain.toString())}`)
-      }
-      let uri = path;
-      if (queryParams.length > 0) {
-        uri += `?${queryParams.join("&")}`
-      }
-      return handler({
-        path: uri,
-        method: "GET",
-        body,
-      }, {
-        service: "LcmClientGatewayService",
-        method: "DownloadCertificate",
-      }) as Promise<lcmservicev1_DownloadMtlsCertificateResponse>;
-    },
-    RevokeCertificate(request) { // eslint-disable-line @typescript-eslint/no-unused-vars
-      if (!request.serialNumber) {
-        throw new Error("missing required field request.serial_number");
-      }
-      const path = `admin/v1/lcm/certificates/${request.serialNumber}:revoke`; // eslint-disable-line quotes
-      const body = JSON.stringify(request);
-      const queryParams: string[] = [];
-      let uri = path;
-      if (queryParams.length > 0) {
-        uri += `?${queryParams.join("&")}`
-      }
-      return handler({
-        path: uri,
-        method: "POST",
-        body,
-      }, {
-        service: "LcmClientGatewayService",
-        method: "RevokeCertificate",
-      }) as Promise<lcmservicev1_RevokeMtlsCertificateResponse>;
-    },
-    GetCertificate(request) { // eslint-disable-line @typescript-eslint/no-unused-vars
-      if (!request.serialNumber) {
-        throw new Error("missing required field request.serial_number");
-      }
-      const path = `admin/v1/lcm/certificates/${request.serialNumber}`; // eslint-disable-line quotes
-      const body = null;
-      const queryParams: string[] = [];
-      let uri = path;
-      if (queryParams.length > 0) {
-        uri += `?${queryParams.join("&")}`
-      }
-      return handler({
-        path: uri,
-        method: "GET",
-        body,
-      }, {
-        service: "LcmClientGatewayService",
-        method: "GetCertificate",
-      }) as Promise<lcmservicev1_GetMtlsCertificateResponse>;
-    },
-  };
-}
-export type lcmservicev1_ListMtlsCertificatesResponse = {
-  items: lcmservicev1_MtlsCertificate[] | undefined;
-  total: number | undefined;
-};
-
-// MtlsCertificate entity - represents an issued mTLS certificate
-export type lcmservicev1_MtlsCertificate = {
-  serialNumber?: number;
-  clientId?: string;
-  commonName?: string;
-  tenantId?: number;
-  subjectDn?: string;
-  issuerDn?: string;
-  issuerName?: string;
-  fingerprintSha256?: string;
-  fingerprintSha1?: string;
-  publicKeyAlgorithm?: string;
-  publicKeySize?: number;
-  signatureAlgorithm?: string;
-  certificatePem?: string;
-  publicKeyPem?: string;
-  dnsNames: string[] | undefined;
-  ipAddresses: string[] | undefined;
-  emailAddresses: string[] | undefined;
-  uris: string[] | undefined;
-  certType?: lcmservicev1_MtlsCertificateType;
-  status?: lcmservicev1_MtlsCertificateStatus;
-  isCa?: boolean;
-  pathLenConstraint?: number;
-  keyUsage: string[] | undefined;
-  extKeyUsage: string[] | undefined;
-  metadata: { [key: string]: string } | undefined;
-  notes?: string;
-  requestId?: number;
-  // Revocation info
-  revocationReason?: lcmservicev1_MtlsCertificateRevocationReason;
-  revocationNotes?: string;
-  // Audit fields
-  issuedBy?: number;
-  revokedBy?: number;
-  createdBy?: number;
-  updatedBy?: number;
-  // Timestamps
-  notBefore?: wellKnownTimestamp;
-  notAfter?: wellKnownTimestamp;
-  issuedAt?: wellKnownTimestamp;
-  revokedAt?: wellKnownTimestamp;
-  lastSeenAt?: wellKnownTimestamp;
-  createTime?: wellKnownTimestamp;
-  updateTime?: wellKnownTimestamp;
-  deleteTime?: wellKnownTimestamp;
-};
-
-export type lcmservicev1_MtlsCertificateType =
-  | "MTLS_CERT_TYPE_UNSPECIFIED"
-  | "MTLS_CERT_TYPE_CLIENT"
-  | "MTLS_CERT_TYPE_INTERNAL";
-export type lcmservicev1_DownloadMtlsCertificateResponse = {
-  certificatePem: string | undefined;
-  chainPem?: string;
-  caCertificatePem?: string;
-};
-
-export type lcmservicev1_RevokeMtlsCertificateResponse = {
-  mtlsCertificate: lcmservicev1_MtlsCertificate | undefined;
-};
-
-export type lcmservicev1_GetMtlsCertificateResponse = {
-  mtlsCertificate: lcmservicev1_MtlsCertificate | undefined;
-};
-
-export type ListLcmIssuersRequest = {
-  tenantId?: number;
-  status?: lcmservicev1_IssuerStatus;
-  type?: string;
-};
-
-// Issuer status enumeration
-export type lcmservicev1_IssuerStatus =
-  | "ISSUER_STATUS_UNSPECIFIED"
-  | "ISSUER_STATUS_ACTIVE"
-  | "ISSUER_STATUS_DISABLED"
-  | "ISSUER_STATUS_ERROR";
-export type GetLcmIssuerRequest = {
-  issuerName: string | undefined;
-};
-
-export type GetDnsProviderRequest = {
-  name: string | undefined;
-};
-
-// LCM Issuer Gateway Service - HTTP gateway for LCM issuer management
-export interface LcmIssuerGatewayService {
-  // List all issuers
-  ListIssuers(request: ListLcmIssuersRequest): Promise<lcmservicev1_ListIssuersResponse>;
-  // Get issuer details
-  GetIssuer(request: GetLcmIssuerRequest): Promise<lcmservicev1_GetIssuerInfoResponse>;
-  // Create a new issuer
-  CreateIssuer(request: lcmservicev1_CreateIssuerRequest): Promise<lcmservicev1_CreateIssuerResponse>;
-  // Update an issuer
-  UpdateIssuer(request: lcmservicev1_UpdateIssuerRequest): Promise<wellKnownEmpty>;
-  // Delete an issuer
-  DeleteIssuer(request: lcmservicev1_DeleteIssuerRequest): Promise<wellKnownEmpty>;
-  // List available DNS providers for ACME challenges
-  ListDnsProviders(request: wellKnownEmpty): Promise<lcmservicev1_ListDnsProvidersResponse>;
-  // Get DNS provider info
-  GetDnsProvider(request: GetDnsProviderRequest): Promise<lcmservicev1_DnsProviderInfo>;
-}
-
-export function createLcmIssuerGatewayServiceClient(
-  handler: RequestHandler
-): LcmIssuerGatewayService {
-  return {
-    ListIssuers(request) { // eslint-disable-line @typescript-eslint/no-unused-vars
-      const path = `admin/v1/lcm/issuers`; // eslint-disable-line quotes
-      const body = null;
-      const queryParams: string[] = [];
-      if (request.tenantId) {
-        queryParams.push(`tenantId=${encodeURIComponent(request.tenantId.toString())}`)
-      }
-      if (request.status) {
-        queryParams.push(`status=${encodeURIComponent(request.status.toString())}`)
-      }
-      if (request.type) {
-        queryParams.push(`type=${encodeURIComponent(request.type.toString())}`)
-      }
-      let uri = path;
-      if (queryParams.length > 0) {
-        uri += `?${queryParams.join("&")}`
-      }
-      return handler({
-        path: uri,
-        method: "GET",
-        body,
-      }, {
-        service: "LcmIssuerGatewayService",
-        method: "ListIssuers",
-      }) as Promise<lcmservicev1_ListIssuersResponse>;
-    },
-    GetIssuer(request) { // eslint-disable-line @typescript-eslint/no-unused-vars
-      if (!request.issuerName) {
-        throw new Error("missing required field request.issuer_name");
-      }
-      const path = `admin/v1/lcm/issuers/${request.issuerName}`; // eslint-disable-line quotes
-      const body = null;
-      const queryParams: string[] = [];
-      let uri = path;
-      if (queryParams.length > 0) {
-        uri += `?${queryParams.join("&")}`
-      }
-      return handler({
-        path: uri,
-        method: "GET",
-        body,
-      }, {
-        service: "LcmIssuerGatewayService",
-        method: "GetIssuer",
-      }) as Promise<lcmservicev1_GetIssuerInfoResponse>;
-    },
-    CreateIssuer(request) { // eslint-disable-line @typescript-eslint/no-unused-vars
-      const path = `admin/v1/lcm/issuers`; // eslint-disable-line quotes
-      const body = JSON.stringify(request);
-      const queryParams: string[] = [];
-      let uri = path;
-      if (queryParams.length > 0) {
-        uri += `?${queryParams.join("&")}`
-      }
-      return handler({
-        path: uri,
-        method: "POST",
-        body,
-      }, {
-        service: "LcmIssuerGatewayService",
-        method: "CreateIssuer",
-      }) as Promise<lcmservicev1_CreateIssuerResponse>;
-    },
-    UpdateIssuer(request) { // eslint-disable-line @typescript-eslint/no-unused-vars
-      if (!request.name) {
-        throw new Error("missing required field request.name");
-      }
-      const path = `admin/v1/lcm/issuers/${request.name}`; // eslint-disable-line quotes
-      const body = JSON.stringify(request);
-      const queryParams: string[] = [];
-      let uri = path;
-      if (queryParams.length > 0) {
-        uri += `?${queryParams.join("&")}`
-      }
-      return handler({
-        path: uri,
-        method: "PUT",
-        body,
-      }, {
-        service: "LcmIssuerGatewayService",
-        method: "UpdateIssuer",
-      }) as Promise<wellKnownEmpty>;
-    },
-    DeleteIssuer(request) { // eslint-disable-line @typescript-eslint/no-unused-vars
-      if (!request.name) {
-        throw new Error("missing required field request.name");
-      }
-      const path = `admin/v1/lcm/issuers/${request.name}`; // eslint-disable-line quotes
-      const body = null;
-      const queryParams: string[] = [];
-      let uri = path;
-      if (queryParams.length > 0) {
-        uri += `?${queryParams.join("&")}`
-      }
-      return handler({
-        path: uri,
-        method: "DELETE",
-        body,
-      }, {
-        service: "LcmIssuerGatewayService",
-        method: "DeleteIssuer",
-      }) as Promise<wellKnownEmpty>;
-    },
-    ListDnsProviders(request) { // eslint-disable-line @typescript-eslint/no-unused-vars
-      const path = `admin/v1/lcm/dns-providers`; // eslint-disable-line quotes
-      const body = null;
-      const queryParams: string[] = [];
-      let uri = path;
-      if (queryParams.length > 0) {
-        uri += `?${queryParams.join("&")}`
-      }
-      return handler({
-        path: uri,
-        method: "GET",
-        body,
-      }, {
-        service: "LcmIssuerGatewayService",
-        method: "ListDnsProviders",
-      }) as Promise<lcmservicev1_ListDnsProvidersResponse>;
-    },
-    GetDnsProvider(request) { // eslint-disable-line @typescript-eslint/no-unused-vars
-      if (!request.name) {
-        throw new Error("missing required field request.name");
-      }
-      const path = `admin/v1/lcm/dns-providers/${request.name}`; // eslint-disable-line quotes
-      const body = null;
-      const queryParams: string[] = [];
-      let uri = path;
-      if (queryParams.length > 0) {
-        uri += `?${queryParams.join("&")}`
-      }
-      return handler({
-        path: uri,
-        method: "GET",
-        body,
-      }, {
-        service: "LcmIssuerGatewayService",
-        method: "GetDnsProvider",
-      }) as Promise<lcmservicev1_DnsProviderInfo>;
-    },
-  };
-}
-export type lcmservicev1_ListIssuersResponse = {
-  issuers: lcmservicev1_IssuerInfo[] | undefined;
-};
-
-export type lcmservicev1_IssuerInfo = {
-  name: string | undefined;
-  type: string | undefined;
-  status?: lcmservicev1_IssuerStatus;
-  description: string | undefined;
-  config: { [key: string]: string } | undefined;
-  createTime: wellKnownTimestamp | undefined;
-  updateTime: wellKnownTimestamp | undefined;
-};
-
-export type lcmservicev1_GetIssuerInfoResponse = {
-  issuer: lcmservicev1_IssuerInfo | undefined;
-};
-
-// Issuer creation and management messages
-export type lcmservicev1_CreateIssuerRequest = {
-  name: string | undefined;
-  type: string | undefined;
-  keyType: string | undefined;
-  description: string | undefined;
-  selfIssuer?: lcmservicev1_SelfIssuer;
-  acmeIssuer?: lcmservicev1_AcmeIssuer;
-  status: lcmservicev1_IssuerStatus | undefined;
-};
-
-export type lcmservicev1_SelfIssuer = {
-  commonName: string | undefined;
-  dnsNames: string[] | undefined;
-  ipAddresses: string[] | undefined;
-  // CA certificate configuration
-  caCommonName: string | undefined;
-  caOrganization: string | undefined;
-  caOrganizationalUnit: string | undefined;
-  caCountry: string | undefined;
-  caProvince: string | undefined;
-  caLocality: string | undefined;
-  caValidityDays: number | undefined;
-};
-
-export type lcmservicev1_AcmeIssuer = {
-  email: string | undefined;
-  endpoint: string | undefined;
-  keyType: string | undefined;
-  keySize: number | undefined;
-  maxRetries: number | undefined;
-  baseDelay: string | undefined;
-  challengeType: lcmservicev1_ChallengeType | undefined;
-  providerName: string | undefined;
-  providerConfig: { [key: string]: string } | undefined;
-  // External Account Binding (EAB) for ACME providers that require it (e.g., ZeroSSL, Google Trust Services)
-  eabKid?: string;
-  eabHmacKey?: string;
-};
-
-export type lcmservicev1_ChallengeType =
-  | "HTTP"
-  | "DNS";
-export type lcmservicev1_CreateIssuerResponse = {
-  issuer: lcmservicev1_IssuerInfo | undefined;
-};
-
-export type lcmservicev1_UpdateIssuerRequest = {
-  name: string | undefined;
-  type: string | undefined;
-  keyType: string | undefined;
-  description: string | undefined;
-  selfIssuer?: lcmservicev1_SelfIssuer;
-  acmeIssuer?: lcmservicev1_AcmeIssuer;
-  status: lcmservicev1_IssuerStatus | undefined;
-};
-
-export type lcmservicev1_DeleteIssuerRequest = {
-  name: string | undefined;
-};
-
-// DNS Provider messages for DNS challenge support
-export type lcmservicev1_ListDnsProvidersResponse = {
-  providers: lcmservicev1_DnsProviderInfo[] | undefined;
-};
-
-export type lcmservicev1_DnsProviderInfo = {
-  name: string | undefined;
-  description: string | undefined;
-  requiredFields: string[] | undefined;
-  optionalFields: string[] | undefined;
-};
-
-export type ListMtlsCertificateRequestsRequest = {
-  tenantId?: number;
-  status?: lcmservicev1_MtlsCertificateRequestStatus;
-  clientId?: string;
-  issuerName?: string;
-  page?: number;
-  pageSize?: number;
-};
-
-// mTLS Certificate Request Status
-export type lcmservicev1_MtlsCertificateRequestStatus =
-  | "MTLS_CERTIFICATE_REQUEST_STATUS_UNSPECIFIED"
-  | "MTLS_CERTIFICATE_REQUEST_STATUS_PENDING"
-  | "MTLS_CERTIFICATE_REQUEST_STATUS_APPROVED"
-  | "MTLS_CERTIFICATE_REQUEST_STATUS_REJECTED"
-  | "MTLS_CERTIFICATE_REQUEST_STATUS_ISSUED"
-  | "MTLS_CERTIFICATE_REQUEST_STATUS_CANCELLED";
-export type GetMtlsCertificateRequestByIdRequest = {
-  id: number | undefined;
-};
-
-export type GetMtlsCertificateRequestByRequestIdRequest = {
-  requestId: string | undefined;
-};
-
-export type ApproveMtlsCertificateRequestGatewayRequest = {
-  id: number | undefined;
-  issuerName?: string;
-  validityDays?: number;
-  notes?: string;
-};
-
-export type RejectMtlsCertificateRequestGatewayRequest = {
-  id: number | undefined;
-  reason: string | undefined;
-};
-
-export type DeleteMtlsCertificateRequestGatewayRequest = {
-  id: number | undefined;
-};
-
-// LCM mTLS Certificate Request Gateway Service - HTTP gateway for certificate request management
-export interface LcmMtlsCertificateRequestGatewayService {
-  // List all mTLS certificate requests
-  ListMtlsCertificateRequests(request: ListMtlsCertificateRequestsRequest): Promise<lcmservicev1_ListMtlsCertificateRequestsResponse>;
-  // Get mTLS certificate request by ID
-  GetMtlsCertificateRequest(request: GetMtlsCertificateRequestByIdRequest): Promise<lcmservicev1_GetMtlsCertificateRequestResponse>;
-  // Get mTLS certificate request by request ID
-  GetMtlsCertificateRequestByRequestId(request: GetMtlsCertificateRequestByRequestIdRequest): Promise<lcmservicev1_GetMtlsCertificateRequestResponse>;
-  // Approve mTLS certificate request
-  ApproveMtlsCertificateRequest(request: ApproveMtlsCertificateRequestGatewayRequest): Promise<lcmservicev1_ApproveMtlsCertificateRequestResponse>;
-  // Reject mTLS certificate request
-  RejectMtlsCertificateRequest(request: RejectMtlsCertificateRequestGatewayRequest): Promise<lcmservicev1_RejectMtlsCertificateRequestResponse>;
-  // Delete mTLS certificate request
-  DeleteMtlsCertificateRequest(request: DeleteMtlsCertificateRequestGatewayRequest): Promise<lcmservicev1_DeleteMtlsCertificateRequestResponse>;
-}
-
-export function createLcmMtlsCertificateRequestGatewayServiceClient(
-  handler: RequestHandler
-): LcmMtlsCertificateRequestGatewayService {
-  return {
-    ListMtlsCertificateRequests(request) { // eslint-disable-line @typescript-eslint/no-unused-vars
-      const path = `admin/v1/lcm/mtls-certificate-requests`; // eslint-disable-line quotes
-      const body = null;
-      const queryParams: string[] = [];
-      if (request.tenantId) {
-        queryParams.push(`tenantId=${encodeURIComponent(request.tenantId.toString())}`)
-      }
-      if (request.status) {
-        queryParams.push(`status=${encodeURIComponent(request.status.toString())}`)
-      }
-      if (request.clientId) {
-        queryParams.push(`clientId=${encodeURIComponent(request.clientId.toString())}`)
-      }
-      if (request.issuerName) {
-        queryParams.push(`issuerName=${encodeURIComponent(request.issuerName.toString())}`)
-      }
-      if (request.page) {
-        queryParams.push(`page=${encodeURIComponent(request.page.toString())}`)
-      }
-      if (request.pageSize) {
-        queryParams.push(`pageSize=${encodeURIComponent(request.pageSize.toString())}`)
-      }
-      let uri = path;
-      if (queryParams.length > 0) {
-        uri += `?${queryParams.join("&")}`
-      }
-      return handler({
-        path: uri,
-        method: "GET",
-        body,
-      }, {
-        service: "LcmMtlsCertificateRequestGatewayService",
-        method: "ListMtlsCertificateRequests",
-      }) as Promise<lcmservicev1_ListMtlsCertificateRequestsResponse>;
-    },
-    GetMtlsCertificateRequest(request) { // eslint-disable-line @typescript-eslint/no-unused-vars
-      if (!request.id) {
-        throw new Error("missing required field request.id");
-      }
-      const path = `admin/v1/lcm/mtls-certificate-requests/${request.id}`; // eslint-disable-line quotes
-      const body = null;
-      const queryParams: string[] = [];
-      let uri = path;
-      if (queryParams.length > 0) {
-        uri += `?${queryParams.join("&")}`
-      }
-      return handler({
-        path: uri,
-        method: "GET",
-        body,
-      }, {
-        service: "LcmMtlsCertificateRequestGatewayService",
-        method: "GetMtlsCertificateRequest",
-      }) as Promise<lcmservicev1_GetMtlsCertificateRequestResponse>;
-    },
-    GetMtlsCertificateRequestByRequestId(request) { // eslint-disable-line @typescript-eslint/no-unused-vars
-      if (!request.requestId) {
-        throw new Error("missing required field request.request_id");
-      }
-      const path = `admin/v1/lcm/mtls-certificate-requests/by-request-id/${request.requestId}`; // eslint-disable-line quotes
-      const body = null;
-      const queryParams: string[] = [];
-      let uri = path;
-      if (queryParams.length > 0) {
-        uri += `?${queryParams.join("&")}`
-      }
-      return handler({
-        path: uri,
-        method: "GET",
-        body,
-      }, {
-        service: "LcmMtlsCertificateRequestGatewayService",
-        method: "GetMtlsCertificateRequestByRequestId",
-      }) as Promise<lcmservicev1_GetMtlsCertificateRequestResponse>;
-    },
-    ApproveMtlsCertificateRequest(request) { // eslint-disable-line @typescript-eslint/no-unused-vars
-      if (!request.id) {
-        throw new Error("missing required field request.id");
-      }
-      const path = `admin/v1/lcm/mtls-certificate-requests/${request.id}:approve`; // eslint-disable-line quotes
-      const body = JSON.stringify(request);
-      const queryParams: string[] = [];
-      let uri = path;
-      if (queryParams.length > 0) {
-        uri += `?${queryParams.join("&")}`
-      }
-      return handler({
-        path: uri,
-        method: "POST",
-        body,
-      }, {
-        service: "LcmMtlsCertificateRequestGatewayService",
-        method: "ApproveMtlsCertificateRequest",
-      }) as Promise<lcmservicev1_ApproveMtlsCertificateRequestResponse>;
-    },
-    RejectMtlsCertificateRequest(request) { // eslint-disable-line @typescript-eslint/no-unused-vars
-      if (!request.id) {
-        throw new Error("missing required field request.id");
-      }
-      const path = `admin/v1/lcm/mtls-certificate-requests/${request.id}:reject`; // eslint-disable-line quotes
-      const body = JSON.stringify(request);
-      const queryParams: string[] = [];
-      let uri = path;
-      if (queryParams.length > 0) {
-        uri += `?${queryParams.join("&")}`
-      }
-      return handler({
-        path: uri,
-        method: "POST",
-        body,
-      }, {
-        service: "LcmMtlsCertificateRequestGatewayService",
-        method: "RejectMtlsCertificateRequest",
-      }) as Promise<lcmservicev1_RejectMtlsCertificateRequestResponse>;
-    },
-    DeleteMtlsCertificateRequest(request) { // eslint-disable-line @typescript-eslint/no-unused-vars
-      if (!request.id) {
-        throw new Error("missing required field request.id");
-      }
-      const path = `admin/v1/lcm/mtls-certificate-requests/${request.id}`; // eslint-disable-line quotes
-      const body = null;
-      const queryParams: string[] = [];
-      let uri = path;
-      if (queryParams.length > 0) {
-        uri += `?${queryParams.join("&")}`
-      }
-      return handler({
-        path: uri,
-        method: "DELETE",
-        body,
-      }, {
-        service: "LcmMtlsCertificateRequestGatewayService",
-        method: "DeleteMtlsCertificateRequest",
-      }) as Promise<lcmservicev1_DeleteMtlsCertificateRequestResponse>;
-    },
-  };
-}
-export type lcmservicev1_ListMtlsCertificateRequestsResponse = {
-  items: lcmservicev1_MtlsCertificateRequest[] | undefined;
-  total: number | undefined;
-};
-
-// mTLS Certificate Request entity
-export type lcmservicev1_MtlsCertificateRequest = {
-  id?: number;
-  requestId?: string;
-  clientId?: string;
-  commonName?: string;
-  csrPem?: string;
-  publicKey?: string;
-  dnsNames: string[] | undefined;
-  ipAddresses: string[] | undefined;
-  issuerName?: string;
-  certType?: lcmservicev1_MtlsCertificateType;
-  status?: lcmservicev1_MtlsCertificateRequestStatus;
-  validityDays?: number;
-  rejectReason?: string;
-  metadata: { [key: string]: string } | undefined;
-  notes?: string;
-  approvedBy?: number;
-  rejectedBy?: number;
-  createdBy?: number;
-  updatedBy?: number;
-  approvedAt?: wellKnownTimestamp;
-  rejectedAt?: wellKnownTimestamp;
-  expiresAt?: wellKnownTimestamp;
-  createTime?: wellKnownTimestamp;
-  updateTime?: wellKnownTimestamp;
-  deleteTime?: wellKnownTimestamp;
-  certificateSerial?: number;
-};
-
-export type lcmservicev1_GetMtlsCertificateRequestResponse = {
-  mtlsCertificateRequest: lcmservicev1_MtlsCertificateRequest | undefined;
-};
-
-export type lcmservicev1_ApproveMtlsCertificateRequestResponse = {
-  request: lcmservicev1_MtlsCertificateRequest | undefined;
-  certificate: lcmservicev1_ClientCertificate | undefined;
-};
-
-// ClientCertificate is a simplified view of an mTLS certificate for client-facing APIs
-export type lcmservicev1_ClientCertificate = {
-  id?: number;
-  commonName?: string;
-  requestId?: string;
-  serialNumber?: string;
-  subject?: string;
-  issuerDn?: string;
-  fingerprint?: string;
-  certificatePem?: string;
-  notBefore?: string;
-  notAfter?: string;
-  status?: lcmservicev1_ClientCertificateStatus;
-  metadata?: string;
-  lastSeen?: wellKnownTimestamp;
-  revokedAt?: wellKnownTimestamp;
-  revokedBy?: string;
-  revokedReason?: string;
-  expiresAt?: wellKnownTimestamp;
-  approvedBy?: string;
-  certType?: lcmservicev1_MtlsCertificateType;
-  tenantId?: number;
-  createBy?: number;
-  updateBy?: number;
-  createTime?: wellKnownTimestamp;
-  updateTime?: wellKnownTimestamp;
-  deleteTime?: wellKnownTimestamp;
-};
-
-export type lcmservicev1_ClientCertificateStatus =
-  | "CLIENT_CERT_STATUS_UNKNOWN"
-  | "CLIENT_CERT_STATUS_ISSUED"
-  | "CLIENT_CERT_STATUS_PENDING"
-  | "CLIENT_CERT_STATUS_REVOKED";
-export type lcmservicev1_RejectMtlsCertificateRequestResponse = {
-  mtlsCertificateRequest: lcmservicev1_MtlsCertificateRequest | undefined;
-};
-
-export type lcmservicev1_DeleteMtlsCertificateRequestResponse = {
-  mtlsCertificateRequest: lcmservicev1_MtlsCertificateRequest | undefined;
-};
-
-// LCM Tenant Secret Gateway Service - HTTP gateway for tenant secret management
-export interface LcmTenantSecretGatewayService {
-  // Create a new tenant secret
-  CreateTenantSecret(request: lcmservicev1_CreateTenantSecretRequest): Promise<lcmservicev1_CreateTenantSecretResponse>;
-  // List tenant secrets
-  ListTenantSecrets(request: lcmservicev1_ListTenantSecretsRequest): Promise<lcmservicev1_ListTenantSecretsResponse>;
-  // Get a tenant secret by ID
-  GetTenantSecret(request: lcmservicev1_GetTenantSecretRequest): Promise<lcmservicev1_GetTenantSecretResponse>;
-  // Update a tenant secret
-  UpdateTenantSecret(request: lcmservicev1_UpdateTenantSecretRequest): Promise<lcmservicev1_UpdateTenantSecretResponse>;
-  // Delete a tenant secret
-  DeleteTenantSecret(request: lcmservicev1_DeleteTenantSecretRequest): Promise<wellKnownEmpty>;
-  // Rotate a tenant secret
-  RotateTenantSecret(request: lcmservicev1_RotateTenantSecretRequest): Promise<lcmservicev1_RotateTenantSecretResponse>;
-}
-
-export function createLcmTenantSecretGatewayServiceClient(
-  handler: RequestHandler
-): LcmTenantSecretGatewayService {
-  return {
-    CreateTenantSecret(request) { // eslint-disable-line @typescript-eslint/no-unused-vars
-      const path = `admin/v1/lcm/tenant-secrets`; // eslint-disable-line quotes
-      const body = JSON.stringify(request);
-      const queryParams: string[] = [];
-      let uri = path;
-      if (queryParams.length > 0) {
-        uri += `?${queryParams.join("&")}`
-      }
-      return handler({
-        path: uri,
-        method: "POST",
-        body,
-      }, {
-        service: "LcmTenantSecretGatewayService",
-        method: "CreateTenantSecret",
-      }) as Promise<lcmservicev1_CreateTenantSecretResponse>;
-    },
-    ListTenantSecrets(request) { // eslint-disable-line @typescript-eslint/no-unused-vars
-      const path = `admin/v1/lcm/tenant-secrets`; // eslint-disable-line quotes
-      const body = null;
-      const queryParams: string[] = [];
-      if (request.tenantId) {
-        queryParams.push(`tenantId=${encodeURIComponent(request.tenantId.toString())}`)
-      }
-      if (request.status) {
-        queryParams.push(`status=${encodeURIComponent(request.status.toString())}`)
-      }
-      if (request.page) {
-        queryParams.push(`page=${encodeURIComponent(request.page.toString())}`)
-      }
-      if (request.pageSize) {
-        queryParams.push(`pageSize=${encodeURIComponent(request.pageSize.toString())}`)
-      }
-      let uri = path;
-      if (queryParams.length > 0) {
-        uri += `?${queryParams.join("&")}`
-      }
-      return handler({
-        path: uri,
-        method: "GET",
-        body,
-      }, {
-        service: "LcmTenantSecretGatewayService",
-        method: "ListTenantSecrets",
-      }) as Promise<lcmservicev1_ListTenantSecretsResponse>;
-    },
-    GetTenantSecret(request) { // eslint-disable-line @typescript-eslint/no-unused-vars
-      if (!request.id) {
-        throw new Error("missing required field request.id");
-      }
-      const path = `admin/v1/lcm/tenant-secrets/${request.id}`; // eslint-disable-line quotes
-      const body = null;
-      const queryParams: string[] = [];
-      let uri = path;
-      if (queryParams.length > 0) {
-        uri += `?${queryParams.join("&")}`
-      }
-      return handler({
-        path: uri,
-        method: "GET",
-        body,
-      }, {
-        service: "LcmTenantSecretGatewayService",
-        method: "GetTenantSecret",
-      }) as Promise<lcmservicev1_GetTenantSecretResponse>;
-    },
-    UpdateTenantSecret(request) { // eslint-disable-line @typescript-eslint/no-unused-vars
-      if (!request.id) {
-        throw new Error("missing required field request.id");
-      }
-      const path = `admin/v1/lcm/tenant-secrets/${request.id}`; // eslint-disable-line quotes
-      const body = JSON.stringify(request);
-      const queryParams: string[] = [];
-      let uri = path;
-      if (queryParams.length > 0) {
-        uri += `?${queryParams.join("&")}`
-      }
-      return handler({
-        path: uri,
-        method: "PUT",
-        body,
-      }, {
-        service: "LcmTenantSecretGatewayService",
-        method: "UpdateTenantSecret",
-      }) as Promise<lcmservicev1_UpdateTenantSecretResponse>;
-    },
-    DeleteTenantSecret(request) { // eslint-disable-line @typescript-eslint/no-unused-vars
-      if (!request.id) {
-        throw new Error("missing required field request.id");
-      }
-      const path = `admin/v1/lcm/tenant-secrets/${request.id}`; // eslint-disable-line quotes
-      const body = null;
-      const queryParams: string[] = [];
-      let uri = path;
-      if (queryParams.length > 0) {
-        uri += `?${queryParams.join("&")}`
-      }
-      return handler({
-        path: uri,
-        method: "DELETE",
-        body,
-      }, {
-        service: "LcmTenantSecretGatewayService",
-        method: "DeleteTenantSecret",
-      }) as Promise<wellKnownEmpty>;
-    },
-    RotateTenantSecret(request) { // eslint-disable-line @typescript-eslint/no-unused-vars
-      if (!request.id) {
-        throw new Error("missing required field request.id");
-      }
-      const path = `admin/v1/lcm/tenant-secrets/${request.id}:rotate`; // eslint-disable-line quotes
-      const body = JSON.stringify(request);
-      const queryParams: string[] = [];
-      let uri = path;
-      if (queryParams.length > 0) {
-        uri += `?${queryParams.join("&")}`
-      }
-      return handler({
-        path: uri,
-        method: "POST",
-        body,
-      }, {
-        service: "LcmTenantSecretGatewayService",
-        method: "RotateTenantSecret",
-      }) as Promise<lcmservicev1_RotateTenantSecretResponse>;
-    },
-  };
-}
-// Create a new tenant secret
-export type lcmservicev1_CreateTenantSecretRequest = {
-  //
-  // Behaviors: REQUIRED
-  tenantId: number | undefined;
-  //
-  // Behaviors: REQUIRED
-  secret: string | undefined;
-  description?: string;
-  expiresAt?: wellKnownTimestamp;
-};
-
-export type lcmservicev1_CreateTenantSecretResponse = {
-  tenantSecret: lcmservicev1_TenantSecret | undefined;
-};
-
-// TenantSecret entity - maps shared secrets to tenants
-export type lcmservicev1_TenantSecret = {
-  id?: number;
-  tenantId?: number;
-  description?: string;
-  status?: lcmservicev1_TenantSecretStatus;
-  expiresAt?: wellKnownTimestamp;
-  createdBy?: number;
-  updatedBy?: number;
-  createTime?: wellKnownTimestamp;
-  updateTime?: wellKnownTimestamp;
-};
-
-// TenantSecret status
-export type lcmservicev1_TenantSecretStatus =
-  | "TENANT_SECRET_STATUS_UNSPECIFIED"
-  | "TENANT_SECRET_STATUS_ACTIVE"
-  | "TENANT_SECRET_STATUS_DISABLED";
-// List tenant secrets
-export type lcmservicev1_ListTenantSecretsRequest = {
-  tenantId?: number;
-  status?: lcmservicev1_TenantSecretStatus;
-  page?: number;
-  pageSize?: number;
-};
-
-export type lcmservicev1_ListTenantSecretsResponse = {
-  items: lcmservicev1_TenantSecret[] | undefined;
-  total: number | undefined;
-};
-
-// Get a tenant secret
-export type lcmservicev1_GetTenantSecretRequest = {
-  //
-  // Behaviors: REQUIRED
-  id: number | undefined;
-};
-
-export type lcmservicev1_GetTenantSecretResponse = {
-  tenantSecret: lcmservicev1_TenantSecret | undefined;
-};
-
-// Update a tenant secret (description, status, expiry only - secret cannot be updated)
-export type lcmservicev1_UpdateTenantSecretRequest = {
-  //
-  // Behaviors: REQUIRED
-  id: number | undefined;
-  description?: string;
-  status?: lcmservicev1_TenantSecretStatus;
-  expiresAt?: wellKnownTimestamp;
-};
-
-export type lcmservicev1_UpdateTenantSecretResponse = {
-  tenantSecret: lcmservicev1_TenantSecret | undefined;
-};
-
-// Delete a tenant secret
-export type lcmservicev1_DeleteTenantSecretRequest = {
-  //
-  // Behaviors: REQUIRED
-  id: number | undefined;
-};
-
-// Rotate a tenant secret (create new secret, optionally disable old)
-export type lcmservicev1_RotateTenantSecretRequest = {
-  //
-  // Behaviors: REQUIRED
-  id: number | undefined;
-  //
-  // Behaviors: REQUIRED
-  newSecret: string | undefined;
-  disableOld?: boolean;
-};
-
-export type lcmservicev1_RotateTenantSecretResponse = {
-  newSecret: lcmservicev1_TenantSecret | undefined;
-  oldSecret?: lcmservicev1_TenantSecret;
-};
-
 // Login audit log management service
 export interface LoginAuditLogService {
   // Query login audit log list
@@ -9318,22 +3296,11 @@ export function createLoginAuditLogServiceClient(
       if (request.noPaging) {
         queryParams.push(`noPaging=${encodeURIComponent(request.noPaging.toString())}`)
       }
-      if (request.orderBy) {
-        request.orderBy.forEach((x) => {
-          queryParams.push(`orderBy=${encodeURIComponent(x.toString())}`)
-        })
-      }
-      if (request.sorting?.field) {
-        queryParams.push(`sorting.field=${encodeURIComponent(request.sorting.field.toString())}`)
-      }
-      if (request.sorting?.order) {
-        queryParams.push(`sorting.order=${encodeURIComponent(request.sorting.order.toString())}`)
-      }
       if (request.query) {
         queryParams.push(`query=${encodeURIComponent(request.query.toString())}`)
       }
-      if (request.or) {
-        queryParams.push(`or=${encodeURIComponent(request.or.toString())}`)
+      if (request.filter) {
+        queryParams.push(`filter=${encodeURIComponent(request.filter.toString())}`)
       }
       if (request.filterExpr?.type) {
         queryParams.push(`filterExpr.type=${encodeURIComponent(request.filterExpr.type.toString())}`)
@@ -9361,8 +3328,14 @@ export function createLoginAuditLogServiceClient(
       if (request.filterExpr?.conditions?.jsonPath) {
         queryParams.push(`filterExpr.conditions.jsonPath=${encodeURIComponent(request.filterExpr.conditions.jsonPath.toString())}`)
       }
-      if (request.filter) {
-        queryParams.push(`filter=${encodeURIComponent(request.filter.toString())}`)
+      if (request.orderBy) {
+        queryParams.push(`orderBy=${encodeURIComponent(request.orderBy.toString())}`)
+      }
+      if (request.sorting?.field) {
+        queryParams.push(`sorting.field=${encodeURIComponent(request.sorting.field.toString())}`)
+      }
+      if (request.sorting?.direction) {
+        queryParams.push(`sorting.direction=${encodeURIComponent(request.sorting.direction.toString())}`)
       }
       if (request.fieldMask) {
         queryParams.push(`fieldMask=${encodeURIComponent(request.fieldMask.toString())}`)
@@ -9513,22 +3486,11 @@ export function createLoginPolicyServiceClient(
       if (request.noPaging) {
         queryParams.push(`noPaging=${encodeURIComponent(request.noPaging.toString())}`)
       }
-      if (request.orderBy) {
-        request.orderBy.forEach((x) => {
-          queryParams.push(`orderBy=${encodeURIComponent(x.toString())}`)
-        })
-      }
-      if (request.sorting?.field) {
-        queryParams.push(`sorting.field=${encodeURIComponent(request.sorting.field.toString())}`)
-      }
-      if (request.sorting?.order) {
-        queryParams.push(`sorting.order=${encodeURIComponent(request.sorting.order.toString())}`)
-      }
       if (request.query) {
         queryParams.push(`query=${encodeURIComponent(request.query.toString())}`)
       }
-      if (request.or) {
-        queryParams.push(`or=${encodeURIComponent(request.or.toString())}`)
+      if (request.filter) {
+        queryParams.push(`filter=${encodeURIComponent(request.filter.toString())}`)
       }
       if (request.filterExpr?.type) {
         queryParams.push(`filterExpr.type=${encodeURIComponent(request.filterExpr.type.toString())}`)
@@ -9556,8 +3518,14 @@ export function createLoginPolicyServiceClient(
       if (request.filterExpr?.conditions?.jsonPath) {
         queryParams.push(`filterExpr.conditions.jsonPath=${encodeURIComponent(request.filterExpr.conditions.jsonPath.toString())}`)
       }
-      if (request.filter) {
-        queryParams.push(`filter=${encodeURIComponent(request.filter.toString())}`)
+      if (request.orderBy) {
+        queryParams.push(`orderBy=${encodeURIComponent(request.orderBy.toString())}`)
+      }
+      if (request.sorting?.field) {
+        queryParams.push(`sorting.field=${encodeURIComponent(request.sorting.field.toString())}`)
+      }
+      if (request.sorting?.direction) {
+        queryParams.push(`sorting.direction=${encodeURIComponent(request.sorting.direction.toString())}`)
       }
       if (request.fieldMask) {
         queryParams.push(`fieldMask=${encodeURIComponent(request.fieldMask.toString())}`)
@@ -9760,22 +3728,11 @@ export function createMenuServiceClient(
       if (request.noPaging) {
         queryParams.push(`noPaging=${encodeURIComponent(request.noPaging.toString())}`)
       }
-      if (request.orderBy) {
-        request.orderBy.forEach((x) => {
-          queryParams.push(`orderBy=${encodeURIComponent(x.toString())}`)
-        })
-      }
-      if (request.sorting?.field) {
-        queryParams.push(`sorting.field=${encodeURIComponent(request.sorting.field.toString())}`)
-      }
-      if (request.sorting?.order) {
-        queryParams.push(`sorting.order=${encodeURIComponent(request.sorting.order.toString())}`)
-      }
       if (request.query) {
         queryParams.push(`query=${encodeURIComponent(request.query.toString())}`)
       }
-      if (request.or) {
-        queryParams.push(`or=${encodeURIComponent(request.or.toString())}`)
+      if (request.filter) {
+        queryParams.push(`filter=${encodeURIComponent(request.filter.toString())}`)
       }
       if (request.filterExpr?.type) {
         queryParams.push(`filterExpr.type=${encodeURIComponent(request.filterExpr.type.toString())}`)
@@ -9803,8 +3760,14 @@ export function createMenuServiceClient(
       if (request.filterExpr?.conditions?.jsonPath) {
         queryParams.push(`filterExpr.conditions.jsonPath=${encodeURIComponent(request.filterExpr.conditions.jsonPath.toString())}`)
       }
-      if (request.filter) {
-        queryParams.push(`filter=${encodeURIComponent(request.filter.toString())}`)
+      if (request.orderBy) {
+        queryParams.push(`orderBy=${encodeURIComponent(request.orderBy.toString())}`)
+      }
+      if (request.sorting?.field) {
+        queryParams.push(`sorting.field=${encodeURIComponent(request.sorting.field.toString())}`)
+      }
+      if (request.sorting?.direction) {
+        queryParams.push(`sorting.direction=${encodeURIComponent(request.sorting.direction.toString())}`)
       }
       if (request.fieldMask) {
         queryParams.push(`fieldMask=${encodeURIComponent(request.fieldMask.toString())}`)
@@ -9984,6 +3947,392 @@ export type permissionservicev1_DeleteMenuRequest = {
   id: number | undefined;
 };
 
+// MFA gateway service - provides HTTP endpoints for multi-factor authentication
+export interface MFAService {
+  // Start MFA challenge during login (after password verified, before MFA verified)
+  StartMFAChallenge(request: authenticationservicev1_StartMFAChallengeRequest): Promise<authenticationservicev1_StartMFAChallengeResponse>;
+  // Verify MFA challenge during login - returns JWT tokens on success
+  VerifyMFAChallenge(request: authenticationservicev1_VerifyMFAChallengeRequest): Promise<authenticationservicev1_VerifyMFAChallengeResponse>;
+  // Get current user's MFA status
+  GetMFAStatus(request: authenticationservicev1_GetMFAStatusRequest): Promise<authenticationservicev1_GetMFAStatusResponse>;
+  // List enrolled MFA methods
+  ListEnrolledMethods(request: authenticationservicev1_ListEnrolledMethodsRequest): Promise<authenticationservicev1_ListEnrolledMethodsResponse>;
+  // Start enrolling an MFA method
+  StartEnrollMethod(request: authenticationservicev1_StartEnrollMethodRequest): Promise<authenticationservicev1_StartEnrollMethodResponse>;
+  // Confirm MFA enrollment with verification code
+  ConfirmEnrollMethod(request: authenticationservicev1_ConfirmEnrollMethodRequest): Promise<authenticationservicev1_ConfirmEnrollMethodResponse>;
+  // Disable MFA for current user
+  DisableMFA(request: authenticationservicev1_DisableMFARequest): Promise<wellKnownEmpty>;
+  // Generate new backup codes
+  GenerateBackupCodes(request: authenticationservicev1_GenerateBackupCodesRequest): Promise<authenticationservicev1_GenerateBackupCodesResponse>;
+  // List backup code metadata (remaining count)
+  ListBackupCodes(request: authenticationservicev1_ListBackupCodesRequest): Promise<authenticationservicev1_ListBackupCodesResponse>;
+  // Revoke a specific MFA device/credential
+  RevokeMFADevice(request: authenticationservicev1_RevokeMFADeviceRequest): Promise<wellKnownEmpty>;
+}
+
+export function createMFAServiceClient(
+  handler: RequestHandler
+): MFAService {
+  return {
+    StartMFAChallenge(request) { // eslint-disable-line @typescript-eslint/no-unused-vars
+      const path = `admin/v1/mfa/challenge`; // eslint-disable-line quotes
+      const body = JSON.stringify(request);
+      const queryParams: string[] = [];
+      let uri = path;
+      if (queryParams.length > 0) {
+        uri += `?${queryParams.join("&")}`
+      }
+      return handler({
+        path: uri,
+        method: "POST",
+        body,
+      }, {
+        service: "MFAService",
+        method: "StartMFAChallenge",
+      }) as Promise<authenticationservicev1_StartMFAChallengeResponse>;
+    },
+    VerifyMFAChallenge(request) { // eslint-disable-line @typescript-eslint/no-unused-vars
+      const path = `admin/v1/mfa/verify`; // eslint-disable-line quotes
+      const body = JSON.stringify(request);
+      const queryParams: string[] = [];
+      let uri = path;
+      if (queryParams.length > 0) {
+        uri += `?${queryParams.join("&")}`
+      }
+      return handler({
+        path: uri,
+        method: "POST",
+        body,
+      }, {
+        service: "MFAService",
+        method: "VerifyMFAChallenge",
+      }) as Promise<authenticationservicev1_VerifyMFAChallengeResponse>;
+    },
+    GetMFAStatus(request) { // eslint-disable-line @typescript-eslint/no-unused-vars
+      const path = `admin/v1/me/mfa/status`; // eslint-disable-line quotes
+      const body = null;
+      const queryParams: string[] = [];
+      if (request.user_id) {
+        queryParams.push(`user_id=${encodeURIComponent(request.user_id.toString())}`)
+      }
+      let uri = path;
+      if (queryParams.length > 0) {
+        uri += `?${queryParams.join("&")}`
+      }
+      return handler({
+        path: uri,
+        method: "GET",
+        body,
+      }, {
+        service: "MFAService",
+        method: "GetMFAStatus",
+      }) as Promise<authenticationservicev1_GetMFAStatusResponse>;
+    },
+    ListEnrolledMethods(request) { // eslint-disable-line @typescript-eslint/no-unused-vars
+      const path = `admin/v1/me/mfa/methods`; // eslint-disable-line quotes
+      const body = null;
+      const queryParams: string[] = [];
+      if (request.user_id) {
+        queryParams.push(`user_id=${encodeURIComponent(request.user_id.toString())}`)
+      }
+      let uri = path;
+      if (queryParams.length > 0) {
+        uri += `?${queryParams.join("&")}`
+      }
+      return handler({
+        path: uri,
+        method: "GET",
+        body,
+      }, {
+        service: "MFAService",
+        method: "ListEnrolledMethods",
+      }) as Promise<authenticationservicev1_ListEnrolledMethodsResponse>;
+    },
+    StartEnrollMethod(request) { // eslint-disable-line @typescript-eslint/no-unused-vars
+      const path = `admin/v1/me/mfa/enroll`; // eslint-disable-line quotes
+      const body = JSON.stringify(request);
+      const queryParams: string[] = [];
+      let uri = path;
+      if (queryParams.length > 0) {
+        uri += `?${queryParams.join("&")}`
+      }
+      return handler({
+        path: uri,
+        method: "POST",
+        body,
+      }, {
+        service: "MFAService",
+        method: "StartEnrollMethod",
+      }) as Promise<authenticationservicev1_StartEnrollMethodResponse>;
+    },
+    ConfirmEnrollMethod(request) { // eslint-disable-line @typescript-eslint/no-unused-vars
+      const path = `admin/v1/me/mfa/enroll/confirm`; // eslint-disable-line quotes
+      const body = JSON.stringify(request);
+      const queryParams: string[] = [];
+      let uri = path;
+      if (queryParams.length > 0) {
+        uri += `?${queryParams.join("&")}`
+      }
+      return handler({
+        path: uri,
+        method: "POST",
+        body,
+      }, {
+        service: "MFAService",
+        method: "ConfirmEnrollMethod",
+      }) as Promise<authenticationservicev1_ConfirmEnrollMethodResponse>;
+    },
+    DisableMFA(request) { // eslint-disable-line @typescript-eslint/no-unused-vars
+      const path = `admin/v1/me/mfa/disable`; // eslint-disable-line quotes
+      const body = JSON.stringify(request);
+      const queryParams: string[] = [];
+      let uri = path;
+      if (queryParams.length > 0) {
+        uri += `?${queryParams.join("&")}`
+      }
+      return handler({
+        path: uri,
+        method: "POST",
+        body,
+      }, {
+        service: "MFAService",
+        method: "DisableMFA",
+      }) as Promise<wellKnownEmpty>;
+    },
+    GenerateBackupCodes(request) { // eslint-disable-line @typescript-eslint/no-unused-vars
+      const path = `admin/v1/me/mfa/backup-codes`; // eslint-disable-line quotes
+      const body = JSON.stringify(request);
+      const queryParams: string[] = [];
+      let uri = path;
+      if (queryParams.length > 0) {
+        uri += `?${queryParams.join("&")}`
+      }
+      return handler({
+        path: uri,
+        method: "POST",
+        body,
+      }, {
+        service: "MFAService",
+        method: "GenerateBackupCodes",
+      }) as Promise<authenticationservicev1_GenerateBackupCodesResponse>;
+    },
+    ListBackupCodes(request) { // eslint-disable-line @typescript-eslint/no-unused-vars
+      const path = `admin/v1/me/mfa/backup-codes`; // eslint-disable-line quotes
+      const body = null;
+      const queryParams: string[] = [];
+      let uri = path;
+      if (queryParams.length > 0) {
+        uri += `?${queryParams.join("&")}`
+      }
+      return handler({
+        path: uri,
+        method: "GET",
+        body,
+      }, {
+        service: "MFAService",
+        method: "ListBackupCodes",
+      }) as Promise<authenticationservicev1_ListBackupCodesResponse>;
+    },
+    RevokeMFADevice(request) { // eslint-disable-line @typescript-eslint/no-unused-vars
+      if (!request.credential_id) {
+        throw new Error("missing required field request.credential_id");
+      }
+      const path = `admin/v1/me/mfa/devices/${request.credential_id}`; // eslint-disable-line quotes
+      const body = null;
+      const queryParams: string[] = [];
+      let uri = path;
+      if (queryParams.length > 0) {
+        uri += `?${queryParams.join("&")}`
+      }
+      return handler({
+        path: uri,
+        method: "DELETE",
+        body,
+      }, {
+        service: "MFAService",
+        method: "RevokeMFADevice",
+      }) as Promise<wellKnownEmpty>;
+    },
+  };
+}
+// Start authentication challenge
+export type authenticationservicev1_StartMFAChallengeRequest = {
+  user_id?: string;
+  method: authenticationservicev1_MFAMethod | undefined;
+  credential_id?: string;
+};
+
+// Multi-factor authentication method
+export type authenticationservicev1_MFAMethod =
+  | "MFA_METHOD_UNSPECIFIED"
+  | "TOTP"
+  | "SMS"
+  | "EMAIL"
+  | "U2F"
+  | "WEBAUTHN"
+  | "BACKUP_CODE"
+  | "OTHER";
+export type authenticationservicev1_StartMFAChallengeResponse = {
+  sms?: authenticationservicev1_SMSResult;
+  webauthn?: authenticationservicev1_WebAuthnResult;
+  operation_id: string | undefined;
+  expires_at?: wellKnownTimestamp;
+};
+
+export type authenticationservicev1_SMSResult = {
+  verification_id: string | undefined;
+  sms_sent: boolean | undefined;
+  masked_phone: string | undefined;
+};
+
+export type authenticationservicev1_WebAuthnResult = {
+  challenge: string | undefined;
+  options_json: string | undefined;
+  rp_id: string | undefined;
+};
+
+export type authenticationservicev1_VerifyMFAChallengeRequest = {
+  operation_id: string | undefined;
+  totp_code?: string;
+  sms?: authenticationservicev1_SMSVerification;
+  webauthn?: authenticationservicev1_WebAuthnAssertion;
+  backup_code?: string;
+};
+
+export type authenticationservicev1_SMSVerification = {
+  verification_id: string | undefined;
+  code: string | undefined;
+};
+
+export type authenticationservicev1_WebAuthnAssertion = {
+  id: string | undefined;
+  client_data_json: string | undefined;
+  authenticator_data: string | undefined;
+  signature: string | undefined;
+  user_handle?: string;
+};
+
+export type authenticationservicev1_VerifyMFAChallengeResponse = {
+  success: boolean | undefined;
+  // Optional: one-time login token or session id (implementation optional)
+  session_token?: string;
+  // When verified during login flow, contains the full login response with JWT tokens
+  login_response?: authenticationservicev1_LoginResponse;
+};
+
+export type authenticationservicev1_GetMFAStatusRequest = {
+  // Optional: if server identifies user through context, user_id can be omitted
+  user_id?: string;
+};
+
+export type authenticationservicev1_GetMFAStatusResponse = {
+  enabled: boolean | undefined;
+  enrolled: authenticationservicev1_EnrolledMethod[] | undefined;
+  enforcement: authenticationservicev1_MFAEnforcement | undefined;
+};
+
+export type authenticationservicev1_EnrolledMethod = {
+  id: string | undefined;
+  method: authenticationservicev1_MFAMethod | undefined;
+  display: string | undefined;
+  enabled: boolean | undefined;
+  created_at?: wellKnownTimestamp;
+  last_used_at?: wellKnownTimestamp;
+};
+
+export type authenticationservicev1_MFAEnforcement =
+  | "MFA_NOT_REQUIRED"
+  | "MFA_OPTIONAL"
+  | "MFA_REQUIRED";
+// List enrolled credentials
+export type authenticationservicev1_ListEnrolledMethodsRequest = {
+  user_id?: string;
+};
+
+export type authenticationservicev1_ListEnrolledMethodsResponse = {
+  items: authenticationservicev1_EnrolledMethod[] | undefined;
+};
+
+// Start enroll
+export type authenticationservicev1_StartEnrollMethodRequest = {
+  method: authenticationservicev1_MFAMethod | undefined;
+  // Additional parameters may be required depending on method (e.g., SMS requires phone)
+  phone?: string;
+  email?: string;
+};
+
+export type authenticationservicev1_StartEnrollMethodResponse = {
+  totp?: authenticationservicev1_TOTPResult;
+  sms?: authenticationservicev1_SMSResult;
+  webauthn?: authenticationservicev1_WebAuthnResult;
+  expires_at?: wellKnownTimestamp;
+  // Temporary operation id, used for ConfirmEnrollMethod / subsequent verification
+  operation_id: string | undefined;
+};
+
+export type authenticationservicev1_TOTPResult = {
+  // base32 secret: only returned once during enrollment, server should only store hash/reference
+  secret: string | undefined;
+  otp_auth_url: string | undefined;
+  qr_code_data_uri: string | undefined;
+};
+
+// Confirm enroll
+export type authenticationservicev1_ConfirmEnrollMethodRequest = {
+  method: authenticationservicev1_MFAMethod | undefined;
+  operation_id: string | undefined;
+  totp_code?: string;
+  sms?: authenticationservicev1_SMSVerification;
+  webauthn?: authenticationservicev1_WebAuthnAssertion;
+  backup_code?: string;
+  // Optional: device/display name
+  display?: string;
+};
+
+export type authenticationservicev1_ConfirmEnrollMethodResponse = {
+  success: boolean | undefined;
+  credential_id: string | undefined;
+};
+
+// Disable / remove
+export type authenticationservicev1_DisableMFARequest = {
+  // Specify credential id or disable all by method only
+  credential_id?: string;
+  method?: authenticationservicev1_MFAMethod;
+  password?: string;
+  totp_code?: string;
+  sms?: authenticationservicev1_SMSVerification;
+  webauthn?: authenticationservicev1_WebAuthnAssertion;
+  reason?: string;
+};
+
+// Backup code management
+export type authenticationservicev1_GenerateBackupCodesRequest = {
+  // Number to generate
+  count?: number;
+};
+
+export type authenticationservicev1_GenerateBackupCodesResponse = {
+  // Plaintext backup codes: only returned once, client should prompt user to save
+  codes: string[] | undefined;
+  generated_at?: wellKnownTimestamp;
+};
+
+export type authenticationservicev1_ListBackupCodesRequest = {
+};
+
+export type authenticationservicev1_ListBackupCodesResponse = {
+  // Only returns metadata (remaining available count), does not return plaintext
+  remaining: number | undefined;
+  generated_at?: wellKnownTimestamp;
+};
+
+// Revoke device/credential
+export type authenticationservicev1_RevokeMFADeviceRequest = {
+  credential_id: string | undefined;
+};
+
 // Operation audit log management service
 export interface OperationAuditLogService {
   // Query operation audit log list
@@ -10018,22 +4367,11 @@ export function createOperationAuditLogServiceClient(
       if (request.noPaging) {
         queryParams.push(`noPaging=${encodeURIComponent(request.noPaging.toString())}`)
       }
-      if (request.orderBy) {
-        request.orderBy.forEach((x) => {
-          queryParams.push(`orderBy=${encodeURIComponent(x.toString())}`)
-        })
-      }
-      if (request.sorting?.field) {
-        queryParams.push(`sorting.field=${encodeURIComponent(request.sorting.field.toString())}`)
-      }
-      if (request.sorting?.order) {
-        queryParams.push(`sorting.order=${encodeURIComponent(request.sorting.order.toString())}`)
-      }
       if (request.query) {
         queryParams.push(`query=${encodeURIComponent(request.query.toString())}`)
       }
-      if (request.or) {
-        queryParams.push(`or=${encodeURIComponent(request.or.toString())}`)
+      if (request.filter) {
+        queryParams.push(`filter=${encodeURIComponent(request.filter.toString())}`)
       }
       if (request.filterExpr?.type) {
         queryParams.push(`filterExpr.type=${encodeURIComponent(request.filterExpr.type.toString())}`)
@@ -10061,8 +4399,14 @@ export function createOperationAuditLogServiceClient(
       if (request.filterExpr?.conditions?.jsonPath) {
         queryParams.push(`filterExpr.conditions.jsonPath=${encodeURIComponent(request.filterExpr.conditions.jsonPath.toString())}`)
       }
-      if (request.filter) {
-        queryParams.push(`filter=${encodeURIComponent(request.filter.toString())}`)
+      if (request.orderBy) {
+        queryParams.push(`orderBy=${encodeURIComponent(request.orderBy.toString())}`)
+      }
+      if (request.sorting?.field) {
+        queryParams.push(`sorting.field=${encodeURIComponent(request.sorting.field.toString())}`)
+      }
+      if (request.sorting?.direction) {
+        queryParams.push(`sorting.direction=${encodeURIComponent(request.sorting.direction.toString())}`)
       }
       if (request.fieldMask) {
         queryParams.push(`fieldMask=${encodeURIComponent(request.fieldMask.toString())}`)
@@ -10192,22 +4536,11 @@ export function createOrgUnitServiceClient(
       if (request.noPaging) {
         queryParams.push(`noPaging=${encodeURIComponent(request.noPaging.toString())}`)
       }
-      if (request.orderBy) {
-        request.orderBy.forEach((x) => {
-          queryParams.push(`orderBy=${encodeURIComponent(x.toString())}`)
-        })
-      }
-      if (request.sorting?.field) {
-        queryParams.push(`sorting.field=${encodeURIComponent(request.sorting.field.toString())}`)
-      }
-      if (request.sorting?.order) {
-        queryParams.push(`sorting.order=${encodeURIComponent(request.sorting.order.toString())}`)
-      }
       if (request.query) {
         queryParams.push(`query=${encodeURIComponent(request.query.toString())}`)
       }
-      if (request.or) {
-        queryParams.push(`or=${encodeURIComponent(request.or.toString())}`)
+      if (request.filter) {
+        queryParams.push(`filter=${encodeURIComponent(request.filter.toString())}`)
       }
       if (request.filterExpr?.type) {
         queryParams.push(`filterExpr.type=${encodeURIComponent(request.filterExpr.type.toString())}`)
@@ -10235,8 +4568,14 @@ export function createOrgUnitServiceClient(
       if (request.filterExpr?.conditions?.jsonPath) {
         queryParams.push(`filterExpr.conditions.jsonPath=${encodeURIComponent(request.filterExpr.conditions.jsonPath.toString())}`)
       }
-      if (request.filter) {
-        queryParams.push(`filter=${encodeURIComponent(request.filter.toString())}`)
+      if (request.orderBy) {
+        queryParams.push(`orderBy=${encodeURIComponent(request.orderBy.toString())}`)
+      }
+      if (request.sorting?.field) {
+        queryParams.push(`sorting.field=${encodeURIComponent(request.sorting.field.toString())}`)
+      }
+      if (request.sorting?.direction) {
+        queryParams.push(`sorting.direction=${encodeURIComponent(request.sorting.direction.toString())}`)
       }
       if (request.fieldMask) {
         queryParams.push(`fieldMask=${encodeURIComponent(request.fieldMask.toString())}`)
@@ -10426,1143 +4765,6 @@ export type userservicev1_DeleteOrgUnitRequest = {
   id: number | undefined;
 };
 
-// Paperless Category Gateway Service - HTTP gateway for category management
-export interface PaperlessCategoryGatewayService {
-  // Create a new category
-  CreateCategory(request: paperlessservicev1_CreateCategoryRequest): Promise<paperlessservicev1_CreateCategoryResponse>;
-  // Get the category tree structure (must be before GetCategory to avoid route conflict)
-  GetCategoryTree(request: paperlessservicev1_GetCategoryTreeRequest): Promise<paperlessservicev1_GetCategoryTreeResponse>;
-  // Get a category by ID
-  GetCategory(request: paperlessservicev1_GetCategoryRequest): Promise<paperlessservicev1_GetCategoryResponse>;
-  // List categories
-  ListCategories(request: paperlessservicev1_ListCategoriesRequest): Promise<paperlessservicev1_ListCategoriesResponse>;
-  // Update category metadata
-  UpdateCategory(request: paperlessservicev1_UpdateCategoryRequest): Promise<paperlessservicev1_UpdateCategoryResponse>;
-  // Delete a category
-  DeleteCategory(request: paperlessservicev1_DeleteCategoryRequest): Promise<wellKnownEmpty>;
-  // Move a category to a new parent
-  MoveCategory(request: paperlessservicev1_MoveCategoryRequest): Promise<paperlessservicev1_MoveCategoryResponse>;
-}
-
-export function createPaperlessCategoryGatewayServiceClient(
-  handler: RequestHandler
-): PaperlessCategoryGatewayService {
-  return {
-    CreateCategory(request) { // eslint-disable-line @typescript-eslint/no-unused-vars
-      const path = `admin/v1/paperless/categories`; // eslint-disable-line quotes
-      const body = JSON.stringify(request);
-      const queryParams: string[] = [];
-      let uri = path;
-      if (queryParams.length > 0) {
-        uri += `?${queryParams.join("&")}`
-      }
-      return handler({
-        path: uri,
-        method: "POST",
-        body,
-      }, {
-        service: "PaperlessCategoryGatewayService",
-        method: "CreateCategory",
-      }) as Promise<paperlessservicev1_CreateCategoryResponse>;
-    },
-    GetCategoryTree(request) { // eslint-disable-line @typescript-eslint/no-unused-vars
-      const path = `admin/v1/paperless/categories/tree`; // eslint-disable-line quotes
-      const body = null;
-      const queryParams: string[] = [];
-      if (request.rootId) {
-        queryParams.push(`rootId=${encodeURIComponent(request.rootId.toString())}`)
-      }
-      if (request.maxDepth) {
-        queryParams.push(`maxDepth=${encodeURIComponent(request.maxDepth.toString())}`)
-      }
-      if (request.includeCounts) {
-        queryParams.push(`includeCounts=${encodeURIComponent(request.includeCounts.toString())}`)
-      }
-      let uri = path;
-      if (queryParams.length > 0) {
-        uri += `?${queryParams.join("&")}`
-      }
-      return handler({
-        path: uri,
-        method: "GET",
-        body,
-      }, {
-        service: "PaperlessCategoryGatewayService",
-        method: "GetCategoryTree",
-      }) as Promise<paperlessservicev1_GetCategoryTreeResponse>;
-    },
-    GetCategory(request) { // eslint-disable-line @typescript-eslint/no-unused-vars
-      if (!request.id) {
-        throw new Error("missing required field request.id");
-      }
-      const path = `admin/v1/paperless/categories/${request.id}`; // eslint-disable-line quotes
-      const body = null;
-      const queryParams: string[] = [];
-      if (request.includeCounts) {
-        queryParams.push(`includeCounts=${encodeURIComponent(request.includeCounts.toString())}`)
-      }
-      let uri = path;
-      if (queryParams.length > 0) {
-        uri += `?${queryParams.join("&")}`
-      }
-      return handler({
-        path: uri,
-        method: "GET",
-        body,
-      }, {
-        service: "PaperlessCategoryGatewayService",
-        method: "GetCategory",
-      }) as Promise<paperlessservicev1_GetCategoryResponse>;
-    },
-    ListCategories(request) { // eslint-disable-line @typescript-eslint/no-unused-vars
-      const path = `admin/v1/paperless/categories`; // eslint-disable-line quotes
-      const body = null;
-      const queryParams: string[] = [];
-      if (request.parentId) {
-        queryParams.push(`parentId=${encodeURIComponent(request.parentId.toString())}`)
-      }
-      if (request.page) {
-        queryParams.push(`page=${encodeURIComponent(request.page.toString())}`)
-      }
-      if (request.pageSize) {
-        queryParams.push(`pageSize=${encodeURIComponent(request.pageSize.toString())}`)
-      }
-      if (request.nameFilter) {
-        queryParams.push(`nameFilter=${encodeURIComponent(request.nameFilter.toString())}`)
-      }
-      let uri = path;
-      if (queryParams.length > 0) {
-        uri += `?${queryParams.join("&")}`
-      }
-      return handler({
-        path: uri,
-        method: "GET",
-        body,
-      }, {
-        service: "PaperlessCategoryGatewayService",
-        method: "ListCategories",
-      }) as Promise<paperlessservicev1_ListCategoriesResponse>;
-    },
-    UpdateCategory(request) { // eslint-disable-line @typescript-eslint/no-unused-vars
-      if (!request.id) {
-        throw new Error("missing required field request.id");
-      }
-      const path = `admin/v1/paperless/categories/${request.id}`; // eslint-disable-line quotes
-      const body = JSON.stringify(request);
-      const queryParams: string[] = [];
-      let uri = path;
-      if (queryParams.length > 0) {
-        uri += `?${queryParams.join("&")}`
-      }
-      return handler({
-        path: uri,
-        method: "PUT",
-        body,
-      }, {
-        service: "PaperlessCategoryGatewayService",
-        method: "UpdateCategory",
-      }) as Promise<paperlessservicev1_UpdateCategoryResponse>;
-    },
-    DeleteCategory(request) { // eslint-disable-line @typescript-eslint/no-unused-vars
-      if (!request.id) {
-        throw new Error("missing required field request.id");
-      }
-      const path = `admin/v1/paperless/categories/${request.id}`; // eslint-disable-line quotes
-      const body = null;
-      const queryParams: string[] = [];
-      if (request.force) {
-        queryParams.push(`force=${encodeURIComponent(request.force.toString())}`)
-      }
-      let uri = path;
-      if (queryParams.length > 0) {
-        uri += `?${queryParams.join("&")}`
-      }
-      return handler({
-        path: uri,
-        method: "DELETE",
-        body,
-      }, {
-        service: "PaperlessCategoryGatewayService",
-        method: "DeleteCategory",
-      }) as Promise<wellKnownEmpty>;
-    },
-    MoveCategory(request) { // eslint-disable-line @typescript-eslint/no-unused-vars
-      if (!request.id) {
-        throw new Error("missing required field request.id");
-      }
-      const path = `admin/v1/paperless/categories/${request.id}:move`; // eslint-disable-line quotes
-      const body = JSON.stringify(request);
-      const queryParams: string[] = [];
-      let uri = path;
-      if (queryParams.length > 0) {
-        uri += `?${queryParams.join("&")}`
-      }
-      return handler({
-        path: uri,
-        method: "POST",
-        body,
-      }, {
-        service: "PaperlessCategoryGatewayService",
-        method: "MoveCategory",
-      }) as Promise<paperlessservicev1_MoveCategoryResponse>;
-    },
-  };
-}
-// Request to create a category
-export type paperlessservicev1_CreateCategoryRequest = {
-  // Parent category ID (null for root-level category)
-  parentId?: string;
-  // Category name
-  //
-  // Behaviors: REQUIRED
-  name: string | undefined;
-  // Optional description
-  description: string | undefined;
-  // Sort order (lower numbers appear first)
-  sortOrder: number | undefined;
-};
-
-export type paperlessservicev1_CreateCategoryResponse = {
-  category: paperlessservicev1_Category | undefined;
-};
-
-// Category entity
-export type paperlessservicev1_Category = {
-  id: string | undefined;
-  tenantId: number | undefined;
-  parentId?: string;
-  name: string | undefined;
-  path: string | undefined;
-  description: string | undefined;
-  depth: number | undefined;
-  sortOrder: number | undefined;
-  documentCount: number | undefined;
-  subcategoryCount: number | undefined;
-  createTime: wellKnownTimestamp | undefined;
-  updateTime: wellKnownTimestamp | undefined;
-  createdBy?: number;
-};
-
-// Request to get category tree
-export type paperlessservicev1_GetCategoryTreeRequest = {
-  // Root category ID (null for entire tree)
-  rootId?: string;
-  // Maximum depth to retrieve
-  maxDepth?: number;
-  // Include document counts
-  includeCounts: boolean | undefined;
-};
-
-export type paperlessservicev1_GetCategoryTreeResponse = {
-  roots: paperlessservicev1_CategoryTreeNode[] | undefined;
-};
-
-// Category tree node
-export type paperlessservicev1_CategoryTreeNode = {
-  category: paperlessservicev1_Category | undefined;
-  children: paperlessservicev1_CategoryTreeNode[] | undefined;
-};
-
-// Request to get a category
-export type paperlessservicev1_GetCategoryRequest = {
-  //
-  // Behaviors: REQUIRED
-  id: string | undefined;
-  // Include document count
-  includeCounts: boolean | undefined;
-};
-
-export type paperlessservicev1_GetCategoryResponse = {
-  category: paperlessservicev1_Category | undefined;
-};
-
-// Request to list categories
-export type paperlessservicev1_ListCategoriesRequest = {
-  // Parent category ID (null for root-level categories)
-  parentId?: string;
-  // Pagination
-  page?: number;
-  pageSize?: number;
-  // Search by name
-  nameFilter?: string;
-};
-
-export type paperlessservicev1_ListCategoriesResponse = {
-  categories: paperlessservicev1_Category[] | undefined;
-  total: number | undefined;
-};
-
-// Request to update a category
-export type paperlessservicev1_UpdateCategoryRequest = {
-  //
-  // Behaviors: REQUIRED
-  id: string | undefined;
-  // New name (optional)
-  name?: string;
-  // New description (optional)
-  description?: string;
-  // New sort order (optional)
-  sortOrder?: number;
-};
-
-export type paperlessservicev1_UpdateCategoryResponse = {
-  category: paperlessservicev1_Category | undefined;
-};
-
-// Request to delete a category
-export type paperlessservicev1_DeleteCategoryRequest = {
-  //
-  // Behaviors: REQUIRED
-  id: string | undefined;
-  // Force delete even if category contains items
-  force: boolean | undefined;
-};
-
-// Request to move a category
-export type paperlessservicev1_MoveCategoryRequest = {
-  //
-  // Behaviors: REQUIRED
-  id: string | undefined;
-  // New parent category ID (null to move to root)
-  newParentId?: string;
-};
-
-export type paperlessservicev1_MoveCategoryResponse = {
-  category: paperlessservicev1_Category | undefined;
-};
-
-// Paperless Document Gateway Service - HTTP gateway for document management
-export interface PaperlessDocumentGatewayService {
-  // Create a new document (upload)
-  CreateDocument(request: paperlessservicev1_CreateDocumentRequest): Promise<paperlessservicev1_CreateDocumentResponse>;
-  // Get a document by ID (metadata only)
-  GetDocument(request: paperlessservicev1_GetDocumentRequest): Promise<paperlessservicev1_GetDocumentResponse>;
-  // List documents
-  ListDocuments(request: paperlessservicev1_ListDocumentsRequest): Promise<paperlessservicev1_ListDocumentsResponse>;
-  // Update document metadata
-  UpdateDocument(request: paperlessservicev1_UpdateDocumentRequest): Promise<paperlessservicev1_UpdateDocumentResponse>;
-  // Delete a document
-  DeleteDocument(request: paperlessservicev1_DeleteDocumentRequest): Promise<wellKnownEmpty>;
-  // Move document to a different category
-  MoveDocument(request: paperlessservicev1_MoveDocumentRequest): Promise<paperlessservicev1_MoveDocumentResponse>;
-  // Download document content
-  DownloadDocument(request: paperlessservicev1_DownloadDocumentRequest): Promise<paperlessservicev1_DownloadDocumentResponse>;
-  // Get document download URL (presigned URL)
-  GetDocumentDownloadUrl(request: paperlessservicev1_GetDocumentDownloadUrlRequest): Promise<paperlessservicev1_GetDocumentDownloadUrlResponse>;
-  // Search documents
-  SearchDocuments(request: paperlessservicev1_SearchDocumentsRequest): Promise<paperlessservicev1_SearchDocumentsResponse>;
-  // Batch delete documents
-  BatchDeleteDocuments(request: paperlessservicev1_BatchDeleteDocumentsRequest): Promise<paperlessservicev1_BatchDeleteDocumentsResponse>;
-}
-
-export function createPaperlessDocumentGatewayServiceClient(
-  handler: RequestHandler
-): PaperlessDocumentGatewayService {
-  return {
-    CreateDocument(request) { // eslint-disable-line @typescript-eslint/no-unused-vars
-      const path = `admin/v1/paperless/documents`; // eslint-disable-line quotes
-      const body = JSON.stringify(request);
-      const queryParams: string[] = [];
-      let uri = path;
-      if (queryParams.length > 0) {
-        uri += `?${queryParams.join("&")}`
-      }
-      return handler({
-        path: uri,
-        method: "POST",
-        body,
-      }, {
-        service: "PaperlessDocumentGatewayService",
-        method: "CreateDocument",
-      }) as Promise<paperlessservicev1_CreateDocumentResponse>;
-    },
-    GetDocument(request) { // eslint-disable-line @typescript-eslint/no-unused-vars
-      if (!request.id) {
-        throw new Error("missing required field request.id");
-      }
-      const path = `admin/v1/paperless/documents/${request.id}`; // eslint-disable-line quotes
-      const body = null;
-      const queryParams: string[] = [];
-      let uri = path;
-      if (queryParams.length > 0) {
-        uri += `?${queryParams.join("&")}`
-      }
-      return handler({
-        path: uri,
-        method: "GET",
-        body,
-      }, {
-        service: "PaperlessDocumentGatewayService",
-        method: "GetDocument",
-      }) as Promise<paperlessservicev1_GetDocumentResponse>;
-    },
-    ListDocuments(request) { // eslint-disable-line @typescript-eslint/no-unused-vars
-      const path = `admin/v1/paperless/documents`; // eslint-disable-line quotes
-      const body = null;
-      const queryParams: string[] = [];
-      if (request.categoryId) {
-        queryParams.push(`categoryId=${encodeURIComponent(request.categoryId.toString())}`)
-      }
-      if (request.page) {
-        queryParams.push(`page=${encodeURIComponent(request.page.toString())}`)
-      }
-      if (request.pageSize) {
-        queryParams.push(`pageSize=${encodeURIComponent(request.pageSize.toString())}`)
-      }
-      if (request.status) {
-        queryParams.push(`status=${encodeURIComponent(request.status.toString())}`)
-      }
-      if (request.nameFilter) {
-        queryParams.push(`nameFilter=${encodeURIComponent(request.nameFilter.toString())}`)
-      }
-      if (request.mimeTypeFilter) {
-        queryParams.push(`mimeTypeFilter=${encodeURIComponent(request.mimeTypeFilter.toString())}`)
-      }
-      if (request.includeSubcategories) {
-        queryParams.push(`includeSubcategories=${encodeURIComponent(request.includeSubcategories.toString())}`)
-      }
-      let uri = path;
-      if (queryParams.length > 0) {
-        uri += `?${queryParams.join("&")}`
-      }
-      return handler({
-        path: uri,
-        method: "GET",
-        body,
-      }, {
-        service: "PaperlessDocumentGatewayService",
-        method: "ListDocuments",
-      }) as Promise<paperlessservicev1_ListDocumentsResponse>;
-    },
-    UpdateDocument(request) { // eslint-disable-line @typescript-eslint/no-unused-vars
-      if (!request.id) {
-        throw new Error("missing required field request.id");
-      }
-      const path = `admin/v1/paperless/documents/${request.id}`; // eslint-disable-line quotes
-      const body = JSON.stringify(request);
-      const queryParams: string[] = [];
-      let uri = path;
-      if (queryParams.length > 0) {
-        uri += `?${queryParams.join("&")}`
-      }
-      return handler({
-        path: uri,
-        method: "PUT",
-        body,
-      }, {
-        service: "PaperlessDocumentGatewayService",
-        method: "UpdateDocument",
-      }) as Promise<paperlessservicev1_UpdateDocumentResponse>;
-    },
-    DeleteDocument(request) { // eslint-disable-line @typescript-eslint/no-unused-vars
-      if (!request.id) {
-        throw new Error("missing required field request.id");
-      }
-      const path = `admin/v1/paperless/documents/${request.id}`; // eslint-disable-line quotes
-      const body = null;
-      const queryParams: string[] = [];
-      if (request.permanent) {
-        queryParams.push(`permanent=${encodeURIComponent(request.permanent.toString())}`)
-      }
-      let uri = path;
-      if (queryParams.length > 0) {
-        uri += `?${queryParams.join("&")}`
-      }
-      return handler({
-        path: uri,
-        method: "DELETE",
-        body,
-      }, {
-        service: "PaperlessDocumentGatewayService",
-        method: "DeleteDocument",
-      }) as Promise<wellKnownEmpty>;
-    },
-    MoveDocument(request) { // eslint-disable-line @typescript-eslint/no-unused-vars
-      if (!request.id) {
-        throw new Error("missing required field request.id");
-      }
-      const path = `admin/v1/paperless/documents/${request.id}:move`; // eslint-disable-line quotes
-      const body = JSON.stringify(request);
-      const queryParams: string[] = [];
-      let uri = path;
-      if (queryParams.length > 0) {
-        uri += `?${queryParams.join("&")}`
-      }
-      return handler({
-        path: uri,
-        method: "POST",
-        body,
-      }, {
-        service: "PaperlessDocumentGatewayService",
-        method: "MoveDocument",
-      }) as Promise<paperlessservicev1_MoveDocumentResponse>;
-    },
-    DownloadDocument(request) { // eslint-disable-line @typescript-eslint/no-unused-vars
-      if (!request.id) {
-        throw new Error("missing required field request.id");
-      }
-      const path = `admin/v1/paperless/documents/${request.id}/download`; // eslint-disable-line quotes
-      const body = null;
-      const queryParams: string[] = [];
-      let uri = path;
-      if (queryParams.length > 0) {
-        uri += `?${queryParams.join("&")}`
-      }
-      return handler({
-        path: uri,
-        method: "GET",
-        body,
-      }, {
-        service: "PaperlessDocumentGatewayService",
-        method: "DownloadDocument",
-      }) as Promise<paperlessservicev1_DownloadDocumentResponse>;
-    },
-    GetDocumentDownloadUrl(request) { // eslint-disable-line @typescript-eslint/no-unused-vars
-      if (!request.id) {
-        throw new Error("missing required field request.id");
-      }
-      const path = `admin/v1/paperless/documents/${request.id}/download-url`; // eslint-disable-line quotes
-      const body = null;
-      const queryParams: string[] = [];
-      if (request.expiresIn) {
-        queryParams.push(`expiresIn=${encodeURIComponent(request.expiresIn.toString())}`)
-      }
-      let uri = path;
-      if (queryParams.length > 0) {
-        uri += `?${queryParams.join("&")}`
-      }
-      return handler({
-        path: uri,
-        method: "GET",
-        body,
-      }, {
-        service: "PaperlessDocumentGatewayService",
-        method: "GetDocumentDownloadUrl",
-      }) as Promise<paperlessservicev1_GetDocumentDownloadUrlResponse>;
-    },
-    SearchDocuments(request) { // eslint-disable-line @typescript-eslint/no-unused-vars
-      const path = `admin/v1/paperless/documents/search`; // eslint-disable-line quotes
-      const body = null;
-      const queryParams: string[] = [];
-      if (request.query) {
-        queryParams.push(`query=${encodeURIComponent(request.query.toString())}`)
-      }
-      if (request.categoryId) {
-        queryParams.push(`categoryId=${encodeURIComponent(request.categoryId.toString())}`)
-      }
-      if (request.includeSubcategories) {
-        queryParams.push(`includeSubcategories=${encodeURIComponent(request.includeSubcategories.toString())}`)
-      }
-      if (request.page) {
-        queryParams.push(`page=${encodeURIComponent(request.page.toString())}`)
-      }
-      if (request.pageSize) {
-        queryParams.push(`pageSize=${encodeURIComponent(request.pageSize.toString())}`)
-      }
-      if (request.status) {
-        queryParams.push(`status=${encodeURIComponent(request.status.toString())}`)
-      }
-      if (request.mimeTypeFilter) {
-        queryParams.push(`mimeTypeFilter=${encodeURIComponent(request.mimeTypeFilter.toString())}`)
-      }
-      if (request.tags) {
-        request.tags.forEach((value, key) => {
-          queryParams.push(`tags[key]=${encodeURIComponent(value.toString())}`)
-        })
-      }
-      let uri = path;
-      if (queryParams.length > 0) {
-        uri += `?${queryParams.join("&")}`
-      }
-      return handler({
-        path: uri,
-        method: "GET",
-        body,
-      }, {
-        service: "PaperlessDocumentGatewayService",
-        method: "SearchDocuments",
-      }) as Promise<paperlessservicev1_SearchDocumentsResponse>;
-    },
-    BatchDeleteDocuments(request) { // eslint-disable-line @typescript-eslint/no-unused-vars
-      const path = `admin/v1/paperless/documents:batch-delete`; // eslint-disable-line quotes
-      const body = JSON.stringify(request);
-      const queryParams: string[] = [];
-      let uri = path;
-      if (queryParams.length > 0) {
-        uri += `?${queryParams.join("&")}`
-      }
-      return handler({
-        path: uri,
-        method: "POST",
-        body,
-      }, {
-        service: "PaperlessDocumentGatewayService",
-        method: "BatchDeleteDocuments",
-      }) as Promise<paperlessservicev1_BatchDeleteDocumentsResponse>;
-    },
-  };
-}
-// Request to create a document
-export type paperlessservicev1_CreateDocumentRequest = {
-  // Category ID (null for root-level)
-  categoryId?: string;
-  // Document name (display name)
-  //
-  // Behaviors: REQUIRED
-  name: string | undefined;
-  // Description
-  description: string | undefined;
-  // Original file name
-  //
-  // Behaviors: REQUIRED
-  fileName: string | undefined;
-  // File content (base64 encoded for non-streaming)
-  //
-  // Behaviors: REQUIRED
-  fileContent: string | undefined;
-  // MIME type (optional - will be detected if not provided)
-  mimeType: string | undefined;
-  // Custom tags
-  tags: { [key: string]: string } | undefined;
-  // Document source (default: UPLOAD)
-  source: paperlessservicev1_DocumentSource | undefined;
-};
-
-// Document source - where the document originated from
-export type paperlessservicev1_DocumentSource =
-  | "DOCUMENT_SOURCE_UNSPECIFIED"
-  | "DOCUMENT_SOURCE_UPLOAD"
-  | "DOCUMENT_SOURCE_EMAIL";
-export type paperlessservicev1_CreateDocumentResponse = {
-  document: paperlessservicev1_Document | undefined;
-};
-
-// Document entity
-export type paperlessservicev1_Document = {
-  id: string | undefined;
-  tenantId: number | undefined;
-  categoryId?: string;
-  categoryPath: string | undefined;
-  name: string | undefined;
-  description: string | undefined;
-  fileKey: string | undefined;
-  fileName: string | undefined;
-  fileSize: number | undefined;
-  mimeType: string | undefined;
-  checksum: string | undefined;
-  status: paperlessservicev1_DocumentStatus | undefined;
-  source: paperlessservicev1_DocumentSource | undefined;
-  tags: { [key: string]: string } | undefined;
-  createTime: wellKnownTimestamp | undefined;
-  updateTime: wellKnownTimestamp | undefined;
-  createdBy?: number;
-  updatedBy?: number;
-};
-
-// Document status
-export type paperlessservicev1_DocumentStatus =
-  | "DOCUMENT_STATUS_UNSPECIFIED"
-  | "DOCUMENT_STATUS_ACTIVE"
-  | "DOCUMENT_STATUS_ARCHIVED"
-  | "DOCUMENT_STATUS_DELETED";
-// Request to get a document
-export type paperlessservicev1_GetDocumentRequest = {
-  //
-  // Behaviors: REQUIRED
-  id: string | undefined;
-};
-
-export type paperlessservicev1_GetDocumentResponse = {
-  document: paperlessservicev1_Document | undefined;
-};
-
-// Request to list documents
-export type paperlessservicev1_ListDocumentsRequest = {
-  // Category ID (null for root-level documents)
-  categoryId?: string;
-  // Pagination
-  page?: number;
-  pageSize?: number;
-  // Filter by status
-  status?: paperlessservicev1_DocumentStatus;
-  // Filter by name
-  nameFilter?: string;
-  // Filter by MIME type
-  mimeTypeFilter?: string;
-  // Include subcategories
-  includeSubcategories: boolean | undefined;
-};
-
-export type paperlessservicev1_ListDocumentsResponse = {
-  documents: paperlessservicev1_Document[] | undefined;
-  total: number | undefined;
-};
-
-// Request to update document metadata
-export type paperlessservicev1_UpdateDocumentRequest = {
-  //
-  // Behaviors: REQUIRED
-  id: string | undefined;
-  // New name
-  name?: string;
-  // New description
-  description?: string;
-  // New status
-  status?: paperlessservicev1_DocumentStatus;
-  // New tags (replaces existing)
-  tags: { [key: string]: string } | undefined;
-  // Whether to update tags (if false, tags field is ignored)
-  updateTags: boolean | undefined;
-};
-
-export type paperlessservicev1_UpdateDocumentResponse = {
-  document: paperlessservicev1_Document | undefined;
-};
-
-// Request to delete a document
-export type paperlessservicev1_DeleteDocumentRequest = {
-  //
-  // Behaviors: REQUIRED
-  id: string | undefined;
-  // Permanently delete (skip soft-delete and remove from storage)
-  permanent: boolean | undefined;
-};
-
-// Request to move a document
-export type paperlessservicev1_MoveDocumentRequest = {
-  //
-  // Behaviors: REQUIRED
-  id: string | undefined;
-  // New category ID (null to move to root)
-  newCategoryId?: string;
-};
-
-export type paperlessservicev1_MoveDocumentResponse = {
-  document: paperlessservicev1_Document | undefined;
-};
-
-// Request to download document content
-export type paperlessservicev1_DownloadDocumentRequest = {
-  //
-  // Behaviors: REQUIRED
-  id: string | undefined;
-};
-
-export type paperlessservicev1_DownloadDocumentResponse = {
-  // File content
-  content: string | undefined;
-  // Original file name
-  fileName: string | undefined;
-  // MIME type
-  mimeType: string | undefined;
-  // File size
-  fileSize: number | undefined;
-};
-
-// Request to get document download URL
-export type paperlessservicev1_GetDocumentDownloadUrlRequest = {
-  //
-  // Behaviors: REQUIRED
-  id: string | undefined;
-  // URL expiration in seconds (default 3600)
-  expiresIn?: number;
-};
-
-export type paperlessservicev1_GetDocumentDownloadUrlResponse = {
-  url: string | undefined;
-  expiresAt: wellKnownTimestamp | undefined;
-};
-
-// Request to search documents
-export type paperlessservicev1_SearchDocumentsRequest = {
-  // Search query (searches name, description, file_name)
-  //
-  // Behaviors: REQUIRED
-  query: string | undefined;
-  // Limit search to category and subcategories (null for all)
-  categoryId?: string;
-  // Include subcategories in search
-  includeSubcategories: boolean | undefined;
-  // Pagination
-  page?: number;
-  pageSize?: number;
-  // Filter by status
-  status?: paperlessservicev1_DocumentStatus;
-  // Filter by MIME type
-  mimeTypeFilter?: string;
-  // Filter by tags (all tags must match)
-  tags: { [key: string]: string } | undefined;
-};
-
-export type paperlessservicev1_SearchDocumentsResponse = {
-  documents: paperlessservicev1_Document[] | undefined;
-  total: number | undefined;
-};
-
-// Request to batch delete documents
-export type paperlessservicev1_BatchDeleteDocumentsRequest = {
-  //
-  // Behaviors: REQUIRED
-  ids: string[] | undefined;
-  // Permanently delete (skip soft-delete and remove from storage)
-  permanent: boolean | undefined;
-};
-
-export type paperlessservicev1_BatchDeleteDocumentsResponse = {
-  // Number of documents successfully deleted
-  deletedCount: number | undefined;
-  // IDs that failed to delete
-  failedIds: string[] | undefined;
-};
-
-// Paperless Permission Gateway Service - HTTP gateway for permission management
-export interface PaperlessPermissionGatewayService {
-  // Grant access to a resource
-  GrantAccess(request: paperlessservicev1_GrantAccessRequest): Promise<paperlessservicev1_GrantAccessResponse>;
-  // Revoke access from a resource
-  RevokeAccess(request: paperlessservicev1_RevokeAccessRequest): Promise<wellKnownEmpty>;
-  // List permissions
-  ListPermissions(request: paperlessservicev1_ListPermissionsRequest): Promise<paperlessservicev1_ListPermissionsResponse>;
-  // Check if a subject has access to a resource
-  CheckAccess(request: paperlessservicev1_CheckAccessRequest): Promise<paperlessservicev1_CheckAccessResponse>;
-  // List resources accessible by a subject
-  ListAccessibleResources(request: paperlessservicev1_ListAccessibleResourcesRequest): Promise<paperlessservicev1_ListAccessibleResourcesResponse>;
-  // Get effective permissions for a subject on a resource
-  GetEffectivePermissions(request: paperlessservicev1_GetEffectivePermissionsRequest): Promise<paperlessservicev1_GetEffectivePermissionsResponse>;
-}
-
-export function createPaperlessPermissionGatewayServiceClient(
-  handler: RequestHandler
-): PaperlessPermissionGatewayService {
-  return {
-    GrantAccess(request) { // eslint-disable-line @typescript-eslint/no-unused-vars
-      const path = `admin/v1/paperless/permissions`; // eslint-disable-line quotes
-      const body = JSON.stringify(request);
-      const queryParams: string[] = [];
-      let uri = path;
-      if (queryParams.length > 0) {
-        uri += `?${queryParams.join("&")}`
-      }
-      return handler({
-        path: uri,
-        method: "POST",
-        body,
-      }, {
-        service: "PaperlessPermissionGatewayService",
-        method: "GrantAccess",
-      }) as Promise<paperlessservicev1_GrantAccessResponse>;
-    },
-    RevokeAccess(request) { // eslint-disable-line @typescript-eslint/no-unused-vars
-      const path = `admin/v1/paperless/permissions:revoke`; // eslint-disable-line quotes
-      const body = JSON.stringify(request);
-      const queryParams: string[] = [];
-      let uri = path;
-      if (queryParams.length > 0) {
-        uri += `?${queryParams.join("&")}`
-      }
-      return handler({
-        path: uri,
-        method: "POST",
-        body,
-      }, {
-        service: "PaperlessPermissionGatewayService",
-        method: "RevokeAccess",
-      }) as Promise<wellKnownEmpty>;
-    },
-    ListPermissions(request) { // eslint-disable-line @typescript-eslint/no-unused-vars
-      const path = `admin/v1/paperless/permissions`; // eslint-disable-line quotes
-      const body = null;
-      const queryParams: string[] = [];
-      if (request.resourceType) {
-        queryParams.push(`resourceType=${encodeURIComponent(request.resourceType.toString())}`)
-      }
-      if (request.resourceId) {
-        queryParams.push(`resourceId=${encodeURIComponent(request.resourceId.toString())}`)
-      }
-      if (request.subjectType) {
-        queryParams.push(`subjectType=${encodeURIComponent(request.subjectType.toString())}`)
-      }
-      if (request.subjectId) {
-        queryParams.push(`subjectId=${encodeURIComponent(request.subjectId.toString())}`)
-      }
-      if (request.page) {
-        queryParams.push(`page=${encodeURIComponent(request.page.toString())}`)
-      }
-      if (request.pageSize) {
-        queryParams.push(`pageSize=${encodeURIComponent(request.pageSize.toString())}`)
-      }
-      let uri = path;
-      if (queryParams.length > 0) {
-        uri += `?${queryParams.join("&")}`
-      }
-      return handler({
-        path: uri,
-        method: "GET",
-        body,
-      }, {
-        service: "PaperlessPermissionGatewayService",
-        method: "ListPermissions",
-      }) as Promise<paperlessservicev1_ListPermissionsResponse>;
-    },
-    CheckAccess(request) { // eslint-disable-line @typescript-eslint/no-unused-vars
-      const path = `admin/v1/paperless/permissions:check`; // eslint-disable-line quotes
-      const body = JSON.stringify(request);
-      const queryParams: string[] = [];
-      let uri = path;
-      if (queryParams.length > 0) {
-        uri += `?${queryParams.join("&")}`
-      }
-      return handler({
-        path: uri,
-        method: "POST",
-        body,
-      }, {
-        service: "PaperlessPermissionGatewayService",
-        method: "CheckAccess",
-      }) as Promise<paperlessservicev1_CheckAccessResponse>;
-    },
-    ListAccessibleResources(request) { // eslint-disable-line @typescript-eslint/no-unused-vars
-      const path = `admin/v1/paperless/permissions/accessible`; // eslint-disable-line quotes
-      const body = null;
-      const queryParams: string[] = [];
-      if (request.userId) {
-        queryParams.push(`userId=${encodeURIComponent(request.userId.toString())}`)
-      }
-      if (request.resourceType) {
-        queryParams.push(`resourceType=${encodeURIComponent(request.resourceType.toString())}`)
-      }
-      if (request.permission) {
-        queryParams.push(`permission=${encodeURIComponent(request.permission.toString())}`)
-      }
-      if (request.page) {
-        queryParams.push(`page=${encodeURIComponent(request.page.toString())}`)
-      }
-      if (request.pageSize) {
-        queryParams.push(`pageSize=${encodeURIComponent(request.pageSize.toString())}`)
-      }
-      let uri = path;
-      if (queryParams.length > 0) {
-        uri += `?${queryParams.join("&")}`
-      }
-      return handler({
-        path: uri,
-        method: "GET",
-        body,
-      }, {
-        service: "PaperlessPermissionGatewayService",
-        method: "ListAccessibleResources",
-      }) as Promise<paperlessservicev1_ListAccessibleResourcesResponse>;
-    },
-    GetEffectivePermissions(request) { // eslint-disable-line @typescript-eslint/no-unused-vars
-      const path = `admin/v1/paperless/permissions/effective`; // eslint-disable-line quotes
-      const body = null;
-      const queryParams: string[] = [];
-      if (request.userId) {
-        queryParams.push(`userId=${encodeURIComponent(request.userId.toString())}`)
-      }
-      if (request.resourceType) {
-        queryParams.push(`resourceType=${encodeURIComponent(request.resourceType.toString())}`)
-      }
-      if (request.resourceId) {
-        queryParams.push(`resourceId=${encodeURIComponent(request.resourceId.toString())}`)
-      }
-      let uri = path;
-      if (queryParams.length > 0) {
-        uri += `?${queryParams.join("&")}`
-      }
-      return handler({
-        path: uri,
-        method: "GET",
-        body,
-      }, {
-        service: "PaperlessPermissionGatewayService",
-        method: "GetEffectivePermissions",
-      }) as Promise<paperlessservicev1_GetEffectivePermissionsResponse>;
-    },
-  };
-}
-// Request to grant access
-export type paperlessservicev1_GrantAccessRequest = {
-  // Resource type
-  //
-  // Behaviors: REQUIRED
-  resourceType: paperlessservicev1_ResourceType | undefined;
-  // Resource ID
-  //
-  // Behaviors: REQUIRED
-  resourceId: string | undefined;
-  // Relation to grant
-  //
-  // Behaviors: REQUIRED
-  relation: paperlessservicev1_Relation | undefined;
-  // Subject type
-  //
-  // Behaviors: REQUIRED
-  subjectType: paperlessservicev1_SubjectType | undefined;
-  // Subject ID
-  //
-  // Behaviors: REQUIRED
-  subjectId: string | undefined;
-  // Optional expiration time
-  expiresAt?: wellKnownTimestamp;
-};
-
-// Resource type
-export type paperlessservicev1_ResourceType =
-  | "RESOURCE_TYPE_UNSPECIFIED"
-  | "RESOURCE_TYPE_CATEGORY"
-  | "RESOURCE_TYPE_DOCUMENT";
-// Relation (permission level)
-export type paperlessservicev1_Relation =
-  | "RELATION_UNSPECIFIED"
-  | "RELATION_OWNER"
-  | "RELATION_EDITOR"
-  | "RELATION_VIEWER"
-  | "RELATION_SHARER";
-// Subject type
-export type paperlessservicev1_SubjectType =
-  | "SUBJECT_TYPE_UNSPECIFIED"
-  | "SUBJECT_TYPE_USER"
-  | "SUBJECT_TYPE_ROLE"
-  | "SUBJECT_TYPE_TENANT";
-export type paperlessservicev1_GrantAccessResponse = {
-  permission: paperlessservicev1_PermissionTuple | undefined;
-};
-
-// Permission tuple entity
-export type paperlessservicev1_PermissionTuple = {
-  id: number | undefined;
-  tenantId: number | undefined;
-  resourceType: paperlessservicev1_ResourceType | undefined;
-  resourceId: string | undefined;
-  relation: paperlessservicev1_Relation | undefined;
-  subjectType: paperlessservicev1_SubjectType | undefined;
-  subjectId: string | undefined;
-  grantedBy?: number;
-  expiresAt?: wellKnownTimestamp;
-  createTime: wellKnownTimestamp | undefined;
-};
-
-// Request to revoke access
-export type paperlessservicev1_RevokeAccessRequest = {
-  // Resource type
-  //
-  // Behaviors: REQUIRED
-  resourceType: paperlessservicev1_ResourceType | undefined;
-  // Resource ID
-  //
-  // Behaviors: REQUIRED
-  resourceId: string | undefined;
-  // Relation to revoke (optional - if not specified, revokes all)
-  relation?: paperlessservicev1_Relation;
-  // Subject type
-  //
-  // Behaviors: REQUIRED
-  subjectType: paperlessservicev1_SubjectType | undefined;
-  // Subject ID
-  //
-  // Behaviors: REQUIRED
-  subjectId: string | undefined;
-};
-
-// Request to list permissions
-export type paperlessservicev1_ListPermissionsRequest = {
-  // Resource type (optional - filter by type)
-  resourceType?: paperlessservicev1_ResourceType;
-  // Resource ID (optional - list for specific resource)
-  resourceId?: string;
-  // Subject type (optional - filter by subject type)
-  subjectType?: paperlessservicev1_SubjectType;
-  // Subject ID (optional - list for specific subject)
-  subjectId?: string;
-  // Pagination
-  page?: number;
-  pageSize?: number;
-};
-
-export type paperlessservicev1_ListPermissionsResponse = {
-  permissions: paperlessservicev1_PermissionTuple[] | undefined;
-  total: number | undefined;
-};
-
-// Request to check access
-export type paperlessservicev1_CheckAccessRequest = {
-  // User ID to check
-  //
-  // Behaviors: REQUIRED
-  userId: string | undefined;
-  // Resource type
-  //
-  // Behaviors: REQUIRED
-  resourceType: paperlessservicev1_ResourceType | undefined;
-  // Resource ID
-  //
-  // Behaviors: REQUIRED
-  resourceId: string | undefined;
-  // Permission to check
-  //
-  // Behaviors: REQUIRED
-  permission: paperlessservicev1_Permission | undefined;
-};
-
-// Permission (action that can be checked)
-export type paperlessservicev1_Permission =
-  | "PERMISSION_UNSPECIFIED"
-  | "PERMISSION_READ"
-  | "PERMISSION_WRITE"
-  | "PERMISSION_DELETE"
-  | "PERMISSION_SHARE"
-  | "PERMISSION_DOWNLOAD";
-export type paperlessservicev1_CheckAccessResponse = {
-  allowed: boolean | undefined;
-  reason?: string;
-};
-
-// Request to list accessible resources
-export type paperlessservicev1_ListAccessibleResourcesRequest = {
-  // User ID
-  //
-  // Behaviors: REQUIRED
-  userId: string | undefined;
-  // Resource type to list
-  //
-  // Behaviors: REQUIRED
-  resourceType: paperlessservicev1_ResourceType | undefined;
-  // Minimum permission level
-  //
-  // Behaviors: REQUIRED
-  permission: paperlessservicev1_Permission | undefined;
-  // Pagination
-  page?: number;
-  pageSize?: number;
-};
-
-export type paperlessservicev1_ListAccessibleResourcesResponse = {
-  resourceIds: string[] | undefined;
-  total: number | undefined;
-};
-
-// Request to get effective permissions
-export type paperlessservicev1_GetEffectivePermissionsRequest = {
-  // User ID
-  //
-  // Behaviors: REQUIRED
-  userId: string | undefined;
-  // Resource type
-  //
-  // Behaviors: REQUIRED
-  resourceType: paperlessservicev1_ResourceType | undefined;
-  // Resource ID
-  //
-  // Behaviors: REQUIRED
-  resourceId: string | undefined;
-};
-
-export type paperlessservicev1_GetEffectivePermissionsResponse = {
-  permissions: paperlessservicev1_Permission[] | undefined;
-  highestRelation: paperlessservicev1_Relation | undefined;
-};
-
 // Permission management service
 export interface PermissionService {
   // Query permission list
@@ -11605,22 +4807,11 @@ export function createPermissionServiceClient(
       if (request.noPaging) {
         queryParams.push(`noPaging=${encodeURIComponent(request.noPaging.toString())}`)
       }
-      if (request.orderBy) {
-        request.orderBy.forEach((x) => {
-          queryParams.push(`orderBy=${encodeURIComponent(x.toString())}`)
-        })
-      }
-      if (request.sorting?.field) {
-        queryParams.push(`sorting.field=${encodeURIComponent(request.sorting.field.toString())}`)
-      }
-      if (request.sorting?.order) {
-        queryParams.push(`sorting.order=${encodeURIComponent(request.sorting.order.toString())}`)
-      }
       if (request.query) {
         queryParams.push(`query=${encodeURIComponent(request.query.toString())}`)
       }
-      if (request.or) {
-        queryParams.push(`or=${encodeURIComponent(request.or.toString())}`)
+      if (request.filter) {
+        queryParams.push(`filter=${encodeURIComponent(request.filter.toString())}`)
       }
       if (request.filterExpr?.type) {
         queryParams.push(`filterExpr.type=${encodeURIComponent(request.filterExpr.type.toString())}`)
@@ -11648,8 +4839,14 @@ export function createPermissionServiceClient(
       if (request.filterExpr?.conditions?.jsonPath) {
         queryParams.push(`filterExpr.conditions.jsonPath=${encodeURIComponent(request.filterExpr.conditions.jsonPath.toString())}`)
       }
-      if (request.filter) {
-        queryParams.push(`filter=${encodeURIComponent(request.filter.toString())}`)
+      if (request.orderBy) {
+        queryParams.push(`orderBy=${encodeURIComponent(request.orderBy.toString())}`)
+      }
+      if (request.sorting?.field) {
+        queryParams.push(`sorting.field=${encodeURIComponent(request.sorting.field.toString())}`)
+      }
+      if (request.sorting?.direction) {
+        queryParams.push(`sorting.direction=${encodeURIComponent(request.sorting.direction.toString())}`)
       }
       if (request.fieldMask) {
         queryParams.push(`fieldMask=${encodeURIComponent(request.fieldMask.toString())}`)
@@ -11865,22 +5062,11 @@ export function createPermissionAuditLogServiceClient(
       if (request.noPaging) {
         queryParams.push(`noPaging=${encodeURIComponent(request.noPaging.toString())}`)
       }
-      if (request.orderBy) {
-        request.orderBy.forEach((x) => {
-          queryParams.push(`orderBy=${encodeURIComponent(x.toString())}`)
-        })
-      }
-      if (request.sorting?.field) {
-        queryParams.push(`sorting.field=${encodeURIComponent(request.sorting.field.toString())}`)
-      }
-      if (request.sorting?.order) {
-        queryParams.push(`sorting.order=${encodeURIComponent(request.sorting.order.toString())}`)
-      }
       if (request.query) {
         queryParams.push(`query=${encodeURIComponent(request.query.toString())}`)
       }
-      if (request.or) {
-        queryParams.push(`or=${encodeURIComponent(request.or.toString())}`)
+      if (request.filter) {
+        queryParams.push(`filter=${encodeURIComponent(request.filter.toString())}`)
       }
       if (request.filterExpr?.type) {
         queryParams.push(`filterExpr.type=${encodeURIComponent(request.filterExpr.type.toString())}`)
@@ -11908,8 +5094,14 @@ export function createPermissionAuditLogServiceClient(
       if (request.filterExpr?.conditions?.jsonPath) {
         queryParams.push(`filterExpr.conditions.jsonPath=${encodeURIComponent(request.filterExpr.conditions.jsonPath.toString())}`)
       }
-      if (request.filter) {
-        queryParams.push(`filter=${encodeURIComponent(request.filter.toString())}`)
+      if (request.orderBy) {
+        queryParams.push(`orderBy=${encodeURIComponent(request.orderBy.toString())}`)
+      }
+      if (request.sorting?.field) {
+        queryParams.push(`sorting.field=${encodeURIComponent(request.sorting.field.toString())}`)
+      }
+      if (request.sorting?.direction) {
+        queryParams.push(`sorting.direction=${encodeURIComponent(request.sorting.direction.toString())}`)
       }
       if (request.fieldMask) {
         queryParams.push(`fieldMask=${encodeURIComponent(request.fieldMask.toString())}`)
@@ -12031,22 +5223,11 @@ export function createPermissionGroupServiceClient(
       if (request.noPaging) {
         queryParams.push(`noPaging=${encodeURIComponent(request.noPaging.toString())}`)
       }
-      if (request.orderBy) {
-        request.orderBy.forEach((x) => {
-          queryParams.push(`orderBy=${encodeURIComponent(x.toString())}`)
-        })
-      }
-      if (request.sorting?.field) {
-        queryParams.push(`sorting.field=${encodeURIComponent(request.sorting.field.toString())}`)
-      }
-      if (request.sorting?.order) {
-        queryParams.push(`sorting.order=${encodeURIComponent(request.sorting.order.toString())}`)
-      }
       if (request.query) {
         queryParams.push(`query=${encodeURIComponent(request.query.toString())}`)
       }
-      if (request.or) {
-        queryParams.push(`or=${encodeURIComponent(request.or.toString())}`)
+      if (request.filter) {
+        queryParams.push(`filter=${encodeURIComponent(request.filter.toString())}`)
       }
       if (request.filterExpr?.type) {
         queryParams.push(`filterExpr.type=${encodeURIComponent(request.filterExpr.type.toString())}`)
@@ -12074,8 +5255,14 @@ export function createPermissionGroupServiceClient(
       if (request.filterExpr?.conditions?.jsonPath) {
         queryParams.push(`filterExpr.conditions.jsonPath=${encodeURIComponent(request.filterExpr.conditions.jsonPath.toString())}`)
       }
-      if (request.filter) {
-        queryParams.push(`filter=${encodeURIComponent(request.filter.toString())}`)
+      if (request.orderBy) {
+        queryParams.push(`orderBy=${encodeURIComponent(request.orderBy.toString())}`)
+      }
+      if (request.sorting?.field) {
+        queryParams.push(`sorting.field=${encodeURIComponent(request.sorting.field.toString())}`)
+      }
+      if (request.sorting?.direction) {
+        queryParams.push(`sorting.direction=${encodeURIComponent(request.sorting.direction.toString())}`)
       }
       if (request.fieldMask) {
         queryParams.push(`fieldMask=${encodeURIComponent(request.fieldMask.toString())}`)
@@ -12262,22 +5449,11 @@ export function createPolicyEvaluationLogServiceClient(
       if (request.noPaging) {
         queryParams.push(`noPaging=${encodeURIComponent(request.noPaging.toString())}`)
       }
-      if (request.orderBy) {
-        request.orderBy.forEach((x) => {
-          queryParams.push(`orderBy=${encodeURIComponent(x.toString())}`)
-        })
-      }
-      if (request.sorting?.field) {
-        queryParams.push(`sorting.field=${encodeURIComponent(request.sorting.field.toString())}`)
-      }
-      if (request.sorting?.order) {
-        queryParams.push(`sorting.order=${encodeURIComponent(request.sorting.order.toString())}`)
-      }
       if (request.query) {
         queryParams.push(`query=${encodeURIComponent(request.query.toString())}`)
       }
-      if (request.or) {
-        queryParams.push(`or=${encodeURIComponent(request.or.toString())}`)
+      if (request.filter) {
+        queryParams.push(`filter=${encodeURIComponent(request.filter.toString())}`)
       }
       if (request.filterExpr?.type) {
         queryParams.push(`filterExpr.type=${encodeURIComponent(request.filterExpr.type.toString())}`)
@@ -12305,8 +5481,14 @@ export function createPolicyEvaluationLogServiceClient(
       if (request.filterExpr?.conditions?.jsonPath) {
         queryParams.push(`filterExpr.conditions.jsonPath=${encodeURIComponent(request.filterExpr.conditions.jsonPath.toString())}`)
       }
-      if (request.filter) {
-        queryParams.push(`filter=${encodeURIComponent(request.filter.toString())}`)
+      if (request.orderBy) {
+        queryParams.push(`orderBy=${encodeURIComponent(request.orderBy.toString())}`)
+      }
+      if (request.sorting?.field) {
+        queryParams.push(`sorting.field=${encodeURIComponent(request.sorting.field.toString())}`)
+      }
+      if (request.sorting?.direction) {
+        queryParams.push(`sorting.direction=${encodeURIComponent(request.sorting.direction.toString())}`)
       }
       if (request.fieldMask) {
         queryParams.push(`fieldMask=${encodeURIComponent(request.fieldMask.toString())}`)
@@ -12422,22 +5604,11 @@ export function createPositionServiceClient(
       if (request.noPaging) {
         queryParams.push(`noPaging=${encodeURIComponent(request.noPaging.toString())}`)
       }
-      if (request.orderBy) {
-        request.orderBy.forEach((x) => {
-          queryParams.push(`orderBy=${encodeURIComponent(x.toString())}`)
-        })
-      }
-      if (request.sorting?.field) {
-        queryParams.push(`sorting.field=${encodeURIComponent(request.sorting.field.toString())}`)
-      }
-      if (request.sorting?.order) {
-        queryParams.push(`sorting.order=${encodeURIComponent(request.sorting.order.toString())}`)
-      }
       if (request.query) {
         queryParams.push(`query=${encodeURIComponent(request.query.toString())}`)
       }
-      if (request.or) {
-        queryParams.push(`or=${encodeURIComponent(request.or.toString())}`)
+      if (request.filter) {
+        queryParams.push(`filter=${encodeURIComponent(request.filter.toString())}`)
       }
       if (request.filterExpr?.type) {
         queryParams.push(`filterExpr.type=${encodeURIComponent(request.filterExpr.type.toString())}`)
@@ -12465,8 +5636,14 @@ export function createPositionServiceClient(
       if (request.filterExpr?.conditions?.jsonPath) {
         queryParams.push(`filterExpr.conditions.jsonPath=${encodeURIComponent(request.filterExpr.conditions.jsonPath.toString())}`)
       }
-      if (request.filter) {
-        queryParams.push(`filter=${encodeURIComponent(request.filter.toString())}`)
+      if (request.orderBy) {
+        queryParams.push(`orderBy=${encodeURIComponent(request.orderBy.toString())}`)
+      }
+      if (request.sorting?.field) {
+        queryParams.push(`sorting.field=${encodeURIComponent(request.sorting.field.toString())}`)
+      }
+      if (request.sorting?.direction) {
+        queryParams.push(`sorting.direction=${encodeURIComponent(request.sorting.direction.toString())}`)
       }
       if (request.fieldMask) {
         queryParams.push(`fieldMask=${encodeURIComponent(request.fieldMask.toString())}`)
@@ -12687,22 +5864,11 @@ export function createRoleServiceClient(
       if (request.noPaging) {
         queryParams.push(`noPaging=${encodeURIComponent(request.noPaging.toString())}`)
       }
-      if (request.orderBy) {
-        request.orderBy.forEach((x) => {
-          queryParams.push(`orderBy=${encodeURIComponent(x.toString())}`)
-        })
-      }
-      if (request.sorting?.field) {
-        queryParams.push(`sorting.field=${encodeURIComponent(request.sorting.field.toString())}`)
-      }
-      if (request.sorting?.order) {
-        queryParams.push(`sorting.order=${encodeURIComponent(request.sorting.order.toString())}`)
-      }
       if (request.query) {
         queryParams.push(`query=${encodeURIComponent(request.query.toString())}`)
       }
-      if (request.or) {
-        queryParams.push(`or=${encodeURIComponent(request.or.toString())}`)
+      if (request.filter) {
+        queryParams.push(`filter=${encodeURIComponent(request.filter.toString())}`)
       }
       if (request.filterExpr?.type) {
         queryParams.push(`filterExpr.type=${encodeURIComponent(request.filterExpr.type.toString())}`)
@@ -12730,8 +5896,14 @@ export function createRoleServiceClient(
       if (request.filterExpr?.conditions?.jsonPath) {
         queryParams.push(`filterExpr.conditions.jsonPath=${encodeURIComponent(request.filterExpr.conditions.jsonPath.toString())}`)
       }
-      if (request.filter) {
-        queryParams.push(`filter=${encodeURIComponent(request.filter.toString())}`)
+      if (request.orderBy) {
+        queryParams.push(`orderBy=${encodeURIComponent(request.orderBy.toString())}`)
+      }
+      if (request.sorting?.field) {
+        queryParams.push(`sorting.field=${encodeURIComponent(request.sorting.field.toString())}`)
+      }
+      if (request.sorting?.direction) {
+        queryParams.push(`sorting.direction=${encodeURIComponent(request.sorting.direction.toString())}`)
       }
       if (request.fieldMask) {
         queryParams.push(`fieldMask=${encodeURIComponent(request.fieldMask.toString())}`)
@@ -12910,6 +6082,10 @@ export type GetPlatformStatisticsResponse = {
   lcm: lcmservicev1_GetStatisticsResponse | undefined;
   // Deployer statistics (from Deployer service)
   deployer: deployerservicev1_GetStatisticsResponse | undefined;
+  // Paperless statistics (from Paperless service)
+  paperless: paperlessservicev1_GetStatisticsResponse | undefined;
+  // IPAM statistics (from IPAM service)
+  ipam: ipamservicev1_GetStatsResponse | undefined;
   // Statistics generation timestamp
   generatedAt: wellKnownTimestamp | undefined;
 };
@@ -13296,6 +6472,53 @@ export type deployerservicev1_TenantStatistics = {
   configurations: deployerservicev1_ConfigurationStatistics | undefined;
 };
 
+// GetStatisticsResponse is the response message for GetStatistics
+export type paperlessservicev1_GetStatisticsResponse = {
+  // Document statistics
+  documents: paperlessservicev1_DocumentStatistics | undefined;
+  // Category statistics
+  categories: paperlessservicev1_CategoryStatistics | undefined;
+  // Statistics generation timestamp
+  generatedAt: wellKnownTimestamp | undefined;
+};
+
+// DocumentStatistics contains statistics about documents
+export type paperlessservicev1_DocumentStatistics = {
+  // Total number of documents
+  totalCount: number | undefined;
+  // Documents grouped by status (active, archived, deleted)
+  byStatus: { [key: string]: number } | undefined;
+  // Documents grouped by source (upload, email)
+  bySource: { [key: string]: number } | undefined;
+  // Documents grouped by processing status (pending, processing, completed, failed, skipped)
+  byProcessingStatus: { [key: string]: number } | undefined;
+  // Documents grouped by MIME type
+  byMimeType: { [key: string]: number } | undefined;
+  // Total storage used in bytes
+  totalStorageBytes: number | undefined;
+  // Documents uploaded in the last 24 hours
+  recentUploads24h: number | undefined;
+  // Documents uploaded in the last 7 days
+  recentUploads7d: number | undefined;
+};
+
+// CategoryStatistics contains statistics about categories
+export type paperlessservicev1_CategoryStatistics = {
+  // Total number of categories
+  totalCount: number | undefined;
+};
+
+export type ipamservicev1_GetStatsResponse = {
+  totalSubnets: number | undefined;
+  totalAddresses: number | undefined;
+  usedAddresses: number | undefined;
+  availableAddresses: number | undefined;
+  totalVlans: number | undefined;
+  totalDevices: number | undefined;
+  totalLocations: number | undefined;
+  overallUtilization: number | undefined;
+};
+
 // Platform Statistics Service provides aggregated statistics for the admin dashboard
 export interface PlatformStatisticsService {
   // GetPlatformStatistics returns comprehensive statistics about the platform
@@ -13331,279 +6554,6 @@ export function createPlatformStatisticsServiceClient(
     },
   };
 }
-// Target Configuration Gateway Service - HTTP gateway for target configuration management
-export interface TargetConfigurationGatewayService {
-  // Create a new target configuration
-  CreateConfiguration(request: deployerservicev1_CreateConfigurationRequest): Promise<deployerservicev1_CreateConfigurationResponse>;
-  // Get a target configuration by ID
-  GetConfiguration(request: deployerservicev1_GetConfigurationRequest): Promise<deployerservicev1_GetConfigurationResponse>;
-  // List target configurations
-  ListConfigurations(request: deployerservicev1_ListConfigurationsRequest): Promise<deployerservicev1_ListConfigurationsResponse>;
-  // Update a target configuration
-  UpdateConfiguration(request: deployerservicev1_UpdateConfigurationRequest): Promise<deployerservicev1_UpdateConfigurationResponse>;
-  // Delete a target configuration
-  DeleteConfiguration(request: deployerservicev1_DeleteConfigurationRequest): Promise<wellKnownEmpty>;
-  // Validate provider credentials
-  ValidateCredentials(request: deployerservicev1_ValidateConfigurationCredentialsRequest): Promise<deployerservicev1_ValidateConfigurationCredentialsResponse>;
-  // List available providers
-  ListProviders(request: deployerservicev1_ListConfigurationProvidersRequest): Promise<deployerservicev1_ListConfigurationProvidersResponse>;
-}
-
-export function createTargetConfigurationGatewayServiceClient(
-  handler: RequestHandler
-): TargetConfigurationGatewayService {
-  return {
-    CreateConfiguration(request) { // eslint-disable-line @typescript-eslint/no-unused-vars
-      const path = `admin/v1/deployer/configurations`; // eslint-disable-line quotes
-      const body = JSON.stringify(request);
-      const queryParams: string[] = [];
-      let uri = path;
-      if (queryParams.length > 0) {
-        uri += `?${queryParams.join("&")}`
-      }
-      return handler({
-        path: uri,
-        method: "POST",
-        body,
-      }, {
-        service: "TargetConfigurationGatewayService",
-        method: "CreateConfiguration",
-      }) as Promise<deployerservicev1_CreateConfigurationResponse>;
-    },
-    GetConfiguration(request) { // eslint-disable-line @typescript-eslint/no-unused-vars
-      if (!request.id) {
-        throw new Error("missing required field request.id");
-      }
-      const path = `admin/v1/deployer/configurations/${request.id}`; // eslint-disable-line quotes
-      const body = null;
-      const queryParams: string[] = [];
-      let uri = path;
-      if (queryParams.length > 0) {
-        uri += `?${queryParams.join("&")}`
-      }
-      return handler({
-        path: uri,
-        method: "GET",
-        body,
-      }, {
-        service: "TargetConfigurationGatewayService",
-        method: "GetConfiguration",
-      }) as Promise<deployerservicev1_GetConfigurationResponse>;
-    },
-    ListConfigurations(request) { // eslint-disable-line @typescript-eslint/no-unused-vars
-      const path = `admin/v1/deployer/configurations`; // eslint-disable-line quotes
-      const body = null;
-      const queryParams: string[] = [];
-      if (request.tenantId) {
-        queryParams.push(`tenantId=${encodeURIComponent(request.tenantId.toString())}`)
-      }
-      if (request.providerType) {
-        queryParams.push(`providerType=${encodeURIComponent(request.providerType.toString())}`)
-      }
-      if (request.status) {
-        queryParams.push(`status=${encodeURIComponent(request.status.toString())}`)
-      }
-      if (request.page) {
-        queryParams.push(`page=${encodeURIComponent(request.page.toString())}`)
-      }
-      if (request.pageSize) {
-        queryParams.push(`pageSize=${encodeURIComponent(request.pageSize.toString())}`)
-      }
-      let uri = path;
-      if (queryParams.length > 0) {
-        uri += `?${queryParams.join("&")}`
-      }
-      return handler({
-        path: uri,
-        method: "GET",
-        body,
-      }, {
-        service: "TargetConfigurationGatewayService",
-        method: "ListConfigurations",
-      }) as Promise<deployerservicev1_ListConfigurationsResponse>;
-    },
-    UpdateConfiguration(request) { // eslint-disable-line @typescript-eslint/no-unused-vars
-      if (!request.id) {
-        throw new Error("missing required field request.id");
-      }
-      const path = `admin/v1/deployer/configurations/${request.id}`; // eslint-disable-line quotes
-      const body = JSON.stringify(request);
-      const queryParams: string[] = [];
-      let uri = path;
-      if (queryParams.length > 0) {
-        uri += `?${queryParams.join("&")}`
-      }
-      return handler({
-        path: uri,
-        method: "PUT",
-        body,
-      }, {
-        service: "TargetConfigurationGatewayService",
-        method: "UpdateConfiguration",
-      }) as Promise<deployerservicev1_UpdateConfigurationResponse>;
-    },
-    DeleteConfiguration(request) { // eslint-disable-line @typescript-eslint/no-unused-vars
-      if (!request.id) {
-        throw new Error("missing required field request.id");
-      }
-      const path = `admin/v1/deployer/configurations/${request.id}`; // eslint-disable-line quotes
-      const body = null;
-      const queryParams: string[] = [];
-      let uri = path;
-      if (queryParams.length > 0) {
-        uri += `?${queryParams.join("&")}`
-      }
-      return handler({
-        path: uri,
-        method: "DELETE",
-        body,
-      }, {
-        service: "TargetConfigurationGatewayService",
-        method: "DeleteConfiguration",
-      }) as Promise<wellKnownEmpty>;
-    },
-    ValidateCredentials(request) { // eslint-disable-line @typescript-eslint/no-unused-vars
-      const path = `admin/v1/deployer/configurations:validate-credentials`; // eslint-disable-line quotes
-      const body = JSON.stringify(request);
-      const queryParams: string[] = [];
-      let uri = path;
-      if (queryParams.length > 0) {
-        uri += `?${queryParams.join("&")}`
-      }
-      return handler({
-        path: uri,
-        method: "POST",
-        body,
-      }, {
-        service: "TargetConfigurationGatewayService",
-        method: "ValidateCredentials",
-      }) as Promise<deployerservicev1_ValidateConfigurationCredentialsResponse>;
-    },
-    ListProviders(request) { // eslint-disable-line @typescript-eslint/no-unused-vars
-      const path = `admin/v1/deployer/providers`; // eslint-disable-line quotes
-      const body = null;
-      const queryParams: string[] = [];
-      let uri = path;
-      if (queryParams.length > 0) {
-        uri += `?${queryParams.join("&")}`
-      }
-      return handler({
-        path: uri,
-        method: "GET",
-        body,
-      }, {
-        service: "TargetConfigurationGatewayService",
-        method: "ListProviders",
-      }) as Promise<deployerservicev1_ListConfigurationProvidersResponse>;
-    },
-  };
-}
-// Create a new target configuration
-export type deployerservicev1_CreateConfigurationRequest = {
-  //
-  // Behaviors: REQUIRED
-  tenantId: number | undefined;
-  //
-  // Behaviors: REQUIRED
-  name: string | undefined;
-  description?: string;
-  //
-  // Behaviors: REQUIRED
-  providerType: string | undefined;
-  //
-  // Behaviors: REQUIRED
-  credentials: wellKnownStruct | undefined;
-  config?: wellKnownStruct;
-};
-
-export type deployerservicev1_CreateConfigurationResponse = {
-  configuration: deployerservicev1_TargetConfiguration | undefined;
-};
-
-// Get a target configuration
-export type deployerservicev1_GetConfigurationRequest = {
-  //
-  // Behaviors: REQUIRED
-  id: string | undefined;
-};
-
-export type deployerservicev1_GetConfigurationResponse = {
-  configuration: deployerservicev1_TargetConfiguration | undefined;
-};
-
-// List target configurations
-export type deployerservicev1_ListConfigurationsRequest = {
-  tenantId?: number;
-  providerType?: string;
-  status?: deployerservicev1_ConfigurationStatus;
-  page?: number;
-  pageSize?: number;
-};
-
-export type deployerservicev1_ListConfigurationsResponse = {
-  items: deployerservicev1_TargetConfiguration[] | undefined;
-  total: number | undefined;
-};
-
-// Update a target configuration
-export type deployerservicev1_UpdateConfigurationRequest = {
-  //
-  // Behaviors: REQUIRED
-  id: string | undefined;
-  name?: string;
-  description?: string;
-  credentials?: wellKnownStruct;
-  config?: wellKnownStruct;
-  status?: deployerservicev1_ConfigurationStatus;
-};
-
-export type deployerservicev1_UpdateConfigurationResponse = {
-  configuration: deployerservicev1_TargetConfiguration | undefined;
-};
-
-// Delete a target configuration
-export type deployerservicev1_DeleteConfigurationRequest = {
-  //
-  // Behaviors: REQUIRED
-  id: string | undefined;
-};
-
-// Validate credentials
-export type deployerservicev1_ValidateConfigurationCredentialsRequest = {
-  //
-  // Behaviors: REQUIRED
-  providerType: string | undefined;
-  //
-  // Behaviors: REQUIRED
-  credentials: wellKnownStruct | undefined;
-  // Optional config for context-aware validation (e.g., zone_id for Cloudflare)
-  config: wellKnownStruct | undefined;
-};
-
-export type deployerservicev1_ValidateConfigurationCredentialsResponse = {
-  valid: boolean | undefined;
-  message?: string;
-};
-
-// List available providers
-export type deployerservicev1_ListConfigurationProvidersRequest = {
-};
-
-export type deployerservicev1_ListConfigurationProvidersResponse = {
-  providers: deployerservicev1_ProviderInfo[] | undefined;
-};
-
-// Provider info
-export type deployerservicev1_ProviderInfo = {
-  type: string | undefined;
-  displayName: string | undefined;
-  description: string | undefined;
-  supportsVerification: boolean | undefined;
-  supportsRollback: boolean | undefined;
-  requiredConfigFields: string[] | undefined;
-  requiredCredentialFields: string[] | undefined;
-};
-
 // Scheduled task management service
 export interface TaskService {
   // Query scheduled task list
@@ -13654,22 +6604,11 @@ export function createTaskServiceClient(
       if (request.noPaging) {
         queryParams.push(`noPaging=${encodeURIComponent(request.noPaging.toString())}`)
       }
-      if (request.orderBy) {
-        request.orderBy.forEach((x) => {
-          queryParams.push(`orderBy=${encodeURIComponent(x.toString())}`)
-        })
-      }
-      if (request.sorting?.field) {
-        queryParams.push(`sorting.field=${encodeURIComponent(request.sorting.field.toString())}`)
-      }
-      if (request.sorting?.order) {
-        queryParams.push(`sorting.order=${encodeURIComponent(request.sorting.order.toString())}`)
-      }
       if (request.query) {
         queryParams.push(`query=${encodeURIComponent(request.query.toString())}`)
       }
-      if (request.or) {
-        queryParams.push(`or=${encodeURIComponent(request.or.toString())}`)
+      if (request.filter) {
+        queryParams.push(`filter=${encodeURIComponent(request.filter.toString())}`)
       }
       if (request.filterExpr?.type) {
         queryParams.push(`filterExpr.type=${encodeURIComponent(request.filterExpr.type.toString())}`)
@@ -13697,8 +6636,14 @@ export function createTaskServiceClient(
       if (request.filterExpr?.conditions?.jsonPath) {
         queryParams.push(`filterExpr.conditions.jsonPath=${encodeURIComponent(request.filterExpr.conditions.jsonPath.toString())}`)
       }
-      if (request.filter) {
-        queryParams.push(`filter=${encodeURIComponent(request.filter.toString())}`)
+      if (request.orderBy) {
+        queryParams.push(`orderBy=${encodeURIComponent(request.orderBy.toString())}`)
+      }
+      if (request.sorting?.field) {
+        queryParams.push(`sorting.field=${encodeURIComponent(request.sorting.field.toString())}`)
+      }
+      if (request.sorting?.direction) {
+        queryParams.push(`sorting.direction=${encodeURIComponent(request.sorting.direction.toString())}`)
       }
       if (request.fieldMask) {
         queryParams.push(`fieldMask=${encodeURIComponent(request.fieldMask.toString())}`)
@@ -14059,22 +7004,11 @@ export function createTenantServiceClient(
       if (request.noPaging) {
         queryParams.push(`noPaging=${encodeURIComponent(request.noPaging.toString())}`)
       }
-      if (request.orderBy) {
-        request.orderBy.forEach((x) => {
-          queryParams.push(`orderBy=${encodeURIComponent(x.toString())}`)
-        })
-      }
-      if (request.sorting?.field) {
-        queryParams.push(`sorting.field=${encodeURIComponent(request.sorting.field.toString())}`)
-      }
-      if (request.sorting?.order) {
-        queryParams.push(`sorting.order=${encodeURIComponent(request.sorting.order.toString())}`)
-      }
       if (request.query) {
         queryParams.push(`query=${encodeURIComponent(request.query.toString())}`)
       }
-      if (request.or) {
-        queryParams.push(`or=${encodeURIComponent(request.or.toString())}`)
+      if (request.filter) {
+        queryParams.push(`filter=${encodeURIComponent(request.filter.toString())}`)
       }
       if (request.filterExpr?.type) {
         queryParams.push(`filterExpr.type=${encodeURIComponent(request.filterExpr.type.toString())}`)
@@ -14102,8 +7036,14 @@ export function createTenantServiceClient(
       if (request.filterExpr?.conditions?.jsonPath) {
         queryParams.push(`filterExpr.conditions.jsonPath=${encodeURIComponent(request.filterExpr.conditions.jsonPath.toString())}`)
       }
-      if (request.filter) {
-        queryParams.push(`filter=${encodeURIComponent(request.filter.toString())}`)
+      if (request.orderBy) {
+        queryParams.push(`orderBy=${encodeURIComponent(request.orderBy.toString())}`)
+      }
+      if (request.sorting?.field) {
+        queryParams.push(`sorting.field=${encodeURIComponent(request.sorting.field.toString())}`)
+      }
+      if (request.sorting?.direction) {
+        queryParams.push(`sorting.direction=${encodeURIComponent(request.sorting.direction.toString())}`)
       }
       if (request.fieldMask) {
         queryParams.push(`fieldMask=${encodeURIComponent(request.fieldMask.toString())}`)
@@ -14400,6 +7340,299 @@ export type userservicev1_TenantExistsResponse = {
   exist: boolean | undefined;
 };
 
+// TimeSeriesRequest is the common request for time-series data.
+export type TimeSeriesRequest = {
+  // Bucket interval: "1h", "6h", "1d", "1w". Default: "1h".
+  interval?: string;
+  // Time range: "24h", "7d", "30d", "90d". Default: "7d".
+  range?: string;
+};
+
+// TimeSeriesDataResponse is the common response for time-series data.
+export type TimeSeriesDataResponse = {
+  // ISO 8601 timestamps for each bucket
+  buckets: string[] | undefined;
+  // Named data series. Key is series name (e.g. "total", "success", "p95").
+  series: { [key: string]: DoubleSeries } | undefined;
+  // The actual interval used
+  interval: string | undefined;
+};
+
+// DoubleSeries is a series of double values matching the buckets array.
+export type DoubleSeries = {
+  values: number[] | undefined;
+};
+
+// HeatmapRequest is the request for heatmap data.
+export type HeatmapRequest = {
+  // Time range: "7d", "30d", "90d". Default: "30d".
+  range?: string;
+};
+
+// HeatmapResponse is the response containing heatmap matrix data.
+export type HeatmapResponse = {
+  // X-axis labels (hours 0-23)
+  hours: number[] | undefined;
+  // Y-axis labels (day names)
+  days: string[] | undefined;
+  // Heatmap data points [hour_index, day_index, value]
+  data: HeatmapCell[] | undefined;
+  // Max value in the data (for color scaling)
+  maxValue: number | undefined;
+};
+
+// HeatmapCell represents a single cell in the heatmap.
+export type HeatmapCell = {
+  hour: number | undefined;
+  day: number | undefined;
+  value: number | undefined;
+};
+
+// TopEndpointsRequest is the request for top endpoints.
+export type TopEndpointsRequest = {
+  // Time range: "24h", "7d", "30d". Default: "7d".
+  range?: string;
+  // Max results to return. Default: 10.
+  limit?: number;
+};
+
+// TopEndpointsResponse contains the most-used API endpoints.
+export type TopEndpointsResponse = {
+  endpoints: EndpointStats[] | undefined;
+};
+
+// EndpointStats represents statistics for a single API endpoint.
+export type EndpointStats = {
+  path: string | undefined;
+  method: string | undefined;
+  module: string | undefined;
+  totalRequests: number | undefined;
+  avgLatencyMs: number | undefined;
+  p95LatencyMs: number | undefined;
+  errorRate: number | undefined;
+  errorCount: number | undefined;
+  successCount: number | undefined;
+};
+
+// SecurityOverviewRequest is the request for security overview.
+export type SecurityOverviewRequest = {
+};
+
+// SecurityOverviewResponse contains security/performance trend metrics.
+// Used by sparkline_card and trend_card widget types.
+export type SecurityOverviewResponse = {
+  // Current period metrics
+  value: number | undefined;
+  previousValue: number | undefined;
+  changePercent: number | undefined;
+  trend: string | undefined;
+  label: string | undefined;
+  // Sparkline data (last 7 days, hourly or daily depending on context)
+  sparkline: number[] | undefined;
+  // Additional breakdown fields
+  failedLogins24h: number | undefined;
+  failedLogins7d: number | undefined;
+  avgRiskScore: number | undefined;
+  uniqueIps24h: number | undefined;
+  errorRatePercent: number | undefined;
+};
+
+// TimeSeriesStatisticsService provides TimescaleDB-powered time-series analytics.
+// All endpoints query audit log hypertables using time_bucket() aggregation.
+export interface TimeSeriesStatisticsService {
+  // GetApiRequestVolume returns API request counts over time.
+  GetApiRequestVolume(request: TimeSeriesRequest): Promise<TimeSeriesDataResponse>;
+  // GetApiLatencyPercentiles returns p50/p95/p99 API latency over time.
+  GetApiLatencyPercentiles(request: TimeSeriesRequest): Promise<TimeSeriesDataResponse>;
+  // GetLoginActivity returns login attempt counts over time.
+  GetLoginActivity(request: TimeSeriesRequest): Promise<TimeSeriesDataResponse>;
+  // GetActiveUsers returns unique active user counts over time.
+  GetActiveUsers(request: TimeSeriesRequest): Promise<TimeSeriesDataResponse>;
+  // GetLoginHeatmap returns login activity as an hour-of-day x day-of-week matrix.
+  GetLoginHeatmap(request: HeatmapRequest): Promise<HeatmapResponse>;
+  // GetTopEndpoints returns most-used API endpoints with performance metrics.
+  GetTopEndpoints(request: TopEndpointsRequest): Promise<TopEndpointsResponse>;
+  // GetSecurityOverview returns security-related trend metrics.
+  GetSecurityOverview(request: SecurityOverviewRequest): Promise<SecurityOverviewResponse>;
+  // GetApiErrorRate returns current API error rate with trend.
+  GetApiErrorRate(request: SecurityOverviewRequest): Promise<SecurityOverviewResponse>;
+}
+
+export function createTimeSeriesStatisticsServiceClient(
+  handler: RequestHandler
+): TimeSeriesStatisticsService {
+  return {
+    GetApiRequestVolume(request) { // eslint-disable-line @typescript-eslint/no-unused-vars
+      const path = `admin/v1/statistics/ts/api-requests`; // eslint-disable-line quotes
+      const body = null;
+      const queryParams: string[] = [];
+      if (request.interval) {
+        queryParams.push(`interval=${encodeURIComponent(request.interval.toString())}`)
+      }
+      if (request.range) {
+        queryParams.push(`range=${encodeURIComponent(request.range.toString())}`)
+      }
+      let uri = path;
+      if (queryParams.length > 0) {
+        uri += `?${queryParams.join("&")}`
+      }
+      return handler({
+        path: uri,
+        method: "GET",
+        body,
+      }, {
+        service: "TimeSeriesStatisticsService",
+        method: "GetApiRequestVolume",
+      }) as Promise<TimeSeriesDataResponse>;
+    },
+    GetApiLatencyPercentiles(request) { // eslint-disable-line @typescript-eslint/no-unused-vars
+      const path = `admin/v1/statistics/ts/api-latency`; // eslint-disable-line quotes
+      const body = null;
+      const queryParams: string[] = [];
+      if (request.interval) {
+        queryParams.push(`interval=${encodeURIComponent(request.interval.toString())}`)
+      }
+      if (request.range) {
+        queryParams.push(`range=${encodeURIComponent(request.range.toString())}`)
+      }
+      let uri = path;
+      if (queryParams.length > 0) {
+        uri += `?${queryParams.join("&")}`
+      }
+      return handler({
+        path: uri,
+        method: "GET",
+        body,
+      }, {
+        service: "TimeSeriesStatisticsService",
+        method: "GetApiLatencyPercentiles",
+      }) as Promise<TimeSeriesDataResponse>;
+    },
+    GetLoginActivity(request) { // eslint-disable-line @typescript-eslint/no-unused-vars
+      const path = `admin/v1/statistics/ts/login-activity`; // eslint-disable-line quotes
+      const body = null;
+      const queryParams: string[] = [];
+      if (request.interval) {
+        queryParams.push(`interval=${encodeURIComponent(request.interval.toString())}`)
+      }
+      if (request.range) {
+        queryParams.push(`range=${encodeURIComponent(request.range.toString())}`)
+      }
+      let uri = path;
+      if (queryParams.length > 0) {
+        uri += `?${queryParams.join("&")}`
+      }
+      return handler({
+        path: uri,
+        method: "GET",
+        body,
+      }, {
+        service: "TimeSeriesStatisticsService",
+        method: "GetLoginActivity",
+      }) as Promise<TimeSeriesDataResponse>;
+    },
+    GetActiveUsers(request) { // eslint-disable-line @typescript-eslint/no-unused-vars
+      const path = `admin/v1/statistics/ts/active-users`; // eslint-disable-line quotes
+      const body = null;
+      const queryParams: string[] = [];
+      if (request.interval) {
+        queryParams.push(`interval=${encodeURIComponent(request.interval.toString())}`)
+      }
+      if (request.range) {
+        queryParams.push(`range=${encodeURIComponent(request.range.toString())}`)
+      }
+      let uri = path;
+      if (queryParams.length > 0) {
+        uri += `?${queryParams.join("&")}`
+      }
+      return handler({
+        path: uri,
+        method: "GET",
+        body,
+      }, {
+        service: "TimeSeriesStatisticsService",
+        method: "GetActiveUsers",
+      }) as Promise<TimeSeriesDataResponse>;
+    },
+    GetLoginHeatmap(request) { // eslint-disable-line @typescript-eslint/no-unused-vars
+      const path = `admin/v1/statistics/ts/login-heatmap`; // eslint-disable-line quotes
+      const body = null;
+      const queryParams: string[] = [];
+      if (request.range) {
+        queryParams.push(`range=${encodeURIComponent(request.range.toString())}`)
+      }
+      let uri = path;
+      if (queryParams.length > 0) {
+        uri += `?${queryParams.join("&")}`
+      }
+      return handler({
+        path: uri,
+        method: "GET",
+        body,
+      }, {
+        service: "TimeSeriesStatisticsService",
+        method: "GetLoginHeatmap",
+      }) as Promise<HeatmapResponse>;
+    },
+    GetTopEndpoints(request) { // eslint-disable-line @typescript-eslint/no-unused-vars
+      const path = `admin/v1/statistics/ts/top-endpoints`; // eslint-disable-line quotes
+      const body = null;
+      const queryParams: string[] = [];
+      if (request.range) {
+        queryParams.push(`range=${encodeURIComponent(request.range.toString())}`)
+      }
+      if (request.limit) {
+        queryParams.push(`limit=${encodeURIComponent(request.limit.toString())}`)
+      }
+      let uri = path;
+      if (queryParams.length > 0) {
+        uri += `?${queryParams.join("&")}`
+      }
+      return handler({
+        path: uri,
+        method: "GET",
+        body,
+      }, {
+        service: "TimeSeriesStatisticsService",
+        method: "GetTopEndpoints",
+      }) as Promise<TopEndpointsResponse>;
+    },
+    GetSecurityOverview(request) { // eslint-disable-line @typescript-eslint/no-unused-vars
+      const path = `admin/v1/statistics/ts/security`; // eslint-disable-line quotes
+      const body = null;
+      const queryParams: string[] = [];
+      let uri = path;
+      if (queryParams.length > 0) {
+        uri += `?${queryParams.join("&")}`
+      }
+      return handler({
+        path: uri,
+        method: "GET",
+        body,
+      }, {
+        service: "TimeSeriesStatisticsService",
+        method: "GetSecurityOverview",
+      }) as Promise<SecurityOverviewResponse>;
+    },
+    GetApiErrorRate(request) { // eslint-disable-line @typescript-eslint/no-unused-vars
+      const path = `admin/v1/statistics/ts/api-error-rate`; // eslint-disable-line quotes
+      const body = null;
+      const queryParams: string[] = [];
+      let uri = path;
+      if (queryParams.length > 0) {
+        uri += `?${queryParams.join("&")}`
+      }
+      return handler({
+        path: uri,
+        method: "GET",
+        body,
+      }, {
+        service: "TimeSeriesStatisticsService",
+        method: "GetApiErrorRate",
+      }) as Promise<SecurityOverviewResponse>;
+    },
+  };
+}
 // UEditor backend service
 export interface UEditorService {
   // UEditor API
@@ -14558,22 +7791,11 @@ export function createUserServiceClient(
       if (request.noPaging) {
         queryParams.push(`noPaging=${encodeURIComponent(request.noPaging.toString())}`)
       }
-      if (request.orderBy) {
-        request.orderBy.forEach((x) => {
-          queryParams.push(`orderBy=${encodeURIComponent(x.toString())}`)
-        })
-      }
-      if (request.sorting?.field) {
-        queryParams.push(`sorting.field=${encodeURIComponent(request.sorting.field.toString())}`)
-      }
-      if (request.sorting?.order) {
-        queryParams.push(`sorting.order=${encodeURIComponent(request.sorting.order.toString())}`)
-      }
       if (request.query) {
         queryParams.push(`query=${encodeURIComponent(request.query.toString())}`)
       }
-      if (request.or) {
-        queryParams.push(`or=${encodeURIComponent(request.or.toString())}`)
+      if (request.filter) {
+        queryParams.push(`filter=${encodeURIComponent(request.filter.toString())}`)
       }
       if (request.filterExpr?.type) {
         queryParams.push(`filterExpr.type=${encodeURIComponent(request.filterExpr.type.toString())}`)
@@ -14601,8 +7823,14 @@ export function createUserServiceClient(
       if (request.filterExpr?.conditions?.jsonPath) {
         queryParams.push(`filterExpr.conditions.jsonPath=${encodeURIComponent(request.filterExpr.conditions.jsonPath.toString())}`)
       }
-      if (request.filter) {
-        queryParams.push(`filter=${encodeURIComponent(request.filter.toString())}`)
+      if (request.orderBy) {
+        queryParams.push(`orderBy=${encodeURIComponent(request.orderBy.toString())}`)
+      }
+      if (request.sorting?.field) {
+        queryParams.push(`sorting.field=${encodeURIComponent(request.sorting.field.toString())}`)
+      }
+      if (request.sorting?.direction) {
+        queryParams.push(`sorting.direction=${encodeURIComponent(request.sorting.direction.toString())}`)
       }
       if (request.fieldMask) {
         queryParams.push(`fieldMask=${encodeURIComponent(request.fieldMask.toString())}`)
@@ -15000,1361 +8228,6 @@ export type userservicev1_EmailVerification = {
   code: string | undefined;
 };
 
-// Warden Bitwarden Transfer Gateway Service - HTTP gateway for Bitwarden import/export
-export interface WardenBitwardenTransferGatewayService {
-  // Export secrets and folders as Bitwarden-compatible JSON
-  ExportToBitwarden(request: wardenservicev1_ExportToBitwardenRequest): Promise<wardenservicev1_ExportToBitwardenResponse>;
-  // Import secrets and folders from Bitwarden JSON
-  ImportFromBitwarden(request: wardenservicev1_ImportFromBitwardenRequest): Promise<wardenservicev1_ImportFromBitwardenResponse>;
-  // Validate Bitwarden JSON without importing (dry-run)
-  ValidateBitwardenImport(request: wardenservicev1_ValidateBitwardenImportRequest): Promise<wardenservicev1_ValidateBitwardenImportResponse>;
-}
-
-export function createWardenBitwardenTransferGatewayServiceClient(
-  handler: RequestHandler
-): WardenBitwardenTransferGatewayService {
-  return {
-    ExportToBitwarden(request) { // eslint-disable-line @typescript-eslint/no-unused-vars
-      const path = `admin/v1/warden/bitwarden/export`; // eslint-disable-line quotes
-      const body = JSON.stringify(request);
-      const queryParams: string[] = [];
-      let uri = path;
-      if (queryParams.length > 0) {
-        uri += `?${queryParams.join("&")}`
-      }
-      return handler({
-        path: uri,
-        method: "POST",
-        body,
-      }, {
-        service: "WardenBitwardenTransferGatewayService",
-        method: "ExportToBitwarden",
-      }) as Promise<wardenservicev1_ExportToBitwardenResponse>;
-    },
-    ImportFromBitwarden(request) { // eslint-disable-line @typescript-eslint/no-unused-vars
-      const path = `admin/v1/warden/bitwarden/import`; // eslint-disable-line quotes
-      const body = JSON.stringify(request);
-      const queryParams: string[] = [];
-      let uri = path;
-      if (queryParams.length > 0) {
-        uri += `?${queryParams.join("&")}`
-      }
-      return handler({
-        path: uri,
-        method: "POST",
-        body,
-      }, {
-        service: "WardenBitwardenTransferGatewayService",
-        method: "ImportFromBitwarden",
-      }) as Promise<wardenservicev1_ImportFromBitwardenResponse>;
-    },
-    ValidateBitwardenImport(request) { // eslint-disable-line @typescript-eslint/no-unused-vars
-      const path = `admin/v1/warden/bitwarden/validate`; // eslint-disable-line quotes
-      const body = JSON.stringify(request);
-      const queryParams: string[] = [];
-      let uri = path;
-      if (queryParams.length > 0) {
-        uri += `?${queryParams.join("&")}`
-      }
-      return handler({
-        path: uri,
-        method: "POST",
-        body,
-      }, {
-        service: "WardenBitwardenTransferGatewayService",
-        method: "ValidateBitwardenImport",
-      }) as Promise<wardenservicev1_ValidateBitwardenImportResponse>;
-    },
-  };
-}
-// Export request
-export type wardenservicev1_ExportToBitwardenRequest = {
-  // Optional: only export secrets from specific folder and subfolders
-  folderId?: string;
-  // Include secrets from subfolders (default: true)
-  includeSubfolders: boolean | undefined;
-};
-
-export type wardenservicev1_ExportToBitwardenResponse = {
-  // JSON string in Bitwarden format
-  jsonData: string | undefined;
-  // Statistics
-  foldersExported: number | undefined;
-  itemsExported: number | undefined;
-  itemsSkipped: number | undefined;
-  // Filename suggestion
-  suggestedFilename: string | undefined;
-};
-
-// Import request
-export type wardenservicev1_ImportFromBitwardenRequest = {
-  // JSON data (Bitwarden export format)
-  //
-  // Behaviors: REQUIRED
-  jsonData: string | undefined;
-  // Target folder to import into (null for root)
-  targetFolderId?: string;
-  // How to handle duplicate names
-  duplicateHandling: wardenservicev1_DuplicateHandling | undefined;
-  // Whether to import folder structure or flatten to target folder
-  preserveFolders: boolean | undefined;
-};
-
-// How to handle duplicate names during import
-export type wardenservicev1_DuplicateHandling =
-  | "DUPLICATE_HANDLING_UNSPECIFIED"
-  | "DUPLICATE_HANDLING_SKIP"
-  | "DUPLICATE_HANDLING_RENAME"
-  | "DUPLICATE_HANDLING_OVERWRITE";
-export type wardenservicev1_ImportFromBitwardenResponse = {
-  // Import statistics
-  foldersCreated: number | undefined;
-  itemsImported: number | undefined;
-  itemsSkipped: number | undefined;
-  itemsFailed: number | undefined;
-  // Details of skipped/failed items
-  errors: wardenservicev1_ImportError[] | undefined;
-  // Mapping of Bitwarden IDs to Warden IDs
-  folderIdMapping: { [key: string]: string } | undefined;
-  itemIdMapping: { [key: string]: string } | undefined;
-};
-
-export type wardenservicev1_ImportError = {
-  bitwardenId: string | undefined;
-  itemName: string | undefined;
-  errorType: string | undefined;
-  message: string | undefined;
-};
-
-// Validation request (dry-run)
-export type wardenservicev1_ValidateBitwardenImportRequest = {
-  //
-  // Behaviors: REQUIRED
-  jsonData: string | undefined;
-  targetFolderId?: string;
-  preserveFolders: boolean | undefined;
-};
-
-export type wardenservicev1_ValidateBitwardenImportResponse = {
-  isValid: boolean | undefined;
-  // Parse statistics
-  foldersFound: number | undefined;
-  loginItemsFound: number | undefined;
-  otherItemsFound: number | undefined;
-  // Potential issues
-  warnings: string[] | undefined;
-  errors: string[] | undefined;
-  // Duplicate detection
-  duplicateNames: string[] | undefined;
-};
-
-// Warden Folder Gateway Service - HTTP gateway for folder management
-export interface WardenFolderGatewayService {
-  // Create a new folder
-  CreateFolder(request: wardenservicev1_CreateFolderRequest): Promise<wardenservicev1_CreateFolderResponse>;
-  // Get the folder tree structure (must be before GetFolder to avoid route conflict)
-  GetFolderTree(request: wardenservicev1_GetFolderTreeRequest): Promise<wardenservicev1_GetFolderTreeResponse>;
-  // Get a folder by ID
-  GetFolder(request: wardenservicev1_GetFolderRequest): Promise<wardenservicev1_GetFolderResponse>;
-  // List folders
-  ListFolders(request: wardenservicev1_ListFoldersRequest): Promise<wardenservicev1_ListFoldersResponse>;
-  // Update folder metadata
-  UpdateFolder(request: wardenservicev1_UpdateFolderRequest): Promise<wardenservicev1_UpdateFolderResponse>;
-  // Delete a folder
-  DeleteFolder(request: wardenservicev1_DeleteFolderRequest): Promise<wellKnownEmpty>;
-  // Move a folder to a new parent
-  MoveFolder(request: wardenservicev1_MoveFolderRequest): Promise<wardenservicev1_MoveFolderResponse>;
-}
-
-export function createWardenFolderGatewayServiceClient(
-  handler: RequestHandler
-): WardenFolderGatewayService {
-  return {
-    CreateFolder(request) { // eslint-disable-line @typescript-eslint/no-unused-vars
-      const path = `admin/v1/warden/folders`; // eslint-disable-line quotes
-      const body = JSON.stringify(request);
-      const queryParams: string[] = [];
-      let uri = path;
-      if (queryParams.length > 0) {
-        uri += `?${queryParams.join("&")}`
-      }
-      return handler({
-        path: uri,
-        method: "POST",
-        body,
-      }, {
-        service: "WardenFolderGatewayService",
-        method: "CreateFolder",
-      }) as Promise<wardenservicev1_CreateFolderResponse>;
-    },
-    GetFolderTree(request) { // eslint-disable-line @typescript-eslint/no-unused-vars
-      const path = `admin/v1/warden/folders/tree`; // eslint-disable-line quotes
-      const body = null;
-      const queryParams: string[] = [];
-      if (request.rootId) {
-        queryParams.push(`rootId=${encodeURIComponent(request.rootId.toString())}`)
-      }
-      if (request.maxDepth) {
-        queryParams.push(`maxDepth=${encodeURIComponent(request.maxDepth.toString())}`)
-      }
-      if (request.includeCounts) {
-        queryParams.push(`includeCounts=${encodeURIComponent(request.includeCounts.toString())}`)
-      }
-      let uri = path;
-      if (queryParams.length > 0) {
-        uri += `?${queryParams.join("&")}`
-      }
-      return handler({
-        path: uri,
-        method: "GET",
-        body,
-      }, {
-        service: "WardenFolderGatewayService",
-        method: "GetFolderTree",
-      }) as Promise<wardenservicev1_GetFolderTreeResponse>;
-    },
-    GetFolder(request) { // eslint-disable-line @typescript-eslint/no-unused-vars
-      if (!request.id) {
-        throw new Error("missing required field request.id");
-      }
-      const path = `admin/v1/warden/folders/${request.id}`; // eslint-disable-line quotes
-      const body = null;
-      const queryParams: string[] = [];
-      if (request.includeCounts) {
-        queryParams.push(`includeCounts=${encodeURIComponent(request.includeCounts.toString())}`)
-      }
-      let uri = path;
-      if (queryParams.length > 0) {
-        uri += `?${queryParams.join("&")}`
-      }
-      return handler({
-        path: uri,
-        method: "GET",
-        body,
-      }, {
-        service: "WardenFolderGatewayService",
-        method: "GetFolder",
-      }) as Promise<wardenservicev1_GetFolderResponse>;
-    },
-    ListFolders(request) { // eslint-disable-line @typescript-eslint/no-unused-vars
-      const path = `admin/v1/warden/folders`; // eslint-disable-line quotes
-      const body = null;
-      const queryParams: string[] = [];
-      if (request.parentId) {
-        queryParams.push(`parentId=${encodeURIComponent(request.parentId.toString())}`)
-      }
-      if (request.page) {
-        queryParams.push(`page=${encodeURIComponent(request.page.toString())}`)
-      }
-      if (request.pageSize) {
-        queryParams.push(`pageSize=${encodeURIComponent(request.pageSize.toString())}`)
-      }
-      if (request.nameFilter) {
-        queryParams.push(`nameFilter=${encodeURIComponent(request.nameFilter.toString())}`)
-      }
-      let uri = path;
-      if (queryParams.length > 0) {
-        uri += `?${queryParams.join("&")}`
-      }
-      return handler({
-        path: uri,
-        method: "GET",
-        body,
-      }, {
-        service: "WardenFolderGatewayService",
-        method: "ListFolders",
-      }) as Promise<wardenservicev1_ListFoldersResponse>;
-    },
-    UpdateFolder(request) { // eslint-disable-line @typescript-eslint/no-unused-vars
-      if (!request.id) {
-        throw new Error("missing required field request.id");
-      }
-      const path = `admin/v1/warden/folders/${request.id}`; // eslint-disable-line quotes
-      const body = JSON.stringify(request);
-      const queryParams: string[] = [];
-      let uri = path;
-      if (queryParams.length > 0) {
-        uri += `?${queryParams.join("&")}`
-      }
-      return handler({
-        path: uri,
-        method: "PUT",
-        body,
-      }, {
-        service: "WardenFolderGatewayService",
-        method: "UpdateFolder",
-      }) as Promise<wardenservicev1_UpdateFolderResponse>;
-    },
-    DeleteFolder(request) { // eslint-disable-line @typescript-eslint/no-unused-vars
-      if (!request.id) {
-        throw new Error("missing required field request.id");
-      }
-      const path = `admin/v1/warden/folders/${request.id}`; // eslint-disable-line quotes
-      const body = null;
-      const queryParams: string[] = [];
-      if (request.force) {
-        queryParams.push(`force=${encodeURIComponent(request.force.toString())}`)
-      }
-      let uri = path;
-      if (queryParams.length > 0) {
-        uri += `?${queryParams.join("&")}`
-      }
-      return handler({
-        path: uri,
-        method: "DELETE",
-        body,
-      }, {
-        service: "WardenFolderGatewayService",
-        method: "DeleteFolder",
-      }) as Promise<wellKnownEmpty>;
-    },
-    MoveFolder(request) { // eslint-disable-line @typescript-eslint/no-unused-vars
-      if (!request.id) {
-        throw new Error("missing required field request.id");
-      }
-      const path = `admin/v1/warden/folders/${request.id}:move`; // eslint-disable-line quotes
-      const body = JSON.stringify(request);
-      const queryParams: string[] = [];
-      let uri = path;
-      if (queryParams.length > 0) {
-        uri += `?${queryParams.join("&")}`
-      }
-      return handler({
-        path: uri,
-        method: "POST",
-        body,
-      }, {
-        service: "WardenFolderGatewayService",
-        method: "MoveFolder",
-      }) as Promise<wardenservicev1_MoveFolderResponse>;
-    },
-  };
-}
-// Request to create a folder
-export type wardenservicev1_CreateFolderRequest = {
-  // Parent folder ID (null for root-level folder)
-  parentId?: string;
-  // Folder name
-  //
-  // Behaviors: REQUIRED
-  name: string | undefined;
-  // Optional description
-  description: string | undefined;
-};
-
-export type wardenservicev1_CreateFolderResponse = {
-  folder: wardenservicev1_Folder | undefined;
-};
-
-// Folder entity
-export type wardenservicev1_Folder = {
-  id: string | undefined;
-  tenantId: number | undefined;
-  parentId?: string;
-  name: string | undefined;
-  path: string | undefined;
-  description: string | undefined;
-  depth: number | undefined;
-  secretCount: number | undefined;
-  subfolderCount: number | undefined;
-  createTime: wellKnownTimestamp | undefined;
-  updateTime: wellKnownTimestamp | undefined;
-  createdBy?: number;
-};
-
-// Request to get folder tree
-export type wardenservicev1_GetFolderTreeRequest = {
-  // Root folder ID (null for entire tree)
-  rootId?: string;
-  // Maximum depth to retrieve
-  maxDepth?: number;
-  // Include secret counts
-  includeCounts: boolean | undefined;
-};
-
-export type wardenservicev1_GetFolderTreeResponse = {
-  roots: wardenservicev1_FolderTreeNode[] | undefined;
-};
-
-// Folder tree node
-export type wardenservicev1_FolderTreeNode = {
-  folder: wardenservicev1_Folder | undefined;
-  children: wardenservicev1_FolderTreeNode[] | undefined;
-};
-
-// Request to get a folder
-export type wardenservicev1_GetFolderRequest = {
-  //
-  // Behaviors: REQUIRED
-  id: string | undefined;
-  // Include secret count
-  includeCounts: boolean | undefined;
-};
-
-export type wardenservicev1_GetFolderResponse = {
-  folder: wardenservicev1_Folder | undefined;
-};
-
-// Request to list folders
-export type wardenservicev1_ListFoldersRequest = {
-  // Parent folder ID (null for root-level folders)
-  parentId?: string;
-  // Pagination
-  page?: number;
-  pageSize?: number;
-  // Search by name
-  nameFilter?: string;
-};
-
-export type wardenservicev1_ListFoldersResponse = {
-  folders: wardenservicev1_Folder[] | undefined;
-  total: number | undefined;
-};
-
-// Request to update a folder
-export type wardenservicev1_UpdateFolderRequest = {
-  //
-  // Behaviors: REQUIRED
-  id: string | undefined;
-  // New name (optional)
-  name?: string;
-  // New description (optional)
-  description?: string;
-};
-
-export type wardenservicev1_UpdateFolderResponse = {
-  folder: wardenservicev1_Folder | undefined;
-};
-
-// Request to delete a folder
-export type wardenservicev1_DeleteFolderRequest = {
-  //
-  // Behaviors: REQUIRED
-  id: string | undefined;
-  // Force delete even if folder contains items
-  force: boolean | undefined;
-};
-
-// Request to move a folder
-export type wardenservicev1_MoveFolderRequest = {
-  //
-  // Behaviors: REQUIRED
-  id: string | undefined;
-  // New parent folder ID (null to move to root)
-  newParentId?: string;
-};
-
-export type wardenservicev1_MoveFolderResponse = {
-  folder: wardenservicev1_Folder | undefined;
-};
-
-// Warden Permission Gateway Service - HTTP gateway for permission management
-export interface WardenPermissionGatewayService {
-  // Grant access to a resource
-  GrantAccess(request: wardenservicev1_GrantAccessRequest): Promise<wardenservicev1_GrantAccessResponse>;
-  // Revoke access from a resource
-  RevokeAccess(request: wardenservicev1_RevokeAccessRequest): Promise<wellKnownEmpty>;
-  // List permissions
-  ListPermissions(request: wardenservicev1_ListPermissionsRequest): Promise<wardenservicev1_ListPermissionsResponse>;
-  // Check if a subject has access to a resource
-  CheckAccess(request: wardenservicev1_CheckAccessRequest): Promise<wardenservicev1_CheckAccessResponse>;
-  // List resources accessible by a subject
-  ListAccessibleResources(request: wardenservicev1_ListAccessibleResourcesRequest): Promise<wardenservicev1_ListAccessibleResourcesResponse>;
-  // Get effective permissions for a subject on a resource
-  GetEffectivePermissions(request: wardenservicev1_GetEffectivePermissionsRequest): Promise<wardenservicev1_GetEffectivePermissionsResponse>;
-}
-
-export function createWardenPermissionGatewayServiceClient(
-  handler: RequestHandler
-): WardenPermissionGatewayService {
-  return {
-    GrantAccess(request) { // eslint-disable-line @typescript-eslint/no-unused-vars
-      const path = `admin/v1/warden/permissions`; // eslint-disable-line quotes
-      const body = JSON.stringify(request);
-      const queryParams: string[] = [];
-      let uri = path;
-      if (queryParams.length > 0) {
-        uri += `?${queryParams.join("&")}`
-      }
-      return handler({
-        path: uri,
-        method: "POST",
-        body,
-      }, {
-        service: "WardenPermissionGatewayService",
-        method: "GrantAccess",
-      }) as Promise<wardenservicev1_GrantAccessResponse>;
-    },
-    RevokeAccess(request) { // eslint-disable-line @typescript-eslint/no-unused-vars
-      const path = `admin/v1/warden/permissions:revoke`; // eslint-disable-line quotes
-      const body = JSON.stringify(request);
-      const queryParams: string[] = [];
-      let uri = path;
-      if (queryParams.length > 0) {
-        uri += `?${queryParams.join("&")}`
-      }
-      return handler({
-        path: uri,
-        method: "POST",
-        body,
-      }, {
-        service: "WardenPermissionGatewayService",
-        method: "RevokeAccess",
-      }) as Promise<wellKnownEmpty>;
-    },
-    ListPermissions(request) { // eslint-disable-line @typescript-eslint/no-unused-vars
-      const path = `admin/v1/warden/permissions`; // eslint-disable-line quotes
-      const body = null;
-      const queryParams: string[] = [];
-      if (request.resourceType) {
-        queryParams.push(`resourceType=${encodeURIComponent(request.resourceType.toString())}`)
-      }
-      if (request.resourceId) {
-        queryParams.push(`resourceId=${encodeURIComponent(request.resourceId.toString())}`)
-      }
-      if (request.subjectType) {
-        queryParams.push(`subjectType=${encodeURIComponent(request.subjectType.toString())}`)
-      }
-      if (request.subjectId) {
-        queryParams.push(`subjectId=${encodeURIComponent(request.subjectId.toString())}`)
-      }
-      if (request.page) {
-        queryParams.push(`page=${encodeURIComponent(request.page.toString())}`)
-      }
-      if (request.pageSize) {
-        queryParams.push(`pageSize=${encodeURIComponent(request.pageSize.toString())}`)
-      }
-      let uri = path;
-      if (queryParams.length > 0) {
-        uri += `?${queryParams.join("&")}`
-      }
-      return handler({
-        path: uri,
-        method: "GET",
-        body,
-      }, {
-        service: "WardenPermissionGatewayService",
-        method: "ListPermissions",
-      }) as Promise<wardenservicev1_ListPermissionsResponse>;
-    },
-    CheckAccess(request) { // eslint-disable-line @typescript-eslint/no-unused-vars
-      const path = `admin/v1/warden/permissions:check`; // eslint-disable-line quotes
-      const body = JSON.stringify(request);
-      const queryParams: string[] = [];
-      let uri = path;
-      if (queryParams.length > 0) {
-        uri += `?${queryParams.join("&")}`
-      }
-      return handler({
-        path: uri,
-        method: "POST",
-        body,
-      }, {
-        service: "WardenPermissionGatewayService",
-        method: "CheckAccess",
-      }) as Promise<wardenservicev1_CheckAccessResponse>;
-    },
-    ListAccessibleResources(request) { // eslint-disable-line @typescript-eslint/no-unused-vars
-      const path = `admin/v1/warden/permissions/accessible`; // eslint-disable-line quotes
-      const body = null;
-      const queryParams: string[] = [];
-      if (request.userId) {
-        queryParams.push(`userId=${encodeURIComponent(request.userId.toString())}`)
-      }
-      if (request.resourceType) {
-        queryParams.push(`resourceType=${encodeURIComponent(request.resourceType.toString())}`)
-      }
-      if (request.permission) {
-        queryParams.push(`permission=${encodeURIComponent(request.permission.toString())}`)
-      }
-      if (request.page) {
-        queryParams.push(`page=${encodeURIComponent(request.page.toString())}`)
-      }
-      if (request.pageSize) {
-        queryParams.push(`pageSize=${encodeURIComponent(request.pageSize.toString())}`)
-      }
-      let uri = path;
-      if (queryParams.length > 0) {
-        uri += `?${queryParams.join("&")}`
-      }
-      return handler({
-        path: uri,
-        method: "GET",
-        body,
-      }, {
-        service: "WardenPermissionGatewayService",
-        method: "ListAccessibleResources",
-      }) as Promise<wardenservicev1_ListAccessibleResourcesResponse>;
-    },
-    GetEffectivePermissions(request) { // eslint-disable-line @typescript-eslint/no-unused-vars
-      const path = `admin/v1/warden/permissions/effective`; // eslint-disable-line quotes
-      const body = null;
-      const queryParams: string[] = [];
-      if (request.userId) {
-        queryParams.push(`userId=${encodeURIComponent(request.userId.toString())}`)
-      }
-      if (request.resourceType) {
-        queryParams.push(`resourceType=${encodeURIComponent(request.resourceType.toString())}`)
-      }
-      if (request.resourceId) {
-        queryParams.push(`resourceId=${encodeURIComponent(request.resourceId.toString())}`)
-      }
-      let uri = path;
-      if (queryParams.length > 0) {
-        uri += `?${queryParams.join("&")}`
-      }
-      return handler({
-        path: uri,
-        method: "GET",
-        body,
-      }, {
-        service: "WardenPermissionGatewayService",
-        method: "GetEffectivePermissions",
-      }) as Promise<wardenservicev1_GetEffectivePermissionsResponse>;
-    },
-  };
-}
-// Request to grant access
-export type wardenservicev1_GrantAccessRequest = {
-  // Resource type
-  //
-  // Behaviors: REQUIRED
-  resourceType: wardenservicev1_ResourceType | undefined;
-  // Resource ID
-  //
-  // Behaviors: REQUIRED
-  resourceId: string | undefined;
-  // Relation to grant
-  //
-  // Behaviors: REQUIRED
-  relation: wardenservicev1_Relation | undefined;
-  // Subject type
-  //
-  // Behaviors: REQUIRED
-  subjectType: wardenservicev1_SubjectType | undefined;
-  // Subject ID
-  //
-  // Behaviors: REQUIRED
-  subjectId: string | undefined;
-  // Optional expiration time
-  expiresAt?: wellKnownTimestamp;
-};
-
-// Resource type
-export type wardenservicev1_ResourceType =
-  | "RESOURCE_TYPE_UNSPECIFIED"
-  | "RESOURCE_TYPE_FOLDER"
-  | "RESOURCE_TYPE_SECRET";
-// Relation (permission level)
-export type wardenservicev1_Relation =
-  | "RELATION_UNSPECIFIED"
-  | "RELATION_OWNER"
-  | "RELATION_EDITOR"
-  | "RELATION_VIEWER"
-  | "RELATION_SHARER";
-// Subject type
-export type wardenservicev1_SubjectType =
-  | "SUBJECT_TYPE_UNSPECIFIED"
-  | "SUBJECT_TYPE_USER"
-  | "SUBJECT_TYPE_ROLE"
-  | "SUBJECT_TYPE_TENANT";
-export type wardenservicev1_GrantAccessResponse = {
-  permission: wardenservicev1_PermissionTuple | undefined;
-};
-
-// Permission tuple entity
-export type wardenservicev1_PermissionTuple = {
-  id: number | undefined;
-  tenantId: number | undefined;
-  resourceType: wardenservicev1_ResourceType | undefined;
-  resourceId: string | undefined;
-  relation: wardenservicev1_Relation | undefined;
-  subjectType: wardenservicev1_SubjectType | undefined;
-  subjectId: string | undefined;
-  grantedBy?: number;
-  expiresAt?: wellKnownTimestamp;
-  createTime: wellKnownTimestamp | undefined;
-};
-
-// Request to revoke access
-export type wardenservicev1_RevokeAccessRequest = {
-  // Resource type
-  //
-  // Behaviors: REQUIRED
-  resourceType: wardenservicev1_ResourceType | undefined;
-  // Resource ID
-  //
-  // Behaviors: REQUIRED
-  resourceId: string | undefined;
-  // Relation to revoke (optional - if not specified, revokes all)
-  relation?: wardenservicev1_Relation;
-  // Subject type
-  //
-  // Behaviors: REQUIRED
-  subjectType: wardenservicev1_SubjectType | undefined;
-  // Subject ID
-  //
-  // Behaviors: REQUIRED
-  subjectId: string | undefined;
-};
-
-// Request to list permissions
-export type wardenservicev1_ListPermissionsRequest = {
-  // Resource type (optional - filter by type)
-  resourceType?: wardenservicev1_ResourceType;
-  // Resource ID (optional - list for specific resource)
-  resourceId?: string;
-  // Subject type (optional - filter by subject type)
-  subjectType?: wardenservicev1_SubjectType;
-  // Subject ID (optional - list for specific subject)
-  subjectId?: string;
-  // Pagination
-  page?: number;
-  pageSize?: number;
-};
-
-export type wardenservicev1_ListPermissionsResponse = {
-  permissions: wardenservicev1_PermissionTuple[] | undefined;
-  total: number | undefined;
-};
-
-// Request to check access
-export type wardenservicev1_CheckAccessRequest = {
-  // User ID to check
-  //
-  // Behaviors: REQUIRED
-  userId: string | undefined;
-  // Resource type
-  //
-  // Behaviors: REQUIRED
-  resourceType: wardenservicev1_ResourceType | undefined;
-  // Resource ID
-  //
-  // Behaviors: REQUIRED
-  resourceId: string | undefined;
-  // Permission to check
-  //
-  // Behaviors: REQUIRED
-  permission: wardenservicev1_Permission | undefined;
-};
-
-// Permission (action that can be checked)
-export type wardenservicev1_Permission =
-  | "PERMISSION_UNSPECIFIED"
-  | "PERMISSION_READ"
-  | "PERMISSION_WRITE"
-  | "PERMISSION_DELETE"
-  | "PERMISSION_SHARE";
-export type wardenservicev1_CheckAccessResponse = {
-  allowed: boolean | undefined;
-  reason?: string;
-};
-
-// Request to list accessible resources
-export type wardenservicev1_ListAccessibleResourcesRequest = {
-  // User ID
-  //
-  // Behaviors: REQUIRED
-  userId: string | undefined;
-  // Resource type to list
-  //
-  // Behaviors: REQUIRED
-  resourceType: wardenservicev1_ResourceType | undefined;
-  // Minimum permission level
-  //
-  // Behaviors: REQUIRED
-  permission: wardenservicev1_Permission | undefined;
-  // Pagination
-  page?: number;
-  pageSize?: number;
-};
-
-export type wardenservicev1_ListAccessibleResourcesResponse = {
-  resourceIds: string[] | undefined;
-  total: number | undefined;
-};
-
-// Request to get effective permissions
-export type wardenservicev1_GetEffectivePermissionsRequest = {
-  // User ID
-  //
-  // Behaviors: REQUIRED
-  userId: string | undefined;
-  // Resource type
-  //
-  // Behaviors: REQUIRED
-  resourceType: wardenservicev1_ResourceType | undefined;
-  // Resource ID
-  //
-  // Behaviors: REQUIRED
-  resourceId: string | undefined;
-};
-
-export type wardenservicev1_GetEffectivePermissionsResponse = {
-  permissions: wardenservicev1_Permission[] | undefined;
-  highestRelation: wardenservicev1_Relation | undefined;
-};
-
-// Warden Secret Gateway Service - HTTP gateway for secret management
-export interface WardenSecretGatewayService {
-  // Create a new secret
-  CreateSecret(request: wardenservicev1_CreateSecretRequest): Promise<wardenservicev1_CreateSecretResponse>;
-  // Get a secret by ID (metadata only, no password)
-  GetSecret(request: wardenservicev1_GetSecretRequest): Promise<wardenservicev1_GetSecretResponse>;
-  // Get secret password
-  GetSecretPassword(request: wardenservicev1_GetSecretPasswordRequest): Promise<wardenservicev1_GetSecretPasswordResponse>;
-  // List secrets
-  ListSecrets(request: wardenservicev1_ListSecretsRequest): Promise<wardenservicev1_ListSecretsResponse>;
-  // Update secret metadata
-  UpdateSecret(request: wardenservicev1_UpdateSecretRequest): Promise<wardenservicev1_UpdateSecretResponse>;
-  // Update secret password (creates new version)
-  UpdateSecretPassword(request: wardenservicev1_UpdateSecretPasswordRequest): Promise<wardenservicev1_UpdateSecretPasswordResponse>;
-  // Delete a secret
-  DeleteSecret(request: wardenservicev1_DeleteSecretRequest): Promise<wellKnownEmpty>;
-  // Move secret to a different folder
-  MoveSecret(request: wardenservicev1_MoveSecretRequest): Promise<wardenservicev1_MoveSecretResponse>;
-  // List all versions of a secret
-  ListVersions(request: wardenservicev1_ListVersionsRequest): Promise<wardenservicev1_ListVersionsResponse>;
-  // Get a specific version
-  GetVersion(request: wardenservicev1_GetVersionRequest): Promise<wardenservicev1_GetVersionResponse>;
-  // Restore a previous version
-  RestoreVersion(request: wardenservicev1_RestoreVersionRequest): Promise<wardenservicev1_RestoreVersionResponse>;
-  // Search secrets
-  SearchSecrets(request: wardenservicev1_SearchSecretsRequest): Promise<wardenservicev1_SearchSecretsResponse>;
-}
-
-export function createWardenSecretGatewayServiceClient(
-  handler: RequestHandler
-): WardenSecretGatewayService {
-  return {
-    CreateSecret(request) { // eslint-disable-line @typescript-eslint/no-unused-vars
-      const path = `admin/v1/warden/secrets`; // eslint-disable-line quotes
-      const body = JSON.stringify(request);
-      const queryParams: string[] = [];
-      let uri = path;
-      if (queryParams.length > 0) {
-        uri += `?${queryParams.join("&")}`
-      }
-      return handler({
-        path: uri,
-        method: "POST",
-        body,
-      }, {
-        service: "WardenSecretGatewayService",
-        method: "CreateSecret",
-      }) as Promise<wardenservicev1_CreateSecretResponse>;
-    },
-    GetSecret(request) { // eslint-disable-line @typescript-eslint/no-unused-vars
-      if (!request.id) {
-        throw new Error("missing required field request.id");
-      }
-      const path = `admin/v1/warden/secrets/${request.id}`; // eslint-disable-line quotes
-      const body = null;
-      const queryParams: string[] = [];
-      let uri = path;
-      if (queryParams.length > 0) {
-        uri += `?${queryParams.join("&")}`
-      }
-      return handler({
-        path: uri,
-        method: "GET",
-        body,
-      }, {
-        service: "WardenSecretGatewayService",
-        method: "GetSecret",
-      }) as Promise<wardenservicev1_GetSecretResponse>;
-    },
-    GetSecretPassword(request) { // eslint-disable-line @typescript-eslint/no-unused-vars
-      if (!request.id) {
-        throw new Error("missing required field request.id");
-      }
-      const path = `admin/v1/warden/secrets/${request.id}/password`; // eslint-disable-line quotes
-      const body = null;
-      const queryParams: string[] = [];
-      if (request.version) {
-        queryParams.push(`version=${encodeURIComponent(request.version.toString())}`)
-      }
-      let uri = path;
-      if (queryParams.length > 0) {
-        uri += `?${queryParams.join("&")}`
-      }
-      return handler({
-        path: uri,
-        method: "GET",
-        body,
-      }, {
-        service: "WardenSecretGatewayService",
-        method: "GetSecretPassword",
-      }) as Promise<wardenservicev1_GetSecretPasswordResponse>;
-    },
-    ListSecrets(request) { // eslint-disable-line @typescript-eslint/no-unused-vars
-      const path = `admin/v1/warden/secrets`; // eslint-disable-line quotes
-      const body = null;
-      const queryParams: string[] = [];
-      if (request.folderId) {
-        queryParams.push(`folderId=${encodeURIComponent(request.folderId.toString())}`)
-      }
-      if (request.page) {
-        queryParams.push(`page=${encodeURIComponent(request.page.toString())}`)
-      }
-      if (request.pageSize) {
-        queryParams.push(`pageSize=${encodeURIComponent(request.pageSize.toString())}`)
-      }
-      if (request.status) {
-        queryParams.push(`status=${encodeURIComponent(request.status.toString())}`)
-      }
-      if (request.nameFilter) {
-        queryParams.push(`nameFilter=${encodeURIComponent(request.nameFilter.toString())}`)
-      }
-      let uri = path;
-      if (queryParams.length > 0) {
-        uri += `?${queryParams.join("&")}`
-      }
-      return handler({
-        path: uri,
-        method: "GET",
-        body,
-      }, {
-        service: "WardenSecretGatewayService",
-        method: "ListSecrets",
-      }) as Promise<wardenservicev1_ListSecretsResponse>;
-    },
-    UpdateSecret(request) { // eslint-disable-line @typescript-eslint/no-unused-vars
-      if (!request.id) {
-        throw new Error("missing required field request.id");
-      }
-      const path = `admin/v1/warden/secrets/${request.id}`; // eslint-disable-line quotes
-      const body = JSON.stringify(request);
-      const queryParams: string[] = [];
-      let uri = path;
-      if (queryParams.length > 0) {
-        uri += `?${queryParams.join("&")}`
-      }
-      return handler({
-        path: uri,
-        method: "PUT",
-        body,
-      }, {
-        service: "WardenSecretGatewayService",
-        method: "UpdateSecret",
-      }) as Promise<wardenservicev1_UpdateSecretResponse>;
-    },
-    UpdateSecretPassword(request) { // eslint-disable-line @typescript-eslint/no-unused-vars
-      if (!request.id) {
-        throw new Error("missing required field request.id");
-      }
-      const path = `admin/v1/warden/secrets/${request.id}/password`; // eslint-disable-line quotes
-      const body = JSON.stringify(request);
-      const queryParams: string[] = [];
-      let uri = path;
-      if (queryParams.length > 0) {
-        uri += `?${queryParams.join("&")}`
-      }
-      return handler({
-        path: uri,
-        method: "PUT",
-        body,
-      }, {
-        service: "WardenSecretGatewayService",
-        method: "UpdateSecretPassword",
-      }) as Promise<wardenservicev1_UpdateSecretPasswordResponse>;
-    },
-    DeleteSecret(request) { // eslint-disable-line @typescript-eslint/no-unused-vars
-      if (!request.id) {
-        throw new Error("missing required field request.id");
-      }
-      const path = `admin/v1/warden/secrets/${request.id}`; // eslint-disable-line quotes
-      const body = null;
-      const queryParams: string[] = [];
-      if (request.permanent) {
-        queryParams.push(`permanent=${encodeURIComponent(request.permanent.toString())}`)
-      }
-      let uri = path;
-      if (queryParams.length > 0) {
-        uri += `?${queryParams.join("&")}`
-      }
-      return handler({
-        path: uri,
-        method: "DELETE",
-        body,
-      }, {
-        service: "WardenSecretGatewayService",
-        method: "DeleteSecret",
-      }) as Promise<wellKnownEmpty>;
-    },
-    MoveSecret(request) { // eslint-disable-line @typescript-eslint/no-unused-vars
-      if (!request.id) {
-        throw new Error("missing required field request.id");
-      }
-      const path = `admin/v1/warden/secrets/${request.id}:move`; // eslint-disable-line quotes
-      const body = JSON.stringify(request);
-      const queryParams: string[] = [];
-      let uri = path;
-      if (queryParams.length > 0) {
-        uri += `?${queryParams.join("&")}`
-      }
-      return handler({
-        path: uri,
-        method: "POST",
-        body,
-      }, {
-        service: "WardenSecretGatewayService",
-        method: "MoveSecret",
-      }) as Promise<wardenservicev1_MoveSecretResponse>;
-    },
-    ListVersions(request) { // eslint-disable-line @typescript-eslint/no-unused-vars
-      if (!request.secretId) {
-        throw new Error("missing required field request.secret_id");
-      }
-      const path = `admin/v1/warden/secrets/${request.secretId}/versions`; // eslint-disable-line quotes
-      const body = null;
-      const queryParams: string[] = [];
-      if (request.page) {
-        queryParams.push(`page=${encodeURIComponent(request.page.toString())}`)
-      }
-      if (request.pageSize) {
-        queryParams.push(`pageSize=${encodeURIComponent(request.pageSize.toString())}`)
-      }
-      let uri = path;
-      if (queryParams.length > 0) {
-        uri += `?${queryParams.join("&")}`
-      }
-      return handler({
-        path: uri,
-        method: "GET",
-        body,
-      }, {
-        service: "WardenSecretGatewayService",
-        method: "ListVersions",
-      }) as Promise<wardenservicev1_ListVersionsResponse>;
-    },
-    GetVersion(request) { // eslint-disable-line @typescript-eslint/no-unused-vars
-      if (!request.secretId) {
-        throw new Error("missing required field request.secret_id");
-      }
-      if (!request.versionNumber) {
-        throw new Error("missing required field request.version_number");
-      }
-      const path = `admin/v1/warden/secrets/${request.secretId}/versions/${request.versionNumber}`; // eslint-disable-line quotes
-      const body = null;
-      const queryParams: string[] = [];
-      if (request.includePassword) {
-        queryParams.push(`includePassword=${encodeURIComponent(request.includePassword.toString())}`)
-      }
-      let uri = path;
-      if (queryParams.length > 0) {
-        uri += `?${queryParams.join("&")}`
-      }
-      return handler({
-        path: uri,
-        method: "GET",
-        body,
-      }, {
-        service: "WardenSecretGatewayService",
-        method: "GetVersion",
-      }) as Promise<wardenservicev1_GetVersionResponse>;
-    },
-    RestoreVersion(request) { // eslint-disable-line @typescript-eslint/no-unused-vars
-      if (!request.secretId) {
-        throw new Error("missing required field request.secret_id");
-      }
-      if (!request.versionNumber) {
-        throw new Error("missing required field request.version_number");
-      }
-      const path = `admin/v1/warden/secrets/${request.secretId}/versions/${request.versionNumber}:restore`; // eslint-disable-line quotes
-      const body = JSON.stringify(request);
-      const queryParams: string[] = [];
-      let uri = path;
-      if (queryParams.length > 0) {
-        uri += `?${queryParams.join("&")}`
-      }
-      return handler({
-        path: uri,
-        method: "POST",
-        body,
-      }, {
-        service: "WardenSecretGatewayService",
-        method: "RestoreVersion",
-      }) as Promise<wardenservicev1_RestoreVersionResponse>;
-    },
-    SearchSecrets(request) { // eslint-disable-line @typescript-eslint/no-unused-vars
-      const path = `admin/v1/warden/secrets/search`; // eslint-disable-line quotes
-      const body = null;
-      const queryParams: string[] = [];
-      if (request.query) {
-        queryParams.push(`query=${encodeURIComponent(request.query.toString())}`)
-      }
-      if (request.folderId) {
-        queryParams.push(`folderId=${encodeURIComponent(request.folderId.toString())}`)
-      }
-      if (request.includeSubfolders) {
-        queryParams.push(`includeSubfolders=${encodeURIComponent(request.includeSubfolders.toString())}`)
-      }
-      if (request.page) {
-        queryParams.push(`page=${encodeURIComponent(request.page.toString())}`)
-      }
-      if (request.pageSize) {
-        queryParams.push(`pageSize=${encodeURIComponent(request.pageSize.toString())}`)
-      }
-      if (request.status) {
-        queryParams.push(`status=${encodeURIComponent(request.status.toString())}`)
-      }
-      let uri = path;
-      if (queryParams.length > 0) {
-        uri += `?${queryParams.join("&")}`
-      }
-      return handler({
-        path: uri,
-        method: "GET",
-        body,
-      }, {
-        service: "WardenSecretGatewayService",
-        method: "SearchSecrets",
-      }) as Promise<wardenservicev1_SearchSecretsResponse>;
-    },
-  };
-}
-// Request to create a secret
-export type wardenservicev1_CreateSecretRequest = {
-  // Folder ID (null for root-level)
-  folderId?: string;
-  // Secret name
-  //
-  // Behaviors: REQUIRED
-  name: string | undefined;
-  // Username associated with the secret
-  username: string | undefined;
-  // Password to store
-  //
-  // Behaviors: REQUIRED
-  password: string | undefined;
-  // Host URL
-  hostUrl: string | undefined;
-  // Description
-  description: string | undefined;
-  // Custom metadata (JSON)
-  metadata: wellKnownStruct | undefined;
-  // Initial version comment
-  versionComment: string | undefined;
-};
-
-export type wardenservicev1_CreateSecretResponse = {
-  secret: wardenservicev1_Secret | undefined;
-};
-
-// Secret entity (without password)
-export type wardenservicev1_Secret = {
-  id: string | undefined;
-  tenantId: number | undefined;
-  folderId?: string;
-  folderPath: string | undefined;
-  name: string | undefined;
-  username: string | undefined;
-  hostUrl: string | undefined;
-  description: string | undefined;
-  currentVersion: number | undefined;
-  metadata: wellKnownStruct | undefined;
-  status: wardenservicev1_SecretStatus | undefined;
-  createTime: wellKnownTimestamp | undefined;
-  updateTime: wellKnownTimestamp | undefined;
-  createdBy?: number;
-  updatedBy?: number;
-};
-
-// Secret status
-export type wardenservicev1_SecretStatus =
-  | "SECRET_STATUS_UNSPECIFIED"
-  | "SECRET_STATUS_ACTIVE"
-  | "SECRET_STATUS_ARCHIVED"
-  | "SECRET_STATUS_DELETED";
-// Request to get a secret
-export type wardenservicev1_GetSecretRequest = {
-  //
-  // Behaviors: REQUIRED
-  id: string | undefined;
-};
-
-export type wardenservicev1_GetSecretResponse = {
-  secret: wardenservicev1_Secret | undefined;
-};
-
-// Request to get secret password
-export type wardenservicev1_GetSecretPasswordRequest = {
-  //
-  // Behaviors: REQUIRED
-  id: string | undefined;
-  // Specific version (null for current)
-  version?: number;
-};
-
-export type wardenservicev1_GetSecretPasswordResponse = {
-  password: string | undefined;
-  version: number | undefined;
-};
-
-// Request to list secrets
-export type wardenservicev1_ListSecretsRequest = {
-  // Folder ID (null for root-level)
-  folderId?: string;
-  // Pagination
-  page?: number;
-  pageSize?: number;
-  // Filter by status
-  status?: wardenservicev1_SecretStatus;
-  // Filter by name
-  nameFilter?: string;
-};
-
-export type wardenservicev1_ListSecretsResponse = {
-  secrets: wardenservicev1_Secret[] | undefined;
-  total: number | undefined;
-};
-
-// Request to update secret metadata
-export type wardenservicev1_UpdateSecretRequest = {
-  //
-  // Behaviors: REQUIRED
-  id: string | undefined;
-  // New name
-  name?: string;
-  // New username
-  username?: string;
-  // New host URL
-  hostUrl?: string;
-  // New description
-  description?: string;
-  // New metadata (replaces existing)
-  metadata?: wellKnownStruct;
-  // New status
-  status?: wardenservicev1_SecretStatus;
-};
-
-export type wardenservicev1_UpdateSecretResponse = {
-  secret: wardenservicev1_Secret | undefined;
-};
-
-// Request to update secret password
-export type wardenservicev1_UpdateSecretPasswordRequest = {
-  //
-  // Behaviors: REQUIRED
-  id: string | undefined;
-  // New password
-  //
-  // Behaviors: REQUIRED
-  password: string | undefined;
-  // Version comment
-  comment: string | undefined;
-};
-
-export type wardenservicev1_UpdateSecretPasswordResponse = {
-  secret: wardenservicev1_Secret | undefined;
-  version: wardenservicev1_SecretVersion | undefined;
-};
-
-// Secret version
-export type wardenservicev1_SecretVersion = {
-  id: number | undefined;
-  secretId: string | undefined;
-  versionNumber: number | undefined;
-  comment: string | undefined;
-  checksum: string | undefined;
-  createTime: wellKnownTimestamp | undefined;
-  createdBy?: number;
-};
-
-// Request to delete a secret
-export type wardenservicev1_DeleteSecretRequest = {
-  //
-  // Behaviors: REQUIRED
-  id: string | undefined;
-  // Permanently delete (skip soft-delete)
-  permanent: boolean | undefined;
-};
-
-// Request to move a secret
-export type wardenservicev1_MoveSecretRequest = {
-  //
-  // Behaviors: REQUIRED
-  id: string | undefined;
-  // New folder ID (null to move to root)
-  newFolderId?: string;
-};
-
-export type wardenservicev1_MoveSecretResponse = {
-  secret: wardenservicev1_Secret | undefined;
-};
-
-// Request to list versions
-export type wardenservicev1_ListVersionsRequest = {
-  //
-  // Behaviors: REQUIRED
-  secretId: string | undefined;
-  // Pagination
-  page?: number;
-  pageSize?: number;
-};
-
-export type wardenservicev1_ListVersionsResponse = {
-  versions: wardenservicev1_SecretVersion[] | undefined;
-  total: number | undefined;
-};
-
-// Request to get a specific version
-export type wardenservicev1_GetVersionRequest = {
-  //
-  // Behaviors: REQUIRED
-  secretId: string | undefined;
-  //
-  // Behaviors: REQUIRED
-  versionNumber: number | undefined;
-  // Include password in response
-  includePassword: boolean | undefined;
-};
-
-export type wardenservicev1_GetVersionResponse = {
-  version: wardenservicev1_SecretVersion | undefined;
-  password?: string;
-};
-
-// Request to restore a version
-export type wardenservicev1_RestoreVersionRequest = {
-  //
-  // Behaviors: REQUIRED
-  secretId: string | undefined;
-  //
-  // Behaviors: REQUIRED
-  versionNumber: number | undefined;
-  // Comment for the new version created by restore
-  comment: string | undefined;
-};
-
-export type wardenservicev1_RestoreVersionResponse = {
-  secret: wardenservicev1_Secret | undefined;
-  newVersion: wardenservicev1_SecretVersion | undefined;
-};
-
-// Request to search secrets
-export type wardenservicev1_SearchSecretsRequest = {
-  // Search query (searches name, username, host_url, description)
-  //
-  // Behaviors: REQUIRED
-  query: string | undefined;
-  // Limit search to folder and subfolders (null for all)
-  folderId?: string;
-  // Include subfolders in search
-  includeSubfolders: boolean | undefined;
-  // Pagination
-  page?: number;
-  pageSize?: number;
-  // Filter by status
-  status?: wardenservicev1_SecretStatus;
-};
-
-export type wardenservicev1_SearchSecretsResponse = {
-  secrets: wardenservicev1_Secret[] | undefined;
-  total: number | undefined;
-};
-
 // ModuleStatus represents the registration status of a module.
 export type ModuleStatus =
   | "MODULE_STATUS_UNSPECIFIED"
@@ -16450,223 +8323,59 @@ export type GetModuleRequest = {
 // ModuleRegistrationService handles dynamic module registration.
 // Modules call this service to register themselves with the admin gateway.
 export interface ModuleRegistrationService {
+  // List all registered modules.
+  // Used by admin UI to display module status.
+  ListModules(request: ListModulesRequest): Promise<ListModulesResponse>;
+  // Get a specific module's details.
+  GetModule(request: GetModuleRequest): Promise<Module>;
 }
 
 export function createModuleRegistrationServiceClient(
   handler: RequestHandler
 ): ModuleRegistrationService {
   return {
-  };
-}
-
-// === MFA Service Types ===
-
-export type authenticationservicev1_MFAMethod =
-  | "MFA_METHOD_UNSPECIFIED"
-  | "TOTP"
-  | "SMS"
-  | "EMAIL"
-  | "U2F"
-  | "WEBAUTHN"
-  | "BACKUP_CODE"
-  | "OTHER";
-
-export type authenticationservicev1_MFAEnforcement =
-  | "MFA_NOT_REQUIRED"
-  | "MFA_OPTIONAL"
-  | "MFA_REQUIRED";
-
-export type authenticationservicev1_EnrolledMethod = {
-  id: string;
-  method: authenticationservicev1_MFAMethod;
-  display: string;
-  enabled: boolean;
-  created_at?: string;
-  last_used_at?: string;
-};
-
-export type authenticationservicev1_GetMFAStatusResponse = {
-  enabled: boolean;
-  enrolled: authenticationservicev1_EnrolledMethod[];
-  enforcement: authenticationservicev1_MFAEnforcement;
-};
-
-export type authenticationservicev1_ListEnrolledMethodsResponse = {
-  items: authenticationservicev1_EnrolledMethod[];
-};
-
-export type authenticationservicev1_TOTPResult = {
-  secret: string;
-  otp_auth_url: string;
-  qr_code_data_uri: string;
-};
-
-export type authenticationservicev1_WebAuthnResult = {
-  challenge: string;
-  options_json: string;
-  rp_id: string;
-};
-
-export type authenticationservicev1_WebAuthnAssertion = {
-  id: string;
-  client_data_json: string;
-  authenticator_data: string;
-  signature?: string;
-  user_handle?: string;
-};
-
-export type authenticationservicev1_StartEnrollMethodResponse = {
-  totp?: authenticationservicev1_TOTPResult;
-  webauthn?: authenticationservicev1_WebAuthnResult;
-  operation_id: string;
-  expires_at?: string;
-};
-
-export type authenticationservicev1_ConfirmEnrollMethodResponse = {
-  success: boolean;
-  credential_id: string;
-};
-
-export type authenticationservicev1_VerifyMFAChallengeResponse = {
-  success: boolean;
-  session_token?: string;
-  login_response?: authenticationservicev1_LoginResponse;
-};
-
-export type authenticationservicev1_GenerateBackupCodesResponse = {
-  codes: string[];
-  generated_at?: string;
-};
-
-export type authenticationservicev1_ListBackupCodesResponse = {
-  remaining: number;
-  generated_at?: string;
-};
-
-// === MFA Service Interface ===
-
-export interface MFAService {
-  // Start MFA challenge during login
-  StartMFAChallenge(request: { method: authenticationservicev1_MFAMethod; user_id?: string }): Promise<{ operation_id: string; expires_at?: string; webauthn?: authenticationservicev1_WebAuthnResult }>;
-  // Verify MFA challenge during login - returns JWT tokens on success
-  VerifyMFAChallenge(request: { operation_id: string; totp_code?: string; backup_code?: string; webauthn?: authenticationservicev1_WebAuthnAssertion }): Promise<authenticationservicev1_VerifyMFAChallengeResponse>;
-  // Get current user's MFA status
-  GetMFAStatus(request: Record<string, never>): Promise<authenticationservicev1_GetMFAStatusResponse>;
-  // List enrolled MFA methods
-  ListEnrolledMethods(request: Record<string, never>): Promise<authenticationservicev1_ListEnrolledMethodsResponse>;
-  // Start enrolling an MFA method
-  StartEnrollMethod(request: { method: authenticationservicev1_MFAMethod }): Promise<authenticationservicev1_StartEnrollMethodResponse>;
-  // Confirm MFA enrollment with verification code
-  ConfirmEnrollMethod(request: { method: authenticationservicev1_MFAMethod; operation_id: string; totp_code?: string; webauthn?: authenticationservicev1_WebAuthnAssertion; display?: string }): Promise<authenticationservicev1_ConfirmEnrollMethodResponse>;
-  // Disable MFA for current user
-  DisableMFA(request: { credential_id?: string; method?: authenticationservicev1_MFAMethod; password?: string; totp_code?: string }): Promise<wellKnownEmpty>;
-  // Generate new backup codes
-  GenerateBackupCodes(request: { count?: number }): Promise<authenticationservicev1_GenerateBackupCodesResponse>;
-  // List backup code metadata (remaining count)
-  ListBackupCodes(request: Record<string, never>): Promise<authenticationservicev1_ListBackupCodesResponse>;
-  // Revoke a specific MFA device/credential
-  RevokeMFADevice(request: { credential_id: string }): Promise<wellKnownEmpty>;
-}
-
-export function createMFAServiceClient(
-  handler: RequestHandler
-): MFAService {
-  return {
-    StartMFAChallenge(request) {
-      const path = `admin/v1/mfa/challenge`;
-      const body = JSON.stringify(request);
+    ListModules(request) { // eslint-disable-line @typescript-eslint/no-unused-vars
+      const path = `admin/v1/registration/modules`; // eslint-disable-line quotes
+      const body = null;
+      const queryParams: string[] = [];
+      if (request.status) {
+        queryParams.push(`status=${encodeURIComponent(request.status.toString())}`)
+      }
+      if (request.health) {
+        queryParams.push(`health=${encodeURIComponent(request.health.toString())}`)
+      }
+      let uri = path;
+      if (queryParams.length > 0) {
+        uri += `?${queryParams.join("&")}`
+      }
       return handler({
-        path,
-        method: "POST",
-        body,
-        responseType: "json",
-      }) as Promise<{ operation_id: string; expires_at?: string; webauthn?: authenticationservicev1_WebAuthnResult }>;
-    },
-    VerifyMFAChallenge(request) {
-      const path = `admin/v1/mfa/verify`;
-      const body = JSON.stringify(request);
-      return handler({
-        path,
-        method: "POST",
-        body,
-        responseType: "json",
-      }) as Promise<authenticationservicev1_VerifyMFAChallengeResponse>;
-    },
-    GetMFAStatus(_request) {
-      const path = `admin/v1/me/mfa/status`;
-      return handler({
-        path,
+        path: uri,
         method: "GET",
-        body: null,
-        responseType: "json",
-      }) as Promise<authenticationservicev1_GetMFAStatusResponse>;
+        body,
+      }, {
+        service: "ModuleRegistrationService",
+        method: "ListModules",
+      }) as Promise<ListModulesResponse>;
     },
-    ListEnrolledMethods(_request) {
-      const path = `admin/v1/me/mfa/methods`;
+    GetModule(request) { // eslint-disable-line @typescript-eslint/no-unused-vars
+      if (!request.moduleId) {
+        throw new Error("missing required field request.module_id");
+      }
+      const path = `admin/v1/registration/modules/${request.moduleId}`; // eslint-disable-line quotes
+      const body = null;
+      const queryParams: string[] = [];
+      let uri = path;
+      if (queryParams.length > 0) {
+        uri += `?${queryParams.join("&")}`
+      }
       return handler({
-        path,
+        path: uri,
         method: "GET",
-        body: null,
-        responseType: "json",
-      }) as Promise<authenticationservicev1_ListEnrolledMethodsResponse>;
-    },
-    StartEnrollMethod(request) {
-      const path = `admin/v1/me/mfa/enroll`;
-      const body = JSON.stringify(request);
-      return handler({
-        path,
-        method: "POST",
         body,
-        responseType: "json",
-      }) as Promise<authenticationservicev1_StartEnrollMethodResponse>;
-    },
-    ConfirmEnrollMethod(request) {
-      const path = `admin/v1/me/mfa/enroll/confirm`;
-      const body = JSON.stringify(request);
-      return handler({
-        path,
-        method: "POST",
-        body,
-        responseType: "json",
-      }) as Promise<authenticationservicev1_ConfirmEnrollMethodResponse>;
-    },
-    DisableMFA(request) {
-      const path = `admin/v1/me/mfa/disable`;
-      const body = JSON.stringify(request);
-      return handler({
-        path,
-        method: "POST",
-        body,
-        responseType: "json",
-      }) as Promise<wellKnownEmpty>;
-    },
-    GenerateBackupCodes(request) {
-      const path = `admin/v1/me/mfa/backup-codes`;
-      const body = JSON.stringify(request);
-      return handler({
-        path,
-        method: "POST",
-        body,
-        responseType: "json",
-      }) as Promise<authenticationservicev1_GenerateBackupCodesResponse>;
-    },
-    ListBackupCodes(_request) {
-      const path = `admin/v1/me/mfa/backup-codes`;
-      return handler({
-        path,
-        method: "GET",
-        body: null,
-        responseType: "json",
-      }) as Promise<authenticationservicev1_ListBackupCodesResponse>;
-    },
-    RevokeMFADevice(request) {
-      const path = `admin/v1/me/mfa/devices/${request.credential_id}`;
-      return handler({
-        path,
-        method: "DELETE",
-        body: null,
-        responseType: "json",
-      }) as Promise<wellKnownEmpty>;
+      }, {
+        service: "ModuleRegistrationService",
+        method: "GetModule",
+      }) as Promise<Module>;
     },
   };
 }
