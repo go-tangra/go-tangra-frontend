@@ -26,12 +26,14 @@ const modules = ref<Module[]>([]);
 const formState = ref({
   description: '',
   selectedModuleIds: [] as string[],
+  includeSecrets: false,
 });
 
 function resetForm() {
   formState.value = {
     description: '',
     selectedModuleIds: [],
+    includeSecrets: false,
   };
 }
 
@@ -61,6 +63,7 @@ async function handleSubmit() {
     const resp = await fullStore.createFullBackup({
       targets,
       description: formState.value.description,
+      includeSecrets: formState.value.includeSecrets,
     });
     if (resp.backup.status === 'failed') {
       notification.warning({
@@ -133,6 +136,12 @@ const [Drawer, drawerApi] = useVbenDrawer({
             </Checkbox>
           </div>
         </CheckboxGroup>
+      </FormItem>
+
+      <FormItem name="includeSecrets">
+        <Checkbox v-model:checked="formState.includeSecrets">
+          {{ $t('backup.page.module.includeSecrets') }}
+        </Checkbox>
       </FormItem>
 
       <FormItem>

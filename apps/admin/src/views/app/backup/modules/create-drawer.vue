@@ -9,6 +9,7 @@ import {
   Input,
   Select,
   SelectOption,
+  Checkbox,
   Button,
   Space,
   notification,
@@ -26,12 +27,14 @@ const modules = ref<Module[]>([]);
 const formState = ref({
   module_id: '',
   description: '',
+  includeSecrets: false,
 });
 
 function resetForm() {
   formState.value = {
     module_id: '',
     description: '',
+    includeSecrets: false,
   };
 }
 
@@ -51,6 +54,7 @@ async function handleSubmit() {
         grpcEndpoint: selected.grpcEndpoint,
       },
       description: formState.value.description,
+      includeSecrets: formState.value.includeSecrets,
     });
     if (resp.backup.status === 'failed') {
       notification.warning({
@@ -120,6 +124,12 @@ const [Drawer, drawerApi] = useVbenDrawer({
           v-model:value="formState.description"
           :placeholder="$t('backup.page.module.descriptionPlaceholder')"
         />
+      </FormItem>
+
+      <FormItem name="includeSecrets">
+        <Checkbox v-model:checked="formState.includeSecrets">
+          {{ $t('backup.page.module.includeSecrets') }}
+        </Checkbox>
       </FormItem>
 
       <FormItem>

@@ -32,7 +32,8 @@
       "restoreMode": "Режим на възстановяване",
       "restoreModeSkip": "Пропусни съществуващи",
       "restoreModeOverwrite": "Презапиши съществуващи",
-      "filterByModule": "Филтър по модул"
+      "filterByModule": "Филтър по модул",
+      "includeSecrets": "Включи Vault пароли в копието"
     },
     "full": {
       "title": "Пълни резервни копия",

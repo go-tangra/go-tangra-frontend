@@ -65,6 +65,7 @@ export interface CreateModuleBackupRequest {
   target: ModuleTarget;
   tenantId?: number;
   description: string;
+  includeSecrets?: boolean;
 }
 
 export interface CreateModuleBackupResponse {
@@ -100,6 +101,7 @@ export interface CreateFullBackupRequest {
   targets: ModuleTarget[];
   tenantId?: number;
   description: string;
+  includeSecrets?: boolean;
 }
 
 export interface CreateFullBackupResponse {

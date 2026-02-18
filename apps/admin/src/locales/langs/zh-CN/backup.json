@@ -32,7 +32,8 @@
       "restoreMode": "恢复模式",
       "restoreModeSkip": "跳过已存在",
       "restoreModeOverwrite": "覆盖已存在",
-      "filterByModule": "按模块筛选"
+      "filterByModule": "按模块筛选",
+      "includeSecrets": "在备份中包含 Vault 密码"
     },
     "full": {
       "title": "完整备份",
