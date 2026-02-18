@@ -33,7 +33,13 @@
       "restoreModeSkip": "Skip existing",
       "restoreModeOverwrite": "Overwrite existing",
       "filterByModule": "Filter by Module",
-      "includeSecrets": "Include Vault passwords in backup"
+      "includeSecrets": "Include Vault passwords in backup",
+      "uploadRestore": "Upload & Restore",
+      "uploadRestoreTitle": "Upload & Restore Backup",
+      "dropBackupFile": "Drop backup JSON file here or click to upload",
+      "supportedFormat": "Supports .json backup files",
+      "selectModule": "Target Module",
+      "uploadRestoreSuccess": "Backup restored successfully"
     },
     "full": {
       "title": "Full Backups",

@@ -16,6 +16,7 @@ import type { BackupInfo } from '#/generated/api/modules/backup/services';
 import BackupDrawer from './backup-drawer.vue';
 import CreateDrawer from './create-drawer.vue';
 import RestoreDrawer from './restore-drawer.vue';
+import UploadRestoreDrawer from './upload-restore-drawer.vue';
 
 const backupStore = useBackupModuleStore();
 
@@ -175,6 +176,15 @@ const [RestoreDrawerComponent, restoreDrawerApi] = useVbenDrawer({
   },
 });
 
+const [UploadRestoreDrawerComponent, uploadRestoreDrawerApi] = useVbenDrawer({
+  connectedComponent: UploadRestoreDrawer,
+  onOpenChange(isOpen: boolean) {
+    if (!isOpen) {
+      gridApi.reload();
+    }
+  },
+});
+
 function handleView(row: BackupInfo) {
   backupDrawerApi.setData({ row });
   backupDrawerApi.open();
@@ -188,6 +198,11 @@ function handleCreate() {
 function handleRestore(row: BackupInfo) {
   restoreDrawerApi.setData({ row });
   restoreDrawerApi.open();
+}
+
+function handleUploadRestore() {
+  uploadRestoreDrawerApi.setData({});
+  uploadRestoreDrawerApi.open();
 }
 
 async function handleDelete(row: BackupInfo) {
@@ -208,6 +223,9 @@ async function handleDelete(row: BackupInfo) {
   <Page auto-content-height>
     <Grid :table-title="$t('backup.page.module.title')">
       <template #toolbar-tools>
+        <Button class="mr-2" @click="handleUploadRestore">
+          {{ $t('backup.page.module.uploadRestore') }}
+        </Button>
         <Button class="mr-2" type="primary" @click="handleCreate">
           {{ $t('backup.page.module.create') }}
         </Button>
@@ -259,5 +277,6 @@ async function handleDelete(row: BackupInfo) {
     <BackupDrawerComponent />
     <CreateDrawerComponent />
     <RestoreDrawerComponent />
+    <UploadRestoreDrawerComponent />
   </Page>
 </template>

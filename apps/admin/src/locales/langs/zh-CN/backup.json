@@ -33,7 +33,13 @@
       "restoreModeSkip": "跳过已存在",
       "restoreModeOverwrite": "覆盖已存在",
       "filterByModule": "按模块筛选",
-      "includeSecrets": "在备份中包含 Vault 密码"
+      "includeSecrets": "在备份中包含 Vault 密码",
+      "uploadRestore": "上传并恢复",
+      "uploadRestoreTitle": "上传并恢复备份",
+      "dropBackupFile": "拖拽备份 JSON 文件到此处或点击上传",
+      "supportedFormat": "支持 .json 备份文件",
+      "selectModule": "目标模块",
+      "uploadRestoreSuccess": "备份已成功恢复"
     },
     "full": {
       "title": "完整备份",

@@ -33,7 +33,13 @@
       "restoreModeSkip": "Пропусни съществуващи",
       "restoreModeOverwrite": "Презапиши съществуващи",
       "filterByModule": "Филтър по модул",
-      "includeSecrets": "Включи Vault пароли в копието"
+      "includeSecrets": "Включи Vault пароли в копието",
+      "uploadRestore": "Качи и възстанови",
+      "uploadRestoreTitle": "Качване и възстановяване на копие",
+      "dropBackupFile": "Плъзнете JSON файл тук или щракнете за качване",
+      "supportedFormat": "Поддържа .json файлове за копия",
+      "selectModule": "Целеви модул",
+      "uploadRestoreSuccess": "Копието е възстановено успешно"
     },
     "full": {
       "title": "Пълни резервни копия",
