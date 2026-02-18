@@ -7,6 +7,7 @@ import {
   Form,
   FormItem,
   Input,
+  InputPassword,
   Select,
   SelectOption,
   Checkbox,
@@ -28,6 +29,7 @@ const formState = ref({
   module_id: '',
   description: '',
   includeSecrets: false,
+  password: '',
 });
 
 function resetForm() {
@@ -35,6 +37,7 @@ function resetForm() {
     module_id: '',
     description: '',
     includeSecrets: false,
+    password: '',
   };
 }
 
@@ -55,6 +58,7 @@ async function handleSubmit() {
       },
       description: formState.value.description,
       includeSecrets: formState.value.includeSecrets,
+      password: formState.value.password || undefined,
     });
     if (resp.backup.status === 'failed') {
       notification.warning({
@@ -130,6 +134,20 @@ const [Drawer, drawerApi] = useVbenDrawer({
         <Checkbox v-model:checked="formState.includeSecrets">
           {{ $t('backup.page.module.includeSecrets') }}
         </Checkbox>
+      </FormItem>
+
+      <FormItem
+        :label="$t('backup.page.module.encryptionPassword')"
+        name="password"
+      >
+        <InputPassword
+          v-model:value="formState.password"
+          :placeholder="$t('backup.page.module.encryptionPasswordPlaceholder')"
+          autocomplete="new-password"
+        />
+        <div class="text-muted-foreground mt-1 text-xs">
+          {{ $t('backup.page.module.encryptionPasswordHint') }}
+        </div>
       </FormItem>
 
       <FormItem>

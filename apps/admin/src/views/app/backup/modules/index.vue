@@ -1,12 +1,12 @@
 <script lang="ts" setup>
 import type { VxeGridProps } from '#/adapter/vxe-table';
 
-import { h } from 'vue';
+import { h, ref } from 'vue';
 
 import { Page, useVbenDrawer, type VbenFormProps } from '@vben/common-ui';
-import { LucideEye, LucideTrash, LucideRotateCcw } from '@vben/icons';
+import { LucideDownload, LucideEye, LucideLock, LucideTrash, LucideRotateCcw } from '@vben/icons';
 
-import { notification, Space, Button, Tag } from 'ant-design-vue';
+import { Modal, InputPassword, notification, Space, Button, Tag } from 'ant-design-vue';
 
 import { useVbenVxeGrid } from '#/adapter/vxe-table';
 import { $t } from '#/locales';
@@ -143,11 +143,17 @@ const gridOptions: VxeGridProps<BackupInfo> = {
       sortable: true,
     },
     {
+      title: $t('backup.page.module.encrypted'),
+      field: 'encrypted',
+      width: 80,
+      slots: { default: 'encrypted' },
+    },
+    {
       title: $t('ui.table.action'),
       field: 'action',
       fixed: 'right',
       slots: { default: 'action' },
-      width: 150,
+      width: 190,
     },
   ],
 };
@@ -205,6 +211,48 @@ function handleUploadRestore() {
   uploadRestoreDrawerApi.open();
 }
 
+const downloadPassword = ref('');
+
+function handleDownload(row: BackupInfo) {
+  if (!row.id || row.status !== 'completed') return;
+
+  if (row.encrypted) {
+    downloadPassword.value = '';
+    Modal.confirm({
+      title: $t('backup.page.module.downloadPasswordTitle'),
+      content: () =>
+        h('div', [
+          h('p', { class: 'mb-2' }, $t('backup.page.module.downloadPasswordPrompt')),
+          h(InputPassword, {
+            value: downloadPassword.value,
+            'onUpdate:value': (val: string) => {
+              downloadPassword.value = val;
+            },
+            placeholder: $t('backup.page.module.enterPassword'),
+          }),
+        ]),
+      okText: $t('backup.page.module.download'),
+      async onOk() {
+        try {
+          await backupStore.downloadBackup(row.id, downloadPassword.value);
+          notification.success({ message: $t('backup.page.module.downloadSuccess') });
+        } catch {
+          notification.error({ message: $t('backup.page.module.downloadFailed') });
+        }
+      },
+    });
+  } else {
+    backupStore
+      .downloadBackup(row.id)
+      .then(() => {
+        notification.success({ message: $t('backup.page.module.downloadSuccess') });
+      })
+      .catch(() => {
+        notification.error({ message: $t('backup.page.module.downloadFailed') });
+      });
+  }
+}
+
 async function handleDelete(row: BackupInfo) {
   if (!row.id) return;
   try {
@@ -239,6 +287,12 @@ async function handleDelete(row: BackupInfo) {
       <template #sizeBytes="{ row }">
         {{ formatBytes(row.sizeBytes) }}
       </template>
+      <template #encrypted="{ row }">
+        <Tag v-if="row.encrypted" color="blue">
+          <component :is="LucideLock" class="inline-block h-3 w-3" />
+        </Tag>
+        <span v-else>-</span>
+      </template>
       <template #action="{ row }">
         <Space>
           <Button
@@ -247,6 +301,14 @@ async function handleDelete(row: BackupInfo) {
             :icon="h(LucideEye)"
             :title="$t('backup.page.module.view')"
             @click.stop="handleView(row)"
+          />
+          <Button
+            type="link"
+            size="small"
+            :icon="h(LucideDownload)"
+            :title="$t('backup.page.module.download')"
+            :disabled="row.status !== 'completed'"
+            @click.stop="handleDownload(row)"
           />
           <Button
             type="link"

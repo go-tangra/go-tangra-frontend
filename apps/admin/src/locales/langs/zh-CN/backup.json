@@ -39,7 +39,20 @@
       "dropBackupFile": "拖拽备份 JSON 文件到此处或点击上传",
       "supportedFormat": "支持 .json 备份文件",
       "selectModule": "目标模块",
-      "uploadRestoreSuccess": "备份已成功恢复"
+      "uploadRestoreSuccess": "备份已成功恢复",
+      "encrypted": "已加密",
+      "yes": "是",
+      "no": "否",
+      "encryptionPassword": "加密密码",
+      "encryptionPasswordPlaceholder": "留空则不加密备份",
+      "encryptionPasswordHint": "可选。设置后备份将使用 AES-256-GCM 加密。请记住此密码以便下载/恢复。",
+      "decryptionPassword": "解密密码",
+      "enterPassword": "输入密码",
+      "download": "下载",
+      "downloadSuccess": "备份下载成功",
+      "downloadFailed": "下载失败，请检查密码后重试。",
+      "downloadPasswordTitle": "加密备份",
+      "downloadPasswordPrompt": "此备份已加密。请输入密码以下载。"
     },
     "full": {
       "title": "完整备份",

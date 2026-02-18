@@ -6,6 +6,7 @@ import { useVbenDrawer } from '@vben/common-ui';
 import {
   Form,
   FormItem,
+  InputPassword,
   Select,
   SelectOption,
   Button,
@@ -28,6 +29,7 @@ const data = ref<{ row?: FullBackupInfo }>();
 
 const formState = ref({
   mode: 'RESTORE_MODE_SKIP' as 'RESTORE_MODE_OVERWRITE' | 'RESTORE_MODE_SKIP',
+  password: '',
 });
 
 const backup = computed(() => data.value?.row);
@@ -65,6 +67,7 @@ async function handleSubmit() {
     const resp = await fullStore.restoreFullBackup(backup.value.id, {
       targets,
       mode: formState.value.mode,
+      password: formState.value.password || undefined,
     });
     if (resp.success) {
       notification.success({
@@ -97,6 +100,7 @@ const [Drawer, drawerApi] = useVbenDrawer({
       data.value = drawerApi.getData() as { row?: FullBackupInfo };
       formState.value = {
         mode: 'RESTORE_MODE_SKIP',
+        password: '',
       };
       modules.value = await moduleRegStore.listModules();
     }
@@ -147,6 +151,18 @@ const [Drawer, drawerApi] = useVbenDrawer({
               {{ $t('backup.page.module.restoreModeOverwrite') }}
             </SelectOption>
           </Select>
+        </FormItem>
+
+        <FormItem
+          v-if="backup.encrypted"
+          :label="$t('backup.page.module.decryptionPassword')"
+          name="password"
+          :rules="[{ required: true, message: $t('ui.formRules.required') }]"
+        >
+          <InputPassword
+            v-model:value="formState.password"
+            :placeholder="$t('backup.page.module.enterPassword')"
+          />
         </FormItem>
 
         <FormItem>

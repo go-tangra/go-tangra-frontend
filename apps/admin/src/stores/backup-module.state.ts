@@ -5,6 +5,7 @@ import {
   type BackupInfo,
   type CreateModuleBackupRequest,
   type CreateModuleBackupResponse,
+  type DownloadBackupResponse,
   type GetBackupResponse,
   type ListBackupsResponse,
   type RestoreModuleBackupRequest,
@@ -45,6 +46,30 @@ export const useBackupModuleStore = defineStore('backup-module', () => {
     return await ModuleBackupService.delete(id);
   }
 
+  async function downloadBackup(id: string, password?: string): Promise<void> {
+    const resp: DownloadBackupResponse = await ModuleBackupService.download(
+      id,
+      password ? { password } : {},
+    );
+
+    // Decode base64 data and trigger browser download
+    const byteCharacters = atob(resp.data);
+    const byteNumbers = new Array(byteCharacters.length);
+    for (let i = 0; i < byteCharacters.length; i++) {
+      byteNumbers[i] = byteCharacters.charCodeAt(i);
+    }
+    const byteArray = new Uint8Array(byteNumbers);
+    const blob = new Blob([byteArray], { type: 'application/json' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = resp.filename || 'backup.json';
+    document.body.append(a);
+    a.click();
+    a.remove();
+    URL.revokeObjectURL(url);
+  }
+
   function $reset() {}
 
   return {
@@ -54,5 +79,6 @@ export const useBackupModuleStore = defineStore('backup-module', () => {
     createBackup,
     restoreBackup,
     deleteBackup,
+    downloadBackup,
   };
 });

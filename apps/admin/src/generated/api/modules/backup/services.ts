@@ -27,6 +27,7 @@ export interface BackupInfo {
   createdBy: string;
   version: string;
   warnings: string[];
+  encrypted: boolean;
 }
 
 export interface FullBackupInfo {
@@ -40,6 +41,7 @@ export interface FullBackupInfo {
   createdAt: string;
   createdBy: string;
   errors: string[];
+  encrypted: boolean;
 }
 
 export interface EntityImportResult {
@@ -66,6 +68,7 @@ export interface CreateModuleBackupRequest {
   tenantId?: number;
   description: string;
   includeSecrets?: boolean;
+  password?: string;
 }
 
 export interface CreateModuleBackupResponse {
@@ -75,6 +78,7 @@ export interface CreateModuleBackupResponse {
 export interface RestoreModuleBackupRequest {
   target: ModuleTarget;
   mode: 'RESTORE_MODE_OVERWRITE' | 'RESTORE_MODE_SKIP';
+  password?: string;
 }
 
 export interface RestoreModuleBackupResponse {
@@ -92,6 +96,10 @@ export interface GetBackupResponse {
   backup: BackupInfo;
 }
 
+export interface DownloadBackupRequest {
+  password?: string;
+}
+
 export interface DownloadBackupResponse {
   data: string;
   filename: string;
@@ -102,6 +110,7 @@ export interface CreateFullBackupRequest {
   tenantId?: number;
   description: string;
   includeSecrets?: boolean;
+  password?: string;
 }
 
 export interface CreateFullBackupResponse {
@@ -111,6 +120,7 @@ export interface CreateFullBackupResponse {
 export interface RestoreFullBackupRequest {
   targets: ModuleTarget[];
   mode: 'RESTORE_MODE_OVERWRITE' | 'RESTORE_MODE_SKIP';
+  password?: string;
 }
 
 export interface RestoreFullBackupResponse {
@@ -181,8 +191,8 @@ export const ModuleBackupService = {
   delete: (id: string, options?: RequestOptions) =>
     backupApi.delete<void>(`/backups/${id}`, options),
 
-  download: (id: string, options?: RequestOptions) =>
-    backupApi.get<DownloadBackupResponse>(`/backups/${id}/download`, options),
+  download: (id: string, data?: DownloadBackupRequest, options?: RequestOptions) =>
+    backupApi.post<DownloadBackupResponse>(`/backups/${id}/download`, data ?? {}, options),
 };
 
 // ==================== Full Backup Service ====================

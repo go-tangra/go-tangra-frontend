@@ -4,7 +4,7 @@ import type { VxeGridProps } from '#/adapter/vxe-table';
 import { h } from 'vue';
 
 import { Page, useVbenDrawer, type VbenFormProps } from '@vben/common-ui';
-import { LucideEye, LucideTrash, LucideRotateCcw } from '@vben/icons';
+import { LucideEye, LucideLock, LucideTrash, LucideRotateCcw } from '@vben/icons';
 
 import { notification, Space, Button, Tag } from 'ant-design-vue';
 
@@ -122,6 +122,12 @@ const gridOptions: VxeGridProps<FullBackupInfo> = {
       sortable: true,
     },
     {
+      title: $t('backup.page.module.encrypted'),
+      field: 'encrypted',
+      width: 80,
+      slots: { default: 'encrypted' },
+    },
+    {
       title: $t('ui.table.action'),
       field: 'action',
       fixed: 'right',
@@ -200,6 +206,12 @@ async function handleDelete(row: FullBackupInfo) {
       </template>
       <template #module_count="{ row }">
         {{ row.moduleBackups?.length ?? 0 }}
+      </template>
+      <template #encrypted="{ row }">
+        <Tag v-if="row.encrypted" color="blue">
+          <component :is="LucideLock" class="inline-block h-3 w-3" />
+        </Tag>
+        <span v-else>-</span>
       </template>
       <template #action="{ row }">
         <Space>

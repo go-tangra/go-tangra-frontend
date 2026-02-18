@@ -78,7 +78,12 @@ const entityCountEntries = computed(() => {
         </DescriptionsItem>
         <DescriptionsItem :label="$t('backup.page.module.fullBackup')">
           <Tag :color="backup.fullBackup ? 'green' : 'default'">
-            {{ backup.fullBackup ? 'Yes' : 'No' }}
+            {{ backup.fullBackup ? $t('backup.page.module.yes') : $t('backup.page.module.no') }}
+          </Tag>
+        </DescriptionsItem>
+        <DescriptionsItem :label="$t('backup.page.module.encrypted')">
+          <Tag :color="backup.encrypted ? 'blue' : 'default'">
+            {{ backup.encrypted ? $t('backup.page.module.yes') : $t('backup.page.module.no') }}
           </Tag>
         </DescriptionsItem>
         <DescriptionsItem :label="$t('backup.page.module.entityCounts')">

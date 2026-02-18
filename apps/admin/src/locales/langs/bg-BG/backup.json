@@ -39,7 +39,20 @@
       "dropBackupFile": "Плъзнете JSON файл тук или щракнете за качване",
       "supportedFormat": "Поддържа .json файлове за копия",
       "selectModule": "Целеви модул",
-      "uploadRestoreSuccess": "Копието е възстановено успешно"
+      "uploadRestoreSuccess": "Копието е възстановено успешно",
+      "encrypted": "Криптирано",
+      "yes": "Да",
+      "no": "Не",
+      "encryptionPassword": "Парола за криптиране",
+      "encryptionPasswordPlaceholder": "Оставете празно за некриптирано копие",
+      "encryptionPasswordHint": "По избор. Ако е зададена, копието се криптира с AES-256-GCM. Запомнете паролата за изтегляне/възстановяване.",
+      "decryptionPassword": "Парола за декриптиране",
+      "enterPassword": "Въведете парола",
+      "download": "Изтегли",
+      "downloadSuccess": "Копието е изтеглено успешно",
+      "downloadFailed": "Изтеглянето е неуспешно. Проверете паролата и опитайте отново.",
+      "downloadPasswordTitle": "Криптирано копие",
+      "downloadPasswordPrompt": "Това копие е криптирано. Въведете паролата за изтегляне."
     },
     "full": {
       "title": "Пълни резервни копия",

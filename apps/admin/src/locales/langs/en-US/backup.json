@@ -39,7 +39,20 @@
       "dropBackupFile": "Drop backup JSON file here or click to upload",
       "supportedFormat": "Supports .json backup files",
       "selectModule": "Target Module",
-      "uploadRestoreSuccess": "Backup restored successfully"
+      "uploadRestoreSuccess": "Backup restored successfully",
+      "encrypted": "Encrypted",
+      "yes": "Yes",
+      "no": "No",
+      "encryptionPassword": "Encryption Password",
+      "encryptionPasswordPlaceholder": "Leave empty for unencrypted backup",
+      "encryptionPasswordHint": "Optional. If set, backup is AES-256-GCM encrypted. Remember this password for download/restore.",
+      "decryptionPassword": "Decryption Password",
+      "enterPassword": "Enter password",
+      "download": "Download",
+      "downloadSuccess": "Backup downloaded successfully",
+      "downloadFailed": "Download failed. Check password and try again.",
+      "downloadPasswordTitle": "Encrypted Backup",
+      "downloadPasswordPrompt": "This backup is encrypted. Enter the password to download."
     },
     "full": {
       "title": "Full Backups",
