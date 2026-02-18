@@ -2,7 +2,7 @@
 import { ref, computed } from 'vue';
 
 import { useVbenDrawer } from '@vben/common-ui';
-import { LucideEye, LucideEyeOff, LucideCopy } from '@vben/icons';
+import { LucideEye, LucideEyeOff, LucideCopy, LucidePlus, LucideTrash } from '@vben/icons';
 
 import {
   Form,
@@ -17,17 +17,24 @@ import {
   Divider,
   Tag,
   Space,
+  Select,
 } from 'ant-design-vue';
 
 import {
   type Secret,
   type FolderTreeNode,
 } from '#/generated/api/modules/warden';
+import {
+  type userservicev1_User,
+  type userservicev1_Role,
+} from '#/generated/api/admin/service/v1';
 import { $t } from '#/locales';
-import { useWardenFolderStore, useWardenSecretStore } from '#/stores';
+import { useWardenFolderStore, useWardenSecretStore, useUserListStore, useRoleStore } from '#/stores';
 
 const folderStore = useWardenFolderStore();
 const secretStore = useWardenSecretStore();
+const userListStore = useUserListStore();
+const roleStore = useRoleStore();
 
 const data = ref<{
   mode: 'create' | 'edit' | 'view';
@@ -67,6 +74,72 @@ const passwordForm = ref<{
   comment: '',
 });
 const updatingPassword = ref(false);
+
+// Initial permissions for create mode
+const initialPermissions = ref<Array<{
+  subjectType: 'SUBJECT_TYPE_USER' | 'SUBJECT_TYPE_ROLE';
+  subjectId: string;
+  relation: 'RELATION_OWNER' | 'RELATION_EDITOR' | 'RELATION_VIEWER' | 'RELATION_SHARER';
+}>>([]);
+const users = ref<userservicev1_User[]>([]);
+const roles = ref<userservicev1_Role[]>([]);
+const loadingSubjects = ref(false);
+
+const subjectTypeOptions = computed(() => [
+  { value: 'SUBJECT_TYPE_USER', label: $t('warden.page.permission.user') },
+  { value: 'SUBJECT_TYPE_ROLE', label: $t('warden.page.permission.role') },
+]);
+
+const relationOptions = computed(() => [
+  { value: 'RELATION_OWNER', label: $t('warden.page.permission.owner') },
+  { value: 'RELATION_EDITOR', label: $t('warden.page.permission.editor') },
+  { value: 'RELATION_VIEWER', label: $t('warden.page.permission.viewer') },
+  { value: 'RELATION_SHARER', label: $t('warden.page.permission.sharer') },
+]);
+
+function getSubjectOptions(subjectType: string) {
+  if (subjectType === 'SUBJECT_TYPE_USER') {
+    return users.value.map((user) => ({
+      value: String(user.id),
+      label: `${user.realname || user.username} (${user.username})`,
+    }));
+  }
+  return roles.value.map((role) => ({
+    value: role.code ?? '',
+    label: role.name ?? '',
+  }));
+}
+
+function addPermissionRow() {
+  initialPermissions.value.push({
+    subjectType: 'SUBJECT_TYPE_USER',
+    subjectId: '',
+    relation: 'RELATION_VIEWER',
+  });
+}
+
+function removePermissionRow(index: number) {
+  initialPermissions.value.splice(index, 1);
+}
+
+async function loadSubjects() {
+  loadingSubjects.value = true;
+  try {
+    const usersResp = await userListStore.listUser(undefined, { status: 'NORMAL' });
+    users.value = usersResp.items ?? [];
+  } catch (e) {
+    console.error('Failed to load users:', e);
+    users.value = [];
+  }
+  try {
+    const rolesResp = await roleStore.listRole(undefined, {});
+    roles.value = rolesResp.items ?? [];
+  } catch (e) {
+    console.error('Failed to load roles:', e);
+    roles.value = [];
+  }
+  loadingSubjects.value = false;
+}
 
 const title = computed(() => {
   switch (data.value?.mode) {
@@ -185,6 +258,10 @@ async function handleSubmit() {
   loading.value = true;
   try {
     if (isCreateMode.value) {
+      // Filter out incomplete permission rows
+      const validPermissions = initialPermissions.value.filter(
+        (p) => p.subjectId && p.subjectType && p.relation,
+      );
       await secretStore.createSecret({
         name: formState.value.name,
         username: formState.value.username,
@@ -194,6 +271,7 @@ async function handleSubmit() {
         folderId: formState.value.folderId,
         versionComment: formState.value.versionComment,
         metadata: {},
+        ...(validPermissions.length > 0 ? { initialPermissions: validPermissions } : {}),
       });
       notification.success({
         message: $t('warden.page.secret.createSuccess'),
@@ -265,6 +343,7 @@ function resetForm() {
   passwordForm.value = { newPassword: '', comment: '' };
   currentPassword.value = '';
   showPassword.value = false;
+  initialPermissions.value = [];
 }
 
 const [Drawer, drawerApi] = useVbenDrawer({
@@ -285,6 +364,7 @@ const [Drawer, drawerApi] = useVbenDrawer({
       if (data.value?.mode === 'create') {
         resetForm();
         formState.value.folderId = data.value.folderId;
+        loadSubjects();
       } else if (data.value?.row) {
         formState.value = {
           name: data.value.row.name ?? '',
@@ -443,6 +523,51 @@ const secret = computed(() => data.value?.row);
             :maxlength="1024"
           />
         </FormItem>
+
+        <Divider>{{ $t('warden.page.permission.title') }}</Divider>
+
+        <div
+          v-for="(perm, idx) in initialPermissions"
+          :key="idx"
+          class="mb-3 flex items-center gap-2"
+        >
+          <Select
+            v-model:value="perm.subjectType"
+            :options="subjectTypeOptions"
+            style="width: 110px"
+            @change="perm.subjectId = ''"
+          />
+          <Select
+            v-model:value="perm.subjectId"
+            :options="getSubjectOptions(perm.subjectType)"
+            :loading="loadingSubjects"
+            :placeholder="$t('ui.placeholder.select')"
+            show-search
+            :filter-option="(input: string, option: any) =>
+              option.label.toLowerCase().includes(input.toLowerCase())"
+            style="flex: 1"
+          />
+          <Select
+            v-model:value="perm.relation"
+            :options="relationOptions"
+            style="width: 110px"
+          />
+          <Button
+            danger
+            type="text"
+            size="small"
+            @click="removePermissionRow(idx)"
+          >
+            <LucideTrash class="size-4" />
+          </Button>
+        </div>
+
+        <div class="mb-4">
+          <Button size="small" type="dashed" block @click="addPermissionRow">
+            <LucidePlus class="mr-1 size-4" />
+            {{ $t('warden.page.permission.grantAccess') }}
+          </Button>
+        </div>
 
         <FormItem>
           <Button type="primary" html-type="submit" :loading="loading" block>

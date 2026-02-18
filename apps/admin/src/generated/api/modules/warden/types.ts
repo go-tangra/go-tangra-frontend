@@ -440,6 +440,20 @@ export interface components {
         CreateFolderResponse: {
             folder?: components["schemas"]["Folder"];
         };
+        /** @description Permission grant to apply during secret creation */
+        InitialPermissionGrant: {
+            /**
+             * Format: enum
+             * @enum {string}
+             */
+            subjectType?: "SUBJECT_TYPE_UNSPECIFIED" | "SUBJECT_TYPE_USER" | "SUBJECT_TYPE_ROLE" | "SUBJECT_TYPE_TENANT";
+            subjectId?: string;
+            /**
+             * Format: enum
+             * @enum {string}
+             */
+            relation?: "RELATION_UNSPECIFIED" | "RELATION_OWNER" | "RELATION_EDITOR" | "RELATION_VIEWER" | "RELATION_SHARER";
+        };
         /** @description Request to create a secret */
         CreateSecretRequest: {
             /** @description Folder ID (null for root-level) */
@@ -458,6 +472,8 @@ export interface components {
             metadata?: Record<string, never>;
             /** @description Initial version comment */
             versionComment?: string;
+            /** @description Permissions to grant on the newly created secret */
+            initialPermissions?: components["schemas"]["InitialPermissionGrant"][];
         };
         CreateSecretResponse: {
             secret?: components["schemas"]["Secret"];

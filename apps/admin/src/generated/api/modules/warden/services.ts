@@ -20,6 +20,7 @@ export type ImportError = components['schemas']['ImportError'];
 
 // ==================== Enum Types (derived from entity fields) ====================
 
+export type InitialPermissionGrant = components['schemas']['InitialPermissionGrant'];
 export type SecretStatus = NonNullable<Secret['status']>;
 export type ResourceType = NonNullable<PermissionTuple['resourceType']>;
 export type RelationType = NonNullable<PermissionTuple['relation']>;
