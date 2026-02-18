@@ -10,11 +10,12 @@ import type { BackupInfo } from '#/generated/api/modules/backup/services';
 
 const data = ref<{ row?: BackupInfo }>();
 
-function formatBytes(bytes: number): string {
-  if (!bytes || bytes === 0) return '0 B';
+function formatBytes(bytes: number | string): string {
+  const n = Number(bytes);
+  if (!n || n === 0) return '0 B';
   const sizes = ['B', 'KB', 'MB', 'GB'];
-  const i = Math.floor(Math.log(bytes) / Math.log(1024));
-  return `${(bytes / 1024 ** i).toFixed(1)} ${sizes[i]}`;
+  const i = Math.floor(Math.log(n) / Math.log(1024));
+  return `${(n / 1024 ** i).toFixed(1)} ${sizes[i]}`;
 }
 
 function statusColor(status: string) {
@@ -45,8 +46,8 @@ const [Drawer, drawerApi] = useVbenDrawer({
 const backup = computed(() => data.value?.row);
 
 const entityCountEntries = computed(() => {
-  if (!backup.value?.entity_counts) return [];
-  return Object.entries(backup.value.entity_counts);
+  if (!backup.value?.entityCounts) return [];
+  return Object.entries(backup.value.entityCounts);
 });
 </script>
 
@@ -58,7 +59,7 @@ const entityCountEntries = computed(() => {
           {{ backup.id }}
         </DescriptionsItem>
         <DescriptionsItem :label="$t('backup.page.module.moduleId')">
-          <Tag color="blue">{{ backup.module_id }}</Tag>
+          <Tag color="blue">{{ backup.moduleId }}</Tag>
         </DescriptionsItem>
         <DescriptionsItem :label="$t('backup.page.module.description')">
           {{ backup.description || '-' }}
@@ -67,17 +68,17 @@ const entityCountEntries = computed(() => {
           <Tag :color="statusColor(backup.status)">{{ backup.status }}</Tag>
         </DescriptionsItem>
         <DescriptionsItem :label="$t('backup.page.module.sizeBytes')">
-          {{ formatBytes(backup.size_bytes) }}
+          {{ formatBytes(backup.sizeBytes) }}
         </DescriptionsItem>
         <DescriptionsItem :label="$t('backup.page.module.version')">
           {{ backup.version || '-' }}
         </DescriptionsItem>
         <DescriptionsItem :label="$t('backup.page.module.tenantId')">
-          {{ backup.tenant_id }}
+          {{ backup.tenantId }}
         </DescriptionsItem>
         <DescriptionsItem :label="$t('backup.page.module.fullBackup')">
-          <Tag :color="backup.full_backup ? 'green' : 'default'">
-            {{ backup.full_backup ? 'Yes' : 'No' }}
+          <Tag :color="backup.fullBackup ? 'green' : 'default'">
+            {{ backup.fullBackup ? 'Yes' : 'No' }}
           </Tag>
         </DescriptionsItem>
         <DescriptionsItem :label="$t('backup.page.module.entityCounts')">
@@ -89,10 +90,10 @@ const entityCountEntries = computed(() => {
           <span v-else>-</span>
         </DescriptionsItem>
         <DescriptionsItem :label="$t('backup.page.module.createdBy')">
-          {{ backup.created_by || '-' }}
+          {{ backup.createdBy || '-' }}
         </DescriptionsItem>
         <DescriptionsItem :label="$t('backup.page.module.createdAt')">
-          {{ backup.created_at || '-' }}
+          {{ backup.createdAt || '-' }}
         </DescriptionsItem>
         <DescriptionsItem
           v-if="backup.warnings && backup.warnings.length"

@@ -10,21 +10,21 @@ import { backupApi, type RequestOptions } from './client';
 // ==================== Entity Types ====================
 
 export interface ModuleTarget {
-  module_id: string;
-  grpc_endpoint: string;
+  moduleId: string;
+  grpcEndpoint: string;
 }
 
 export interface BackupInfo {
   id: string;
-  module_id: string;
+  moduleId: string;
   description: string;
-  tenant_id: number;
-  full_backup: boolean;
+  tenantId: number;
+  fullBackup: boolean;
   status: string;
-  size_bytes: number;
-  entity_counts: Record<string, number>;
-  created_at: string;
-  created_by: string;
+  sizeBytes: string | number;
+  entityCounts: Record<string, string | number>;
+  createdAt: string;
+  createdBy: string;
   version: string;
   warnings: string[];
 }
@@ -32,18 +32,18 @@ export interface BackupInfo {
 export interface FullBackupInfo {
   id: string;
   description: string;
-  tenant_id: number;
-  full_backup: boolean;
+  tenantId: number;
+  fullBackup: boolean;
   status: string;
-  total_size_bytes: number;
-  module_backups: BackupInfo[];
-  created_at: string;
-  created_by: string;
+  totalSizeBytes: string | number;
+  moduleBackups: BackupInfo[];
+  createdAt: string;
+  createdBy: string;
   errors: string[];
 }
 
 export interface EntityImportResult {
-  entity_type: string;
+  entityType: string;
   total: number;
   created: number;
   updated: number;
@@ -52,7 +52,7 @@ export interface EntityImportResult {
 }
 
 export interface ModuleRestoreResult {
-  module_id: string;
+  moduleId: string;
   success: boolean;
   results: EntityImportResult[];
   warnings: string[];
@@ -63,7 +63,7 @@ export interface ModuleRestoreResult {
 
 export interface CreateModuleBackupRequest {
   target: ModuleTarget;
-  tenant_id?: number;
+  tenantId?: number;
   description: string;
 }
 
@@ -98,7 +98,7 @@ export interface DownloadBackupResponse {
 
 export interface CreateFullBackupRequest {
   targets: ModuleTarget[];
-  tenant_id?: number;
+  tenantId?: number;
   description: string;
 }
 
@@ -113,7 +113,7 @@ export interface RestoreFullBackupRequest {
 
 export interface RestoreFullBackupResponse {
   success: boolean;
-  module_results: ModuleRestoreResult[];
+  moduleResults: ModuleRestoreResult[];
 }
 
 export interface ListFullBackupsResponse {

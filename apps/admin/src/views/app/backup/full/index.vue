@@ -43,11 +43,12 @@ function statusColor(status: string) {
   }
 }
 
-function formatBytes(bytes: number): string {
-  if (!bytes || bytes === 0) return '0 B';
+function formatBytes(bytes: number | string): string {
+  const n = Number(bytes);
+  if (!n || n === 0) return '0 B';
   const sizes = ['B', 'KB', 'MB', 'GB'];
-  const i = Math.floor(Math.log(bytes) / Math.log(1024));
-  return `${(bytes / 1024 ** i).toFixed(1)} ${sizes[i]}`;
+  const i = Math.floor(Math.log(n) / Math.log(1024));
+  return `${(n / 1024 ** i).toFixed(1)} ${sizes[i]}`;
 }
 
 const gridOptions: VxeGridProps<FullBackupInfo> = {
@@ -99,24 +100,24 @@ const gridOptions: VxeGridProps<FullBackupInfo> = {
     },
     {
       title: $t('backup.page.full.totalSize'),
-      field: 'total_size_bytes',
+      field: 'totalSizeBytes',
       width: 110,
-      slots: { default: 'total_size_bytes' },
+      slots: { default: 'totalSizeBytes' },
     },
     {
       title: $t('backup.page.full.moduleCount'),
-      field: 'module_backups',
+      field: 'moduleBackups',
       width: 100,
       slots: { default: 'module_count' },
     },
     {
       title: $t('backup.page.full.createdBy'),
-      field: 'created_by',
+      field: 'createdBy',
       width: 120,
     },
     {
       title: $t('backup.page.full.createdAt'),
-      field: 'created_at',
+      field: 'createdAt',
       width: 160,
       sortable: true,
     },
@@ -194,11 +195,11 @@ async function handleDelete(row: FullBackupInfo) {
       <template #status="{ row }">
         <Tag :color="statusColor(row.status)">{{ row.status }}</Tag>
       </template>
-      <template #total_size_bytes="{ row }">
-        {{ formatBytes(row.total_size_bytes) }}
+      <template #totalSizeBytes="{ row }">
+        {{ formatBytes(row.totalSizeBytes) }}
       </template>
       <template #module_count="{ row }">
-        {{ row.module_backups?.length ?? 0 }}
+        {{ row.moduleBackups?.length ?? 0 }}
       </template>
       <template #action="{ row }">
         <Space>

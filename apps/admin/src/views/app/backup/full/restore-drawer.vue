@@ -33,29 +33,29 @@ const formState = ref({
 const backup = computed(() => data.value?.row);
 
 const moduleTargets = computed(() => {
-  if (!backup.value?.module_backups) return [];
-  return backup.value.module_backups.map((mb) => {
-    const registered = modules.value.find((m) => m.moduleId === mb.module_id);
+  if (!backup.value?.moduleBackups) return [];
+  return backup.value.moduleBackups.map((mb) => {
+    const registered = modules.value.find((m) => m.moduleId === mb.moduleId);
     return {
-      module_id: mb.module_id,
-      grpc_endpoint: registered?.grpcEndpoint ?? '',
+      moduleId: mb.moduleId,
+      grpcEndpoint: registered?.grpcEndpoint ?? '',
       found: !!registered,
     };
   });
 });
 
 const allModulesResolved = computed(() =>
-  moduleTargets.value.every((t) => t.found && t.grpc_endpoint),
+  moduleTargets.value.every((t) => t.found && t.grpcEndpoint),
 );
 
 async function handleSubmit() {
   if (!backup.value?.id || !allModulesResolved.value) return;
 
   const targets = moduleTargets.value
-    .filter((t) => t.grpc_endpoint)
+    .filter((t) => t.grpcEndpoint)
     .map((t) => ({
-      module_id: t.module_id,
-      grpc_endpoint: t.grpc_endpoint,
+      moduleId: t.moduleId,
+      grpcEndpoint: t.grpcEndpoint,
     }));
 
   if (targets.length === 0) return;
@@ -73,9 +73,9 @@ async function handleSubmit() {
     } else {
       notification.warning({
         message: 'Restore completed with issues',
-        description: resp.module_results
+        description: resp.moduleResults
           ?.filter((r) => !r.success)
-          .map((r) => `${r.module_id}: ${r.error}`)
+          .map((r) => `${r.moduleId}: ${r.error}`)
           .join(', '),
       });
     }
@@ -118,14 +118,14 @@ const [Drawer, drawerApi] = useVbenDrawer({
         <div class="flex flex-col gap-1">
           <div
             v-for="target in moduleTargets"
-            :key="target.module_id"
+            :key="target.moduleId"
             class="flex items-center gap-2"
           >
             <Tag :color="target.found ? 'blue' : 'red'">
-              {{ target.module_id }}
+              {{ target.moduleId }}
             </Tag>
             <span v-if="target.found" class="text-muted-foreground text-xs">
-              {{ target.grpc_endpoint }}
+              {{ target.grpcEndpoint }}
             </span>
             <span v-else class="text-xs text-red-500">
               Module not registered

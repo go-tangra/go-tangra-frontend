@@ -47,8 +47,8 @@ async function handleSubmit() {
   try {
     const resp = await backupStore.createBackup({
       target: {
-        module_id: selected.moduleId,
-        grpc_endpoint: selected.grpcEndpoint,
+        moduleId: selected.moduleId,
+        grpcEndpoint: selected.grpcEndpoint,
       },
       description: formState.value.description,
     });

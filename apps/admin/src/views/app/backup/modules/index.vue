@@ -53,11 +53,12 @@ function statusColor(status: string) {
   }
 }
 
-function formatBytes(bytes: number): string {
-  if (!bytes || bytes === 0) return '0 B';
+function formatBytes(bytes: number | string): string {
+  const n = Number(bytes);
+  if (!n || n === 0) return '0 B';
   const sizes = ['B', 'KB', 'MB', 'GB'];
-  const i = Math.floor(Math.log(bytes) / Math.log(1024));
-  return `${(bytes / 1024 ** i).toFixed(1)} ${sizes[i]}`;
+  const i = Math.floor(Math.log(n) / Math.log(1024));
+  return `${(n / 1024 ** i).toFixed(1)} ${sizes[i]}`;
 }
 
 const gridOptions: VxeGridProps<BackupInfo> = {
@@ -103,9 +104,9 @@ const gridOptions: VxeGridProps<BackupInfo> = {
     { title: $t('ui.table.seq'), type: 'seq', width: 50 },
     {
       title: $t('backup.page.module.moduleId'),
-      field: 'module_id',
+      field: 'moduleId',
       width: 120,
-      slots: { default: 'module_id' },
+      slots: { default: 'moduleId' },
     },
     {
       title: $t('backup.page.module.description'),
@@ -120,9 +121,9 @@ const gridOptions: VxeGridProps<BackupInfo> = {
     },
     {
       title: $t('backup.page.module.sizeBytes'),
-      field: 'size_bytes',
+      field: 'sizeBytes',
       width: 100,
-      slots: { default: 'size_bytes' },
+      slots: { default: 'sizeBytes' },
     },
     {
       title: $t('backup.page.module.version'),
@@ -131,12 +132,12 @@ const gridOptions: VxeGridProps<BackupInfo> = {
     },
     {
       title: $t('backup.page.module.createdBy'),
-      field: 'created_by',
+      field: 'createdBy',
       width: 120,
     },
     {
       title: $t('backup.page.module.createdAt'),
-      field: 'created_at',
+      field: 'createdAt',
       width: 160,
       sortable: true,
     },
@@ -211,14 +212,14 @@ async function handleDelete(row: BackupInfo) {
           {{ $t('backup.page.module.create') }}
         </Button>
       </template>
-      <template #module_id="{ row }">
-        <Tag color="blue">{{ row.module_id }}</Tag>
+      <template #moduleId="{ row }">
+        <Tag color="blue">{{ row.moduleId }}</Tag>
       </template>
       <template #status="{ row }">
         <Tag :color="statusColor(row.status)">{{ row.status }}</Tag>
       </template>
-      <template #size_bytes="{ row }">
-        {{ formatBytes(row.size_bytes) }}
+      <template #sizeBytes="{ row }">
+        {{ formatBytes(row.sizeBytes) }}
       </template>
       <template #action="{ row }">
         <Space>

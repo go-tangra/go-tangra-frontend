@@ -50,8 +50,8 @@ async function handleSubmit() {
         formState.value.selectedModuleIds.includes(m.moduleId),
     )
     .map((m) => ({
-      module_id: m.moduleId!,
-      grpc_endpoint: m.grpcEndpoint!,
+      moduleId: m.moduleId!,
+      grpcEndpoint: m.grpcEndpoint!,
     }));
 
   if (targets.length === 0) return;

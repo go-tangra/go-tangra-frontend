@@ -33,17 +33,17 @@ const formState = ref({
 const backup = computed(() => data.value?.row);
 
 const targetModule = computed(() =>
-  modules.value.find((m) => m.moduleId === backup.value?.module_id),
+  modules.value.find((m) => m.moduleId === backup.value?.moduleId),
 );
 
 async function handleSubmit() {
-  if (!backup.value?.id || !backup.value?.module_id || !targetModule.value?.grpcEndpoint) return;
+  if (!backup.value?.id || !backup.value?.moduleId || !targetModule.value?.grpcEndpoint) return;
   loading.value = true;
   try {
     const resp = await backupStore.restoreBackup(backup.value.id, {
       target: {
-        module_id: backup.value.module_id,
-        grpc_endpoint: targetModule.value.grpcEndpoint,
+        moduleId: backup.value.moduleId,
+        grpcEndpoint: targetModule.value.grpcEndpoint,
       },
       mode: formState.value.mode,
     });
@@ -86,7 +86,7 @@ const [Drawer, drawerApi] = useVbenDrawer({
   <Drawer :title="$t('backup.page.module.restore')" :footer="false">
     <template v-if="backup">
       <div class="mb-4">
-        <Tag color="blue">{{ backup.module_id }}</Tag>
+        <Tag color="blue">{{ backup.moduleId }}</Tag>
         <span class="ml-2 text-muted-foreground">{{ backup.id }}</span>
         <div v-if="targetModule" class="text-muted-foreground mt-1 text-xs">
           {{ $t('backup.page.module.grpcEndpoint') }}: {{ targetModule.grpcEndpoint }}
