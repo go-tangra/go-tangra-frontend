@@ -72,7 +72,8 @@
     "login": "登录",
     "logout": "退出",
     "register": "注册",
-    "view": "查看"
+    "view": "查看",
+    "select_all": "全选"
   },
   "modal": {
     "create": "创建{moduleName}",

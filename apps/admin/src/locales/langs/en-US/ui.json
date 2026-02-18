@@ -72,7 +72,8 @@
     "login": "Login",
     "logout": "Logout",
     "register": "Register",
-    "view": "View"
+    "view": "View",
+    "select_all": "Select All"
   },
   "modal": {
     "create": "Create {moduleName}",

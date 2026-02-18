@@ -78,7 +78,9 @@ const [Drawer, drawerApi] = useVbenDrawer({
   async onOpenChange(isOpen) {
     if (isOpen) {
       resetForm();
-      modules.value = await moduleRegStore.listModules();
+      modules.value = (await moduleRegStore.listModules()).filter(
+        (m) => m.moduleId !== 'backup',
+      );
     }
   },
 });
