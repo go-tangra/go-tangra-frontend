@@ -370,9 +370,9 @@ const [Drawer, drawerApi] = useVbenDrawer({
           name: data.value.row.name ?? '',
           username: data.value.row.username ?? '',
           password: '',
-          hostUrl: data.value.row.host_url ?? '',
+          hostUrl: data.value.row.hostUrl ?? '',
           description: data.value.row.description ?? '',
-          folderId: data.value.row.folder_id,
+          folderId: data.value.row.folderId,
           versionComment: '',
         };
         currentPassword.value = '';

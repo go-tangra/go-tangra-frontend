@@ -88,15 +88,15 @@ const gridOptions: VxeGridProps<wardenservicev1_Secret> = {
       slots: { default: 'name' },
     },
     { title: $t('warden.page.secret.username'), field: 'username', width: 150 },
-    { title: $t('warden.page.secret.hostUrl'), field: 'host_url', minWidth: 200 },
+    { title: $t('warden.page.secret.hostUrl'), field: 'hostUrl', minWidth: 200 },
     {
       title: $t('warden.page.secret.currentVersion'),
-      field: 'current_version',
+      field: 'currentVersion',
       width: 100,
     },
     {
       title: $t('ui.table.createdAt'),
-      field: 'create_time',
+      field: 'createTime',
       formatter: 'formatDateTime',
       width: 160,
     },
