@@ -205,7 +205,7 @@ const gridOptions: VxeGridProps<ipamservicev1_Device> = {
     { title: $t('ipam.page.device.primaryIp'), field: 'primaryIp', width: 140, sortable: true },
     { title: $t('ipam.page.device.managementIp'), field: 'managementIp', width: 140, sortable: true },
     { title: $t('ipam.page.device.osVersion'), field: 'osVersion', width: 150, sortable: true },
-    { title: $t('ipam.page.device.notes'), field: 'notes', minWidth: 150, sortable: true },
+    { title: $t('ipam.page.device.description'), field: 'description', minWidth: 150, sortable: true },
     {
       title: $t('ui.table.action'),
       field: 'action',
@@ -222,7 +222,7 @@ const [DeviceDrawerComponent, deviceDrawerApi] = useVbenDrawer({
   connectedComponent: DeviceDrawer,
   onOpenChange(isOpen: boolean) {
     if (!isOpen) {
-      gridApi.reload();
+      gridApi.query();
     }
   },
 });
@@ -249,7 +249,7 @@ async function handleDelete(row: ipamservicev1_Device) {
   try {
     await deviceStore.deleteDevice(row.id);
     notification.success({ message: $t('ipam.page.device.deleteSuccess') });
-    await gridApi.reload();
+    await gridApi.query();
   } catch {
     notification.error({ message: $t('ui.notification.delete_failed') });
   }

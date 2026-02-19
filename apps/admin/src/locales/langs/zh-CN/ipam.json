@@ -86,7 +86,22 @@
       "lastHost": "末个主机",
       "subnetMask": "子网掩码",
       "wildcardMask": "通配符掩码",
-      "usableHosts": "可用主机数"
+      "usableHosts": "可用主机数",
+      "snmpConfig": "SNMP 配置",
+      "snmpVersion": "SNMP 版本",
+      "snmpNone": "无",
+      "snmpV2c": "v2c (社区字符串)",
+      "snmpV3": "v3 (USM)",
+      "snmpCommunity": "社区字符串",
+      "snmpCommunityPlaceholder": "例如 public",
+      "snmpUser": "SNMP 用户",
+      "snmpAuthPassword": "认证密码",
+      "snmpPrivPassword": "隐私密码",
+      "snmpAuthProtocol": "认证协议",
+      "snmpPrivProtocol": "隐私协议",
+      "enableSnmp": "启用 SNMP 发现",
+      "enableSnmpHint": "查询支持 SNMP 的设备以自动发现设备信息和接口",
+      "snmpDiscoveredCount": "SNMP 设备"
     },
     "ipAddress": {
       "title": "IP地址",

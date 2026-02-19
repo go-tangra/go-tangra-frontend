@@ -62,6 +62,13 @@ export const useIpamSubnetStore = defineStore('ipam-subnet', () => {
       vlanId: data.vlanId,
       parentId: data.parentId,
       locationId: data.locationId,
+      snmpVersion: data.snmpVersion,
+      snmpCommunity: data.snmpCommunity,
+      snmpUser: data.snmpUser,
+      snmpAuthPassword: data.snmpAuthPassword,
+      snmpPrivPassword: data.snmpPrivPassword,
+      snmpAuthProtocol: data.snmpAuthProtocol,
+      snmpPrivProtocol: data.snmpPrivProtocol,
       autoScan,
     });
   }

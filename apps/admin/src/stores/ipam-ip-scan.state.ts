@@ -18,11 +18,13 @@ export const useIpamIpScanStore = defineStore('ipam-ip-scan', () => {
     tenantId: number,
     subnetId: string,
     scanConfig?: ScanConfig,
+    enableSnmp?: boolean,
   ): Promise<GetScanJobResponse> {
     return await IpScanService.start({
       tenantId,
       subnetId,
       scanConfig,
+      enableSnmp,
     });
   }
 

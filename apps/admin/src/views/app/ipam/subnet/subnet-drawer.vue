@@ -9,11 +9,13 @@ import {
   Form,
   FormItem,
   Input,
+  InputPassword,
   Button,
   notification,
   Textarea,
   TreeSelect,
   Select,
+  SelectOption,
   Descriptions,
   DescriptionsItem,
   Divider,
@@ -94,6 +96,13 @@ const formState = ref<{
   vlanId?: string;
   locationId?: string;
   autoScan: boolean;
+  snmpVersion: number;
+  snmpCommunity: string;
+  snmpUser: string;
+  snmpAuthPassword: string;
+  snmpPrivPassword: string;
+  snmpAuthProtocol: string;
+  snmpPrivProtocol: string;
 }>({
   name: '',
   cidr: '',
@@ -104,6 +113,13 @@ const formState = ref<{
   vlanId: undefined,
   locationId: undefined,
   autoScan: false,
+  snmpVersion: 0,
+  snmpCommunity: '',
+  snmpUser: '',
+  snmpAuthPassword: '',
+  snmpPrivPassword: '',
+  snmpAuthProtocol: 'SHA',
+  snmpPrivProtocol: 'AES',
 });
 
 const title = computed(() => {
@@ -479,6 +495,13 @@ async function handleSubmit() {
           parentId: formState.value.parentId,
           vlanId: formState.value.vlanId,
           locationId: formState.value.locationId,
+          snmpVersion: formState.value.snmpVersion || undefined,
+          snmpCommunity: formState.value.snmpCommunity || undefined,
+          snmpUser: formState.value.snmpUser || undefined,
+          snmpAuthPassword: formState.value.snmpAuthPassword || undefined,
+          snmpPrivPassword: formState.value.snmpPrivPassword || undefined,
+          snmpAuthProtocol: formState.value.snmpVersion === 3 ? formState.value.snmpAuthProtocol : undefined,
+          snmpPrivProtocol: formState.value.snmpVersion === 3 ? formState.value.snmpPrivProtocol : undefined,
         },
         formState.value.autoScan,
       );
@@ -495,8 +518,15 @@ async function handleSubmit() {
           description: formState.value.description || undefined,
           vlanId: formState.value.vlanId,
           locationId: formState.value.locationId,
+          snmpVersion: formState.value.snmpVersion,
+          snmpCommunity: formState.value.snmpCommunity || undefined,
+          snmpUser: formState.value.snmpUser || undefined,
+          snmpAuthPassword: formState.value.snmpAuthPassword || undefined,
+          snmpPrivPassword: formState.value.snmpPrivPassword || undefined,
+          snmpAuthProtocol: formState.value.snmpVersion === 3 ? formState.value.snmpAuthProtocol : undefined,
+          snmpPrivProtocol: formState.value.snmpVersion === 3 ? formState.value.snmpPrivProtocol : undefined,
         },
-        ['name', 'gateway', 'dnsServers', 'description', 'vlanId', 'locationId'],
+        ['name', 'gateway', 'dnsServers', 'description', 'vlanId', 'locationId', 'snmpVersion', 'snmpCommunity', 'snmpUser', 'snmpAuthPassword', 'snmpPrivPassword', 'snmpAuthProtocol', 'snmpPrivProtocol'],
       );
       notification.success({
         message: $t('ipam.page.subnet.updateSuccess'),
@@ -526,6 +556,13 @@ function resetForm() {
     vlanId: undefined,
     locationId: undefined,
     autoScan: false,
+    snmpVersion: 0,
+    snmpCommunity: '',
+    snmpUser: '',
+    snmpAuthPassword: '',
+    snmpPrivPassword: '',
+    snmpAuthProtocol: 'SHA',
+    snmpPrivProtocol: 'AES',
   };
   utilization.value = null;
 }
@@ -559,6 +596,13 @@ const [Drawer, drawerApi] = useVbenDrawer({
           vlanId: data.value.subnet.vlanId,
           locationId: data.value.subnet.locationId,
           autoScan: false,
+          snmpVersion: data.value.subnet.snmpVersion ?? 0,
+          snmpCommunity: data.value.subnet.snmpCommunity ?? '',
+          snmpUser: data.value.subnet.snmpUser ?? '',
+          snmpAuthPassword: data.value.subnet.snmpAuthPassword ?? '',
+          snmpPrivPassword: data.value.subnet.snmpPrivPassword ?? '',
+          snmpAuthProtocol: data.value.subnet.snmpAuthProtocol ?? 'SHA',
+          snmpPrivProtocol: data.value.subnet.snmpPrivProtocol ?? 'AES',
         };
         if (data.value.subnet.id) {
           await loadUtilization(data.value.subnet.id);
@@ -618,6 +662,36 @@ const networkInfo = computed(() => {
           {{ subnet.description || '-' }}
         </DescriptionsItem>
       </Descriptions>
+
+      <!-- SNMP Configuration -->
+      <template v-if="subnet.snmpVersion && subnet.snmpVersion > 0">
+        <Divider>{{ $t('ipam.page.subnet.snmpConfig') }}</Divider>
+        <Descriptions :column="1" bordered size="small">
+          <DescriptionsItem :label="$t('ipam.page.subnet.snmpVersion')">
+            {{ subnet.snmpVersion === 2 ? $t('ipam.page.subnet.snmpV2c') : $t('ipam.page.subnet.snmpV3') }}
+          </DescriptionsItem>
+          <DescriptionsItem v-if="subnet.snmpVersion === 2" :label="$t('ipam.page.subnet.snmpCommunity')">
+            {{ subnet.snmpCommunity || '-' }}
+          </DescriptionsItem>
+          <template v-if="subnet.snmpVersion === 3">
+            <DescriptionsItem :label="$t('ipam.page.subnet.snmpUser')">
+              {{ subnet.snmpUser || '-' }}
+            </DescriptionsItem>
+            <DescriptionsItem :label="$t('ipam.page.subnet.snmpAuthPassword')">
+              ********
+            </DescriptionsItem>
+            <DescriptionsItem :label="$t('ipam.page.subnet.snmpPrivPassword')">
+              ********
+            </DescriptionsItem>
+            <DescriptionsItem :label="$t('ipam.page.subnet.snmpAuthProtocol')">
+              {{ subnet.snmpAuthProtocol || '-' }}
+            </DescriptionsItem>
+            <DescriptionsItem :label="$t('ipam.page.subnet.snmpPrivProtocol')">
+              {{ subnet.snmpPrivProtocol || '-' }}
+            </DescriptionsItem>
+          </template>
+        </Descriptions>
+      </template>
 
       <!-- Network Details -->
       <template v-if="networkInfo">
@@ -1071,6 +1145,74 @@ const networkInfo = computed(() => {
             :placeholder="$t('ui.placeholder.input')"
           />
         </FormItem>
+
+        <!-- SNMP Configuration -->
+        <Divider class="!my-3">{{ $t('ipam.page.subnet.snmpConfig') }}</Divider>
+
+        <FormItem :label="$t('ipam.page.subnet.snmpVersion')" name="snmpVersion">
+          <Select v-model:value="formState.snmpVersion">
+            <SelectOption :value="0">{{ $t('ipam.page.subnet.snmpNone') }}</SelectOption>
+            <SelectOption :value="2">{{ $t('ipam.page.subnet.snmpV2c') }}</SelectOption>
+            <SelectOption :value="3">{{ $t('ipam.page.subnet.snmpV3') }}</SelectOption>
+          </Select>
+        </FormItem>
+
+        <FormItem
+          v-if="formState.snmpVersion === 2"
+          :label="$t('ipam.page.subnet.snmpCommunity')"
+          name="snmpCommunity"
+          :rules="[{ required: true, message: $t('ui.formRules.required') }]"
+        >
+          <Input
+            v-model:value="formState.snmpCommunity"
+            :placeholder="$t('ipam.page.subnet.snmpCommunityPlaceholder')"
+            :maxlength="255"
+          />
+        </FormItem>
+
+        <template v-if="formState.snmpVersion === 3">
+          <FormItem
+            :label="$t('ipam.page.subnet.snmpUser')"
+            name="snmpUser"
+            :rules="[{ required: true, message: $t('ui.formRules.required') }]"
+          >
+            <Input
+              v-model:value="formState.snmpUser"
+              :placeholder="$t('ui.placeholder.input')"
+              :maxlength="255"
+            />
+          </FormItem>
+
+          <FormItem :label="$t('ipam.page.subnet.snmpAuthPassword')" name="snmpAuthPassword">
+            <InputPassword
+              v-model:value="formState.snmpAuthPassword"
+              :placeholder="$t('ui.placeholder.input')"
+              :maxlength="255"
+            />
+          </FormItem>
+
+          <FormItem :label="$t('ipam.page.subnet.snmpPrivPassword')" name="snmpPrivPassword">
+            <InputPassword
+              v-model:value="formState.snmpPrivPassword"
+              :placeholder="$t('ui.placeholder.input')"
+              :maxlength="255"
+            />
+          </FormItem>
+
+          <FormItem :label="$t('ipam.page.subnet.snmpAuthProtocol')" name="snmpAuthProtocol">
+            <Select v-model:value="formState.snmpAuthProtocol">
+              <SelectOption value="MD5">MD5</SelectOption>
+              <SelectOption value="SHA">SHA</SelectOption>
+            </Select>
+          </FormItem>
+
+          <FormItem :label="$t('ipam.page.subnet.snmpPrivProtocol')" name="snmpPrivProtocol">
+            <Select v-model:value="formState.snmpPrivProtocol">
+              <SelectOption value="DES">DES</SelectOption>
+              <SelectOption value="AES">AES</SelectOption>
+            </Select>
+          </FormItem>
+        </template>
 
         <FormItem v-if="isCreateMode" name="autoScan">
           <Checkbox v-model:checked="formState.autoScan">

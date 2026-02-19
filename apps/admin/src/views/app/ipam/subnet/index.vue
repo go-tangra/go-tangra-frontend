@@ -15,7 +15,7 @@ import {
   LucideCheckCircle,
 } from '@vben/icons';
 
-import { notification, Space, Button, Tree, Card, Empty, Tag, Modal, Progress, Tooltip, Descriptions, DescriptionsItem, Divider } from 'ant-design-vue';
+import { notification, Space, Button, Tree, Card, Empty, Tag, Modal, Progress, Tooltip, Descriptions, DescriptionsItem, Divider, Checkbox } from 'ant-design-vue';
 import type { TreeProps } from 'ant-design-vue';
 
 import { useVbenVxeGrid } from '#/adapter/vxe-table';
@@ -295,11 +295,29 @@ async function handleDeleteSubnet(subnetId: string) {
   }
 }
 
-// Scan functions
-async function handleStartScan(subnetId: string) {
+// Scan configuration state
+const scanConfigVisible = ref(false);
+const scanEnableSnmp = ref(false);
+const scanTargetSubnetId = ref<string>('');
+
+// Show scan config before starting
+function handleStartScan(subnetId: string) {
+  scanTargetSubnetId.value = subnetId;
+  scanEnableSnmp.value = false;
+  scanConfigVisible.value = true;
+}
+
+async function confirmStartScan() {
+  const subnetId = scanTargetSubnetId.value;
+  scanConfigVisible.value = false;
   try {
     scanningSubnetIds.value.add(subnetId);
-    const resp = await ipScanStore.startScan(userStore.tenantId as number, subnetId);
+    const resp = await ipScanStore.startScan(
+      userStore.tenantId as number,
+      subnetId,
+      undefined,
+      scanEnableSnmp.value,
+    );
     if (resp.job) {
       currentScanJob.value = resp.job as ipamservicev1_IpScanJob;
       scanModalVisible.value = true;
@@ -336,7 +354,7 @@ function startScanPolling(jobId: string) {
           }
           // Refresh IP address list if this subnet is selected
           if (selectedSubnetId.value === resp.job.subnetId) {
-            gridApi.reload();
+            gridApi.query();
           }
         }
       }
@@ -580,6 +598,24 @@ onMounted(() => {
       </div>
     </Modal>
 
+    <!-- Scan Configuration Modal -->
+    <Modal
+      v-model:open="scanConfigVisible"
+      :title="$t('ipam.page.subnet.scan')"
+      :ok-text="$t('ipam.page.subnet.scan')"
+      :cancel-text="$t('ui.button.cancel')"
+      @ok="confirmStartScan"
+    >
+      <div class="space-y-4 py-2">
+        <Checkbox v-model:checked="scanEnableSnmp">
+          {{ $t('ipam.page.subnet.enableSnmp') }}
+        </Checkbox>
+        <div v-if="scanEnableSnmp" class="text-muted-foreground ml-6 text-xs">
+          {{ $t('ipam.page.subnet.enableSnmpHint') }}
+        </div>
+      </div>
+    </Modal>
+
     <!-- Scan Job Progress Modal -->
     <Modal
       v-model:open="scanModalVisible"
@@ -617,6 +653,10 @@ onMounted(() => {
           <div>
             <span class="text-gray-500">{{ $t('ipam.page.subnet.newCount') }}:</span>
             <span class="ml-2 font-medium text-blue-600">{{ currentScanJob.newCount ?? 0 }}</span>
+          </div>
+          <div v-if="currentScanJob.enableSnmp">
+            <span class="text-gray-500">{{ $t('ipam.page.subnet.snmpDiscoveredCount') }}:</span>
+            <span class="ml-2 font-medium text-purple-600">{{ currentScanJob.snmpDiscoveredCount ?? 0 }}</span>
           </div>
         </div>
 

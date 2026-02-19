@@ -86,7 +86,22 @@
       "lastHost": "Last Host",
       "subnetMask": "Subnet Mask",
       "wildcardMask": "Wildcard Mask",
-      "usableHosts": "Usable Hosts"
+      "usableHosts": "Usable Hosts",
+      "snmpConfig": "SNMP Configuration",
+      "snmpVersion": "SNMP Version",
+      "snmpNone": "None",
+      "snmpV2c": "v2c (Community)",
+      "snmpV3": "v3 (USM)",
+      "snmpCommunity": "Community String",
+      "snmpCommunityPlaceholder": "e.g. public",
+      "snmpUser": "SNMP User",
+      "snmpAuthPassword": "Auth Password",
+      "snmpPrivPassword": "Privacy Password",
+      "snmpAuthProtocol": "Auth Protocol",
+      "snmpPrivProtocol": "Privacy Protocol",
+      "enableSnmp": "Enable SNMP Discovery",
+      "enableSnmpHint": "Query SNMP-enabled devices to auto-discover device info and interfaces",
+      "snmpDiscoveredCount": "SNMP Devices"
     },
     "ipAddress": {
       "title": "IP Addresses",

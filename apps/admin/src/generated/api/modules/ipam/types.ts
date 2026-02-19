@@ -950,6 +950,15 @@ export interface components {
             status?: "SUBNET_STATUS_UNSPECIFIED" | "SUBNET_STATUS_ACTIVE" | "SUBNET_STATUS_RESERVED" | "SUBNET_STATUS_DEPRECATED" | "SUBNET_STATUS_DELETED";
             tags?: string;
             metadata?: string;
+            /** @description SNMPv2c community string */
+            snmpCommunity?: string;
+            /** Format: int32 */
+            snmpVersion?: number;
+            snmpUser?: string;
+            snmpAuthPassword?: string;
+            snmpPrivPassword?: string;
+            snmpAuthProtocol?: string;
+            snmpPrivProtocol?: string;
             /** @description Auto-scan the subnet for active hosts after creation */
             autoScan?: boolean;
             /** @description Scan configuration (used when auto_scan is true) */
@@ -1532,6 +1541,10 @@ export interface components {
             skipReverseDns?: boolean;
             /** @description Comma-separated list of TCP ports to probe */
             tcpProbePorts?: string;
+            /** @description Enable SNMP device discovery */
+            enableSnmp?: boolean;
+            /** @description Number of SNMP devices discovered */
+            snmpDiscoveredCount?: string;
             /**
              * Format: date-time
              * @description When the scan started
@@ -1758,6 +1771,8 @@ export interface components {
             subnetId: string;
             /** @description Scan configuration */
             scanConfig?: components["schemas"]["ScanConfig"];
+            /** @description Enable SNMP device discovery during scan */
+            enableSnmp?: boolean;
         };
         StartScanResponse: {
             job?: components["schemas"]["IpScanJob"];
@@ -1824,6 +1839,23 @@ export interface components {
             tags?: string;
             /** @description Custom metadata (JSON) */
             metadata?: string;
+            /** @description SNMPv2c community string */
+            snmpCommunity?: string;
+            /**
+             * Format: int32
+             * @description SNMP version: 0=none, 2=v2c, 3=v3
+             */
+            snmpVersion?: number;
+            /** @description SNMPv3 USM username */
+            snmpUser?: string;
+            /** @description SNMPv3 auth password */
+            snmpAuthPassword?: string;
+            /** @description SNMPv3 privacy password */
+            snmpPrivPassword?: string;
+            /** @description SNMPv3 auth protocol (MD5/SHA) */
+            snmpAuthProtocol?: string;
+            /** @description SNMPv3 priv protocol (DES/AES) */
+            snmpPrivProtocol?: string;
             /**
              * Format: date-time
              * @description Creation timestamp
