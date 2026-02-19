@@ -23,6 +23,9 @@ rm -f "${NGINX_CONF_DIR}/default.conf"
 # Common location blocks (shared between SSL and non-SSL configs)
 generate_locations() {
     cat << 'LOCATIONS'
+        # Allow large file uploads (documents, backups)
+        client_max_body_size 100m;
+
         root /usr/share/nginx/html;
         index index.html;
 
