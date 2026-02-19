@@ -343,7 +343,7 @@ const [AssetModalComponent, assetModalApi] = useVbenModal({
   connectedComponent: AssetModal,
   onOpenChange(isOpen: boolean) {
     if (!isOpen) {
-      gridApi.reload();
+      gridApi.query();
     }
   },
 });
@@ -372,7 +372,7 @@ async function handleDelete(row: Asset) {
     notification.success({
       message: $t('asset.page.asset.deleteSuccess'),
     });
-    await gridApi.reload();
+    await gridApi.query();
   } catch {
     notification.error({ message: $t('ui.notification.delete_failed') });
   }
@@ -403,7 +403,7 @@ async function confirmAssign() {
       message: $t('asset.page.asset.assignSuccess'),
     });
     assignModalVisible.value = false;
-    await gridApi.reload();
+    await gridApi.query();
   } catch {
     notification.error({ message: $t('ui.notification.update_failed') });
   }
@@ -434,7 +434,7 @@ async function confirmUnassign() {
       message: $t('asset.page.asset.unassignSuccess'),
     });
     unassignModalVisible.value = false;
-    await gridApi.reload();
+    await gridApi.query();
   } catch {
     notification.error({ message: $t('ui.notification.update_failed') });
   }

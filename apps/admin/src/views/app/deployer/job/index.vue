@@ -233,7 +233,7 @@ const [Drawer, drawerApi] = useVbenDrawer({
 
   onOpenChange(isOpen: boolean) {
     if (!isOpen) {
-      gridApi.reload();
+      gridApi.query();
     }
   },
 });
@@ -251,7 +251,7 @@ async function handleCancel(row: deployerservicev1_DeploymentJob) {
   try {
     await jobStore.cancelJob(row.id);
     notification.success({ message: $t('deployer.page.job.cancelSuccess') });
-    await gridApi.reload();
+    await gridApi.query();
   } catch {
     notification.error({ message: $t('ui.notification.operation_failed') });
   }
@@ -264,7 +264,7 @@ async function handleRetry(row: deployerservicev1_DeploymentJob) {
   try {
     await jobStore.retryJob(row.id);
     notification.success({ message: $t('deployer.page.job.retrySuccess') });
-    await gridApi.reload();
+    await gridApi.query();
   } catch {
     notification.error({ message: $t('ui.notification.operation_failed') });
   }

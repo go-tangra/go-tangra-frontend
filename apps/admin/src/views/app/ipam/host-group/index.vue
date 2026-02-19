@@ -139,7 +139,7 @@ const [HostGroupDrawerComponent, hostGroupDrawerApi] = useVbenDrawer({
   connectedComponent: HostGroupDrawer,
   onOpenChange(isOpen: boolean) {
     if (!isOpen) {
-      gridApi.reload();
+      gridApi.query();
     }
   },
 });
@@ -164,7 +164,7 @@ async function handleDelete(row: ipamservicev1_HostGroup) {
   try {
     await hostGroupStore.deleteGroup(row.id);
     notification.success({ message: $t('ipam.page.hostGroup.deleteSuccess') });
-    gridApi.reload();
+    gridApi.query();
   } catch {
     notification.error({ message: $t('ui.notification.delete_failed') });
   }

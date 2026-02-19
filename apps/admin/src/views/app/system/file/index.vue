@@ -119,7 +119,7 @@ const [Drawer] = useVbenDrawer({
   onOpenChange(isOpen: boolean) {
     if (!isOpen) {
       // 关闭时，重载表格数据
-      gridApi.reload();
+      gridApi.query();
     }
   },
 });
@@ -148,7 +148,7 @@ async function handleUploadFile(options: any) {
 
     onSuccess?.(res ?? {}, file);
 
-    await gridApi.reload();
+    await gridApi.query();
 
     notification.success({
       message: $t('ui.notification.upload_success'),
@@ -183,7 +183,7 @@ async function handleDelete(row: any) {
       message: $t('ui.notification.delete_success'),
     });
 
-    await gridApi.reload();
+    await gridApi.query();
   } catch {
     notification.error({
       message: $t('ui.notification.delete_failed'),

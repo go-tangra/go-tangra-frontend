@@ -162,7 +162,7 @@ const [Drawer, drawerApi] = useVbenDrawer({
 
   onOpenChange(isOpen: boolean) {
     if (!isOpen) {
-      gridApi.reload();
+      gridApi.query();
     }
   },
 });
@@ -221,7 +221,7 @@ async function handleRevoke(row: MtlsCertificate) {
     );
 
     notification.success({ message: $t('lcm.page.certificate.revokeSuccess') });
-    await gridApi.reload();
+    await gridApi.query();
   } catch {
     notification.error({ message: $t('lcm.page.certificate.revokeFailed') });
   }

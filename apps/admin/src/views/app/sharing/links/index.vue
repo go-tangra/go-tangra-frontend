@@ -156,7 +156,7 @@ const [LinkDrawerComponent, linkDrawerApi] = useVbenDrawer({
   connectedComponent: LinkDrawer,
   onOpenChange(isOpen: boolean) {
     if (!isOpen) {
-      gridApi.reload();
+      gridApi.query();
     }
   },
 });
@@ -172,7 +172,7 @@ async function handleRevoke(row: SharedLink) {
   try {
     await shareStore.revokeShare(row.id);
     notification.success({ message: $t('sharing.page.link.revokeSuccess') });
-    await gridApi.reload();
+    await gridApi.query();
   } catch {
     notification.error({ message: $t('ui.notification.delete_failed') });
   }

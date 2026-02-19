@@ -125,7 +125,7 @@ const [CategoryDrawerComponent, categoryDrawerApi] = useVbenDrawer({
   connectedComponent: CategoryDrawer,
   onOpenChange(isOpen: boolean) {
     if (!isOpen) {
-      gridApi.reload();
+      gridApi.query();
     }
   },
 });
@@ -175,7 +175,7 @@ async function handleDeleteCategory(row: paperlessservicev1_Category) {
         notification.success({
           message: $t('paperless.page.category.deleteSuccess'),
         });
-        await gridApi.reload();
+        await gridApi.query();
       } catch {
         notification.error({ message: $t('ui.notification.delete_failed') });
       }

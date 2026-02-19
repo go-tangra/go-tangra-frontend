@@ -309,7 +309,7 @@ async function saveRowEvent(row: DictEntryI18n) {
     return;
   } finally {
     gridApi.setLoading(false);
-    await gridApi.reload();
+    await gridApi.query();
   }
 }
 

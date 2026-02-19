@@ -209,7 +209,7 @@ const [InsuranceDrawerComponent, insuranceDrawerApi] = useVbenDrawer({
   connectedComponent: InsuranceDrawer,
   onOpenChange(isOpen: boolean) {
     if (!isOpen) {
-      gridApi.reload();
+      gridApi.query();
     }
   },
 });
@@ -241,7 +241,7 @@ async function handleDelete(row: InsurancePolicy) {
     notification.success({
       message: $t('asset.page.insurance.deleteSuccess'),
     });
-    await gridApi.reload();
+    await gridApi.query();
   } catch {
     notification.error({ message: $t('ui.notification.delete_failed') });
   }

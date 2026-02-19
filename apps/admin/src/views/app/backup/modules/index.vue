@@ -168,7 +168,7 @@ const [CreateDrawerComponent, createDrawerApi] = useVbenDrawer({
   connectedComponent: CreateDrawer,
   onOpenChange(isOpen: boolean) {
     if (!isOpen) {
-      gridApi.reload();
+      gridApi.query();
     }
   },
 });
@@ -177,7 +177,7 @@ const [RestoreDrawerComponent, restoreDrawerApi] = useVbenDrawer({
   connectedComponent: RestoreDrawer,
   onOpenChange(isOpen: boolean) {
     if (!isOpen) {
-      gridApi.reload();
+      gridApi.query();
     }
   },
 });
@@ -186,7 +186,7 @@ const [UploadRestoreDrawerComponent, uploadRestoreDrawerApi] = useVbenDrawer({
   connectedComponent: UploadRestoreDrawer,
   onOpenChange(isOpen: boolean) {
     if (!isOpen) {
-      gridApi.reload();
+      gridApi.query();
     }
   },
 });
@@ -260,7 +260,7 @@ async function handleDelete(row: BackupInfo) {
     notification.success({
       message: $t('backup.page.module.deleteSuccess'),
     });
-    await gridApi.reload();
+    await gridApi.query();
   } catch {
     notification.error({ message: $t('ui.notification.delete_failed') });
   }

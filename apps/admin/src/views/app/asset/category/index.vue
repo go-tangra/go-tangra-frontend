@@ -182,7 +182,7 @@ const [CategoryDrawerComponent, categoryDrawerApi] = useVbenDrawer({
   onOpenChange(isOpen: boolean) {
     if (!isOpen) {
       loadCategoryTree();
-      gridApi.reload();
+      gridApi.query();
     }
   },
 });
@@ -220,7 +220,7 @@ async function handleDelete(row: Category) {
       message: $t('asset.page.category.deleteSuccess'),
     });
     await loadCategoryTree();
-    await gridApi.reload();
+    await gridApi.query();
   } catch {
     notification.error({ message: $t('ui.notification.delete_failed') });
   }
@@ -243,7 +243,7 @@ async function handleDeleteFromTree(category: Category | undefined) {
       selectedCategory.value = null;
     }
     await loadCategoryTree();
-    await gridApi.reload();
+    await gridApi.query();
   } catch {
     notification.error({ message: $t('ui.notification.delete_failed') });
   }

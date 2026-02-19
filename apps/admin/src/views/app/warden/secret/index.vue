@@ -118,7 +118,7 @@ const [SecretDrawerComponent, secretDrawerApi] = useVbenDrawer({
   connectedComponent: SecretDrawer,
   onOpenChange(isOpen: boolean) {
     if (!isOpen) {
-      gridApi.reload();
+      gridApi.query();
     }
   },
 });
@@ -127,7 +127,7 @@ const [VersionDrawerComponent, versionDrawerApi] = useVbenDrawer({
   connectedComponent: VersionDrawer,
   onOpenChange(isOpen: boolean) {
     if (!isOpen) {
-      gridApi.reload();
+      gridApi.query();
     }
   },
 });
@@ -162,7 +162,7 @@ async function handleDeleteSecret(row: wardenservicev1_Secret) {
   try {
     await secretStore.deleteSecret(row.id);
     notification.success({ message: $t('warden.page.secret.deleteSuccess') });
-    await gridApi.reload();
+    await gridApi.query();
   } catch {
     notification.error({ message: $t('ui.notification.delete_failed') });
   }

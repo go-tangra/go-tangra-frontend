@@ -139,7 +139,7 @@ const [GroupDrawerComponent, groupDrawerApi] = useVbenDrawer({
   connectedComponent: GroupDrawer,
   onOpenChange(isOpen: boolean) {
     if (!isOpen) {
-      gridApi.reload();
+      gridApi.query();
     }
   },
 });
@@ -164,7 +164,7 @@ async function handleDelete(row: ipamservicev1_IpGroup) {
   try {
     await groupStore.deleteGroup(row.id);
     notification.success({ message: $t('ipam.page.group.deleteSuccess') });
-    gridApi.reload();
+    gridApi.query();
   } catch {
     notification.error({ message: $t('ui.notification.delete_failed') });
   }

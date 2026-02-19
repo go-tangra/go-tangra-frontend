@@ -126,7 +126,7 @@ const [EmployeeModalComponent, employeeModalApi] = useVbenModal({
   connectedComponent: EmployeeModal,
   onOpenChange(isOpen: boolean) {
     if (!isOpen) {
-      gridApi.reload();
+      gridApi.query();
     }
   },
 });
@@ -135,7 +135,7 @@ const [LdapSyncModalComponent, ldapSyncModalApi] = useVbenModal({
   connectedComponent: LdapSyncModal,
   onOpenChange(isOpen: boolean) {
     if (!isOpen) {
-      gridApi.reload();
+      gridApi.query();
     }
   },
 });
@@ -168,7 +168,7 @@ async function handleDelete(row: Employee) {
     notification.success({
       message: $t('asset.page.employee.deleteSuccess'),
     });
-    await gridApi.reload();
+    await gridApi.query();
   } catch {
     notification.error({ message: $t('ui.notification.delete_failed') });
   }

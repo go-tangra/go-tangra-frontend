@@ -149,7 +149,7 @@ const [Drawer, drawerApi] = useVbenDrawer({
 
   onOpenChange(isOpen: boolean) {
     if (!isOpen) {
-      gridApi.reload();
+      gridApi.query();
     }
   },
 });

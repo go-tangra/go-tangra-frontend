@@ -127,7 +127,7 @@ const [PermissionDrawerComponent, permissionDrawerApi] = useVbenDrawer({
   connectedComponent: PermissionDrawer,
   onOpenChange(isOpen: boolean) {
     if (!isOpen) {
-      gridApi.reload();
+      gridApi.query();
     }
   },
 });
@@ -160,7 +160,7 @@ async function handleDeletePermission(row: any) {
       relation: row.relation,
     });
     notification.success({ message: $t('ui.notification.delete_success') });
-    await gridApi.reload();
+    await gridApi.query();
   } catch {
     notification.error({ message: $t('ui.notification.delete_failed') });
   }

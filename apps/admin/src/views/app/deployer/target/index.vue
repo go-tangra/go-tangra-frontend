@@ -145,7 +145,7 @@ const [Drawer, drawerApi] = useVbenDrawer({
 
   onOpenChange(isOpen: boolean) {
     if (!isOpen) {
-      gridApi.reload();
+      gridApi.query();
     }
   },
 });
@@ -186,7 +186,7 @@ async function handleDelete(row: deployerservicev1_DeploymentTarget) {
   try {
     await targetStore.deleteTarget(row.id);
     notification.success({ message: $t('deployer.page.target.deleteSuccess') });
-    await gridApi.reload();
+    await gridApi.query();
   } catch {
     notification.error({ message: $t('ui.notification.delete_failed') });
   }

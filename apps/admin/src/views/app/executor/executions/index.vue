@@ -206,7 +206,7 @@ const [ExecutionDrawerComponent, executionDrawerApi] = useVbenDrawer({
   connectedComponent: ExecutionDrawer,
   onOpenChange(isOpen: boolean) {
     if (!isOpen) {
-      gridApi.reload();
+      gridApi.query();
     }
   },
 });

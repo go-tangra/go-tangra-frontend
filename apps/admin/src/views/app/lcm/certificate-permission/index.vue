@@ -168,7 +168,7 @@ const [Drawer, drawerApi] = useVbenDrawer({
 
   onOpenChange(isOpen: boolean) {
     if (!isOpen) {
-      gridApi.reload();
+      gridApi.query();
     }
   },
 });
@@ -178,7 +178,7 @@ const [GrantDrawer, grantDrawerApi] = useVbenDrawer({
 
   onOpenChange(isOpen: boolean) {
     if (!isOpen) {
-      gridApi.reload();
+      gridApi.query();
     }
   },
 });
@@ -211,7 +211,7 @@ async function handleRevoke(row: CertificatePermission) {
     );
 
     notification.success({ message: $t('lcm.page.certificatePermission.revokeSuccess') });
-    await gridApi.reload();
+    await gridApi.query();
   } catch {
     notification.error({ message: $t('lcm.page.certificatePermission.revokeFailed') });
   }

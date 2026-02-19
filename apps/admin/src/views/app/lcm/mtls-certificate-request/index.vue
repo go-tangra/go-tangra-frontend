@@ -139,7 +139,7 @@ const [Drawer, drawerApi] = useVbenDrawer({
 
   onOpenChange(isOpen: boolean) {
     if (!isOpen) {
-      gridApi.reload();
+      gridApi.query();
     }
   },
 });
@@ -164,7 +164,7 @@ async function handleApprove(row: lcmservicev1_MtlsCertificateRequest) {
   try {
     await requestStore.approveRequest(row.id);
     notification.success({ message: $t('lcm.page.certificateRequest.approveSuccess') });
-    await gridApi.reload();
+    await gridApi.query();
   } catch (error: any) {
     notification.error({
       message: $t('lcm.page.certificateRequest.approveFailed'),
@@ -208,7 +208,7 @@ function handleReject(row: lcmservicev1_MtlsCertificateRequest) {
       try {
         await requestStore.rejectRequest(row.id!, rejectReason.value);
         notification.success({ message: $t('lcm.page.certificateRequest.rejectSuccess') });
-        await gridApi.reload();
+        await gridApi.query();
       } catch (error: any) {
         notification.error({
           message: $t('lcm.page.certificateRequest.rejectFailed'),
@@ -230,7 +230,7 @@ async function handleDelete(row: lcmservicev1_MtlsCertificateRequest) {
   try {
     await requestStore.deleteRequest(row.id);
     notification.success({ message: $t('ui.notification.delete_success') });
-    await gridApi.reload();
+    await gridApi.query();
   } catch {
     notification.error({ message: $t('ui.notification.delete_failed') });
   }

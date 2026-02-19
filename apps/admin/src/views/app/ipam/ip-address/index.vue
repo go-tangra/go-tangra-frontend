@@ -168,7 +168,7 @@ const [IpAddressDrawerComponent, ipAddressDrawerApi] = useVbenDrawer({
   connectedComponent: IpAddressDrawer,
   onOpenChange(isOpen: boolean) {
     if (!isOpen) {
-      gridApi.reload();
+      gridApi.query();
     }
   },
 });
@@ -195,7 +195,7 @@ async function handleDelete(row: ipamservicev1_IpAddress) {
   try {
     await ipAddressStore.deleteIpAddress(row.id);
     notification.success({ message: $t('ipam.page.ipAddress.deleteSuccess') });
-    await gridApi.reload();
+    await gridApi.query();
   } catch {
     notification.error({ message: $t('ui.notification.delete_failed') });
   }

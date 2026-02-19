@@ -168,7 +168,7 @@ const [Drawer, drawerApi] = useVbenDrawer({
 
   onOpenChange(isOpen: boolean) {
     if (!isOpen) {
-      gridApi.reload();
+      gridApi.query();
     }
   },
 });
@@ -236,7 +236,7 @@ async function handleCancel(row: lcmservicev1_CertificateJobInfo) {
   try {
     await certificateJobStore.cancelJob(row.jobId);
     notification.success({ message: $t('lcm.page.certificateJob.cancelSuccess') });
-    await gridApi.reload();
+    await gridApi.query();
   } catch {
     notification.error({ message: $t('lcm.page.certificateJob.cancelFailed') });
   }
@@ -265,7 +265,7 @@ async function handleRetry(row: lcmservicev1_CertificateJobInfo) {
   try {
     await certificateJobStore.retryJob(row.jobId);
     notification.success({ message: $t('lcm.page.certificateJob.retrySuccess') });
-    await gridApi.reload();
+    await gridApi.query();
   } catch {
     notification.error({ message: $t('lcm.page.certificateJob.retryFailed') });
   }

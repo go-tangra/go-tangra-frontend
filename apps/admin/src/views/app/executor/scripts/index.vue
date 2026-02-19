@@ -177,7 +177,7 @@ const [ScriptDrawerComponent, scriptDrawerApi] = useVbenDrawer({
   connectedComponent: ScriptDrawer,
   onOpenChange(isOpen: boolean) {
     if (!isOpen) {
-      gridApi.reload();
+      gridApi.query();
     }
   },
 });
@@ -268,7 +268,7 @@ async function handleDelete(row: Script) {
     notification.success({
       message: $t('executor.page.script.deleteSuccess'),
     });
-    await gridApi.reload();
+    await gridApi.query();
   } catch {
     notification.error({ message: $t('ui.notification.delete_failed') });
   }

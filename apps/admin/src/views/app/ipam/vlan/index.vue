@@ -142,7 +142,7 @@ const [VlanDrawerComponent, vlanDrawerApi] = useVbenDrawer({
   connectedComponent: VlanDrawer,
   onOpenChange(isOpen: boolean) {
     if (!isOpen) {
-      gridApi.reload();
+      gridApi.query();
     }
   },
 });
@@ -169,7 +169,7 @@ async function handleDelete(row: ipamservicev1_Vlan) {
   try {
     await vlanStore.deleteVlan(row.id);
     notification.success({ message: $t('ipam.page.vlan.deleteSuccess') });
-    await gridApi.reload();
+    await gridApi.query();
   } catch {
     notification.error({ message: $t('ui.notification.delete_failed') });
   }

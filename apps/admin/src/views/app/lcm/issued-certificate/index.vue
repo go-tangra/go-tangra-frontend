@@ -210,7 +210,7 @@ const [Drawer, drawerApi] = useVbenDrawer({
 
   onOpenChange(isOpen: boolean) {
     if (!isOpen) {
-      gridApi.reload();
+      gridApi.query();
     }
   },
 });
@@ -240,7 +240,7 @@ async function handleForceRenew(row: IssuedCertificateInfo) {
   try {
     await issuedCertStore.renewCertificate(row.id);
     notification.success({ message: $t('lcm.page.issuedCertificate.renewSuccess') });
-    await gridApi.reload();
+    await gridApi.query();
   } catch {
     notification.error({ message: $t('lcm.page.issuedCertificate.renewFailed') });
   }

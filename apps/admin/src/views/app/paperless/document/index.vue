@@ -253,7 +253,7 @@ const [DocumentDrawerComponent, documentDrawerApi] = useVbenDrawer({
   connectedComponent: DocumentDrawer,
   onOpenChange(isOpen: boolean) {
     if (!isOpen) {
-      gridApi.reload();
+      gridApi.query();
     }
   },
 });
@@ -301,7 +301,7 @@ async function handleDeleteDocument(row: paperlessservicev1_Document) {
     const permanent = row.status === 'DOCUMENT_STATUS_DELETED';
     await documentStore.deleteDocument(row.id, permanent);
     notification.success({ message: $t('paperless.page.document.deleteSuccess') });
-    await gridApi.reload();
+    await gridApi.query();
   } catch {
     notification.error({ message: $t('ui.notification.delete_failed') });
   }
@@ -381,7 +381,7 @@ async function handleDeleteCategory(node: TreeNode) {
           selectedCategoryId.value = undefined;
         }
         await loadCategoryTree();
-        await gridApi.reload();
+        await gridApi.query();
       } catch {
         notification.error({ message: $t('ui.notification.delete_failed') });
       }

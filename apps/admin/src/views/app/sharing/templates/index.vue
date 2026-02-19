@@ -109,7 +109,7 @@ const [TemplateDrawerComponent, templateDrawerApi] = useVbenDrawer({
   connectedComponent: TemplateDrawer,
   onOpenChange(isOpen: boolean) {
     if (!isOpen) {
-      gridApi.reload();
+      gridApi.query();
     }
   },
 });
@@ -141,7 +141,7 @@ async function handleDelete(row: EmailTemplate) {
     notification.success({
       message: $t('sharing.page.template.deleteSuccess'),
     });
-    await gridApi.reload();
+    await gridApi.query();
   } catch {
     notification.error({ message: $t('ui.notification.delete_failed') });
   }

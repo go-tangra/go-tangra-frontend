@@ -96,7 +96,7 @@ async function handleCreateSubmit() {
 
     notification.success({ message: $t('ui.notification.create_success') });
     createModalVisible.value = false;
-    await gridApi.reload();
+    await gridApi.query();
   } catch (error: any) {
     if (error?.errorFields) {
       // Form validation error
@@ -215,7 +215,7 @@ const [Drawer, drawerApi] = useVbenDrawer({
 
   onOpenChange(isOpen: boolean) {
     if (!isOpen) {
-      gridApi.reload();
+      gridApi.query();
     }
   },
 });
@@ -262,7 +262,7 @@ async function handleRotateSubmit() {
     );
     notification.success({ message: $t('ui.notification.success') });
     rotateModalVisible.value = false;
-    await gridApi.reload();
+    await gridApi.query();
   } catch (error: any) {
     if (error?.errorFields) {
       return;
@@ -289,7 +289,7 @@ async function handleDelete(row: lcmservicev1_TenantSecret) {
   try {
     await secretStore.deleteTenantSecret(row.id);
     notification.success({ message: $t('ui.notification.delete_success') });
-    await gridApi.reload();
+    await gridApi.query();
   } catch {
     notification.error({ message: $t('ui.notification.delete_failed') });
   }

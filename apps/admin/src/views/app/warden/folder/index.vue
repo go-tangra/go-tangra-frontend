@@ -210,7 +210,7 @@ const [SecretDrawerComponent, secretDrawerApi] = useVbenDrawer({
   connectedComponent: SecretDrawer,
   onOpenChange(isOpen: boolean) {
     if (!isOpen) {
-      gridApi.reload();
+      gridApi.query();
     }
   },
 });
@@ -228,7 +228,7 @@ const [VersionDrawerComponent, versionDrawerApi] = useVbenDrawer({
   connectedComponent: VersionDrawer,
   onOpenChange(isOpen: boolean) {
     if (!isOpen) {
-      gridApi.reload();
+      gridApi.query();
     }
   },
 });
@@ -267,7 +267,7 @@ async function handleDeleteSecret(row: Secret) {
   try {
     await secretStore.deleteSecret(row.id);
     notification.success({ message: $t('warden.page.secret.deleteSuccess') });
-    await gridApi.reload();
+    await gridApi.query();
   } catch {
     notification.error({ message: $t('ui.notification.delete_failed') });
   }
@@ -415,7 +415,7 @@ async function handleDeleteFolder(node: TreeNode) {
           selectedFolderId.value = undefined;
         }
         await loadFolderTree();
-        await gridApi.reload();
+        await gridApi.query();
       } catch {
         notification.error({ message: $t('ui.notification.delete_failed') });
       }
@@ -469,7 +469,7 @@ async function handleExport() {
 
 function handleImportSuccess() {
   loadFolderTree();
-  gridApi.reload();
+  gridApi.query();
 }
 
 // Get selected folder name

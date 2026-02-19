@@ -125,7 +125,7 @@ const [BookmarkDrawerComponent, bookmarkDrawerApi] = useVbenDrawer({
   connectedComponent: BookmarkDrawer,
   onOpenChange(isOpen: boolean) {
     if (!isOpen) {
-      gridApi.reload();
+      gridApi.query();
     }
   },
 });
@@ -134,7 +134,7 @@ const [PermissionDrawerComponent, permissionDrawerApi] = useVbenDrawer({
   connectedComponent: PermissionDrawer,
   onOpenChange(isOpen: boolean) {
     if (!isOpen) {
-      gridApi.reload();
+      gridApi.query();
     }
   },
 });
@@ -172,7 +172,7 @@ async function handleDelete(row: Bookmark) {
     notification.success({
       message: $t('bookmark.page.bookmark.deleteSuccess'),
     });
-    await gridApi.reload();
+    await gridApi.query();
   } catch {
     notification.error({ message: $t('ui.notification.delete_failed') });
   }

@@ -167,7 +167,7 @@ const [ConsumableDrawerComponent, consumableDrawerApi] = useVbenDrawer({
   connectedComponent: ConsumableDrawer,
   onOpenChange(isOpen: boolean) {
     if (!isOpen) {
-      gridApi.reload();
+      gridApi.query();
     }
   },
 });
@@ -196,7 +196,7 @@ async function handleDelete(row: Consumable) {
     notification.success({
       message: $t('asset.page.consumable.deleteSuccess'),
     });
-    await gridApi.reload();
+    await gridApi.query();
   } catch {
     notification.error({ message: $t('ui.notification.delete_failed') });
   }

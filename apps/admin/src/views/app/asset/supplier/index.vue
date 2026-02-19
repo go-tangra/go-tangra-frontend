@@ -154,7 +154,7 @@ const [SupplierModalComponent, supplierModalApi] = useVbenModal({
   connectedComponent: SupplierModal,
   onOpenChange(isOpen: boolean) {
     if (!isOpen) {
-      gridApi.reload();
+      gridApi.query();
     }
   },
 });
@@ -183,7 +183,7 @@ async function handleDelete(row: Supplier) {
     notification.success({
       message: $t('asset.page.supplier.deleteSuccess'),
     });
-    await gridApi.reload();
+    await gridApi.query();
   } catch {
     notification.error({ message: $t('ui.notification.delete_failed') });
   }

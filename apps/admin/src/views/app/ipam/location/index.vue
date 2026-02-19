@@ -199,7 +199,7 @@ const [LocationDrawerComponent, locationDrawerApi] = useVbenDrawer({
   onOpenChange(isOpen: boolean) {
     if (!isOpen) {
       loadLocationTree();
-      gridApi.reload();
+      gridApi.query();
     }
   },
 });
@@ -235,7 +235,7 @@ async function handleDelete(row: ipamservicev1_Location) {
     await locationStore.deleteLocation(row.id);
     notification.success({ message: $t('ipam.page.location.deleteSuccess') });
     await loadLocationTree();
-    await gridApi.reload();
+    await gridApi.query();
   } catch {
     notification.error({ message: $t('ui.notification.delete_failed') });
   }
@@ -258,7 +258,7 @@ async function handleDeleteFromTree(location: ipamservicev1_Location | undefined
       selectedLocation.value = null;
     }
     await loadLocationTree();
-    await gridApi.reload();
+    await gridApi.query();
   } catch {
     notification.error({ message: $t('ui.notification.delete_failed') });
   }

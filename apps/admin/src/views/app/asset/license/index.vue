@@ -177,7 +177,7 @@ const [LicenseDrawerComponent, licenseDrawerApi] = useVbenDrawer({
   connectedComponent: LicenseDrawer,
   onOpenChange(isOpen: boolean) {
     if (!isOpen) {
-      gridApi.reload();
+      gridApi.query();
     }
   },
 });
@@ -206,7 +206,7 @@ async function handleDelete(row: License) {
     notification.success({
       message: $t('asset.page.license.deleteSuccess'),
     });
-    await gridApi.reload();
+    await gridApi.query();
   } catch {
     notification.error({ message: $t('ui.notification.delete_failed') });
   }
