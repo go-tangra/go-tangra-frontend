@@ -74,7 +74,18 @@
       "descriptionPlaceholder": "Enter backup description",
       "targets": "Module Targets",
       "addTarget": "Add Target",
-      "removeTarget": "Remove"
+      "removeTarget": "Remove",
+      "uploadRestore": "Upload & Restore",
+      "uploadRestoreTitle": "Upload & Restore Full Backup",
+      "uploadRestoreSuccess": "Full backup restored successfully",
+      "uploadRestorePartial": "Some modules failed to restore",
+      "uploadRestoreFailed": "Full backup restore failed",
+      "dropBackupFile": "Drop full backup JSON file here or click to upload",
+      "supportedFormat": "Supports .json full backup files",
+      "detectedModules": "Detected Modules",
+      "moduleNotRegistered": "Module not registered",
+      "unresolvedModules": "Some modules in the backup are not currently registered",
+      "invalidFileFormat": "Invalid file format. Expected {\"modules\": {...}} structure."
     }
   }
 }

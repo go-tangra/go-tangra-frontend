@@ -74,7 +74,18 @@
       "descriptionPlaceholder": "输入备份描述",
       "targets": "模块目标",
       "addTarget": "添加目标",
-      "removeTarget": "移除"
+      "removeTarget": "移除",
+      "uploadRestore": "上传并恢复",
+      "uploadRestoreTitle": "上传并恢复完整备份",
+      "uploadRestoreSuccess": "完整备份已成功恢复",
+      "uploadRestorePartial": "部分模块恢复失败",
+      "uploadRestoreFailed": "完整备份恢复失败",
+      "dropBackupFile": "拖拽完整备份 JSON 文件到此处或点击上传",
+      "supportedFormat": "支持 .json 完整备份文件",
+      "detectedModules": "检测到的模块",
+      "moduleNotRegistered": "模块未注册",
+      "unresolvedModules": "备份中的某些模块当前未注册",
+      "invalidFileFormat": "文件格式无效。预期 {\"modules\": {...}} 结构。"
     }
   }
 }

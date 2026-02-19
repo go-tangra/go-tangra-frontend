@@ -137,6 +137,15 @@ export interface GetFullBackupResponse {
   backup: FullBackupInfo;
 }
 
+export interface DownloadFullBackupRequest {
+  password?: string;
+}
+
+export interface DownloadFullBackupResponse {
+  data: string;
+  filename: string;
+}
+
 // ==================== Helper ====================
 
 function buildQuery(params: Record<string, unknown>): string {
@@ -230,6 +239,9 @@ export const FullBackupService = {
 
   get: (id: string, options?: RequestOptions) =>
     backupApi.get<GetFullBackupResponse>(`/backups/full/${id}`, options),
+
+  download: (id: string, data?: DownloadFullBackupRequest, options?: RequestOptions) =>
+    backupApi.post<DownloadFullBackupResponse>(`/backups/full/${id}/download`, data ?? {}, options),
 
   delete: (id: string, options?: RequestOptions) =>
     backupApi.delete<void>(`/backups/full/${id}`, options),

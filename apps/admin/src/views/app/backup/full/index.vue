@@ -1,12 +1,12 @@
 <script lang="ts" setup>
 import type { VxeGridProps } from '#/adapter/vxe-table';
 
-import { h } from 'vue';
+import { h, ref } from 'vue';
 
 import { Page, useVbenDrawer, type VbenFormProps } from '@vben/common-ui';
-import { LucideEye, LucideLock, LucideTrash, LucideRotateCcw } from '@vben/icons';
+import { LucideDownload, LucideEye, LucideLock, LucideTrash, LucideRotateCcw } from '@vben/icons';
 
-import { notification, Space, Button, Tag } from 'ant-design-vue';
+import { Modal, InputPassword, notification, Space, Button, Tag } from 'ant-design-vue';
 
 import { useVbenVxeGrid } from '#/adapter/vxe-table';
 import { $t } from '#/locales';
@@ -16,6 +16,7 @@ import type { FullBackupInfo } from '#/generated/api/modules/backup/services';
 import BackupDrawer from './backup-drawer.vue';
 import CreateDrawer from './create-drawer.vue';
 import RestoreDrawer from './restore-drawer.vue';
+import UploadRestoreDrawer from './upload-restore-drawer.vue';
 
 const fullStore = useBackupFullStore();
 
@@ -132,7 +133,7 @@ const gridOptions: VxeGridProps<FullBackupInfo> = {
       field: 'action',
       fixed: 'right',
       slots: { default: 'action' },
-      width: 150,
+      width: 190,
     },
   ],
 };
@@ -161,6 +162,20 @@ const [RestoreDrawerComponent, restoreDrawerApi] = useVbenDrawer({
   },
 });
 
+const [UploadRestoreDrawerComponent, uploadRestoreDrawerApi] = useVbenDrawer({
+  connectedComponent: UploadRestoreDrawer,
+  onOpenChange(isOpen: boolean) {
+    if (!isOpen) {
+      gridApi.reload();
+    }
+  },
+});
+
+function handleUploadRestore() {
+  uploadRestoreDrawerApi.setData({});
+  uploadRestoreDrawerApi.open();
+}
+
 function handleView(row: FullBackupInfo) {
   backupDrawerApi.setData({ row });
   backupDrawerApi.open();
@@ -174,6 +189,48 @@ function handleCreate() {
 function handleRestore(row: FullBackupInfo) {
   restoreDrawerApi.setData({ row });
   restoreDrawerApi.open();
+}
+
+const downloadPassword = ref('');
+
+function handleDownload(row: FullBackupInfo) {
+  if (!row.id || row.status === 'failed') return;
+
+  if (row.encrypted) {
+    downloadPassword.value = '';
+    Modal.confirm({
+      title: $t('backup.page.module.downloadPasswordTitle'),
+      content: () =>
+        h('div', [
+          h('p', { class: 'mb-2' }, $t('backup.page.module.downloadPasswordPrompt')),
+          h(InputPassword, {
+            value: downloadPassword.value,
+            'onUpdate:value': (val: string) => {
+              downloadPassword.value = val;
+            },
+            placeholder: $t('backup.page.module.enterPassword'),
+          }),
+        ]),
+      okText: $t('backup.page.module.download'),
+      async onOk() {
+        try {
+          await fullStore.downloadFullBackup(row.id, downloadPassword.value);
+          notification.success({ message: $t('backup.page.module.downloadSuccess') });
+        } catch {
+          notification.error({ message: $t('backup.page.module.downloadFailed') });
+        }
+      },
+    });
+  } else {
+    fullStore
+      .downloadFullBackup(row.id)
+      .then(() => {
+        notification.success({ message: $t('backup.page.module.downloadSuccess') });
+      })
+      .catch(() => {
+        notification.error({ message: $t('backup.page.module.downloadFailed') });
+      });
+  }
 }
 
 async function handleDelete(row: FullBackupInfo) {
@@ -194,6 +251,9 @@ async function handleDelete(row: FullBackupInfo) {
   <Page auto-content-height>
     <Grid :table-title="$t('backup.page.full.title')">
       <template #toolbar-tools>
+        <Button class="mr-2" @click="handleUploadRestore">
+          {{ $t('backup.page.full.uploadRestore') }}
+        </Button>
         <Button class="mr-2" type="primary" @click="handleCreate">
           {{ $t('backup.page.full.create') }}
         </Button>
@@ -225,6 +285,14 @@ async function handleDelete(row: FullBackupInfo) {
           <Button
             type="link"
             size="small"
+            :icon="h(LucideDownload)"
+            :title="$t('backup.page.module.download')"
+            :disabled="row.status === 'failed'"
+            @click.stop="handleDownload(row)"
+          />
+          <Button
+            type="link"
+            size="small"
             :icon="h(LucideRotateCcw)"
             :title="$t('backup.page.full.restore')"
             :disabled="row.status !== 'completed'"
@@ -251,5 +319,6 @@ async function handleDelete(row: FullBackupInfo) {
     <BackupDrawerComponent />
     <CreateDrawerComponent />
     <RestoreDrawerComponent />
+    <UploadRestoreDrawerComponent />
   </Page>
 </template>

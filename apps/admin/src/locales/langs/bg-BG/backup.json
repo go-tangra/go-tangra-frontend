@@ -74,7 +74,18 @@
       "descriptionPlaceholder": "Въведете описание на копието",
       "targets": "Целеви модули",
       "addTarget": "Добави цел",
-      "removeTarget": "Премахни"
+      "removeTarget": "Премахни",
+      "uploadRestore": "Качи и възстанови",
+      "uploadRestoreTitle": "Качване и възстановяване на пълно копие",
+      "uploadRestoreSuccess": "Пълното копие е възстановено успешно",
+      "uploadRestorePartial": "Някои модули не бяха възстановени",
+      "uploadRestoreFailed": "Възстановяването на пълното копие е неуспешно",
+      "dropBackupFile": "Плъзнете JSON файл на пълно копие тук или щракнете за качване",
+      "supportedFormat": "Поддържа .json файлове за пълни копия",
+      "detectedModules": "Открити модули",
+      "moduleNotRegistered": "Модулът не е регистриран",
+      "unresolvedModules": "Някои модули в копието не са регистрирани в момента",
+      "invalidFileFormat": "Невалиден формат на файла. Очаква се структура {\"modules\": {...}}."
     }
   }
 }
