@@ -206,6 +206,8 @@ export const DocumentService = {
 
 // ==================== Permission Service ====================
 
+// ==================== Permission Service ====================
+
 export const PermissionService = {
   list: async (
     params?: operations['PaperlessPermissionService_ListPermissions']['parameters']['query'],

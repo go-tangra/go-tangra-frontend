@@ -119,6 +119,23 @@ LOCATIONS
             add_header Expires "0" always;
         }
 
+        # Public signing endpoint (no auth, proxied to paperless-service HTTP)
+        location /public/v1/signing/ {
+            resolver 127.0.0.11 valid=30s ipv6=off;
+LOCATIONS
+    echo "            set \$paperless_upstream http://${PAPERLESS_HTTP_HOST:-paperless-service}:${PAPERLESS_HTTP_PORT:-9501};"
+    cat << 'LOCATIONS'
+            rewrite ^/public/v1/signing/(.*)$ /api/v1/signing/$1 break;
+            proxy_pass $paperless_upstream;
+            proxy_http_version 1.1;
+            proxy_set_header Host $host;
+            proxy_set_header X-Real-IP $remote_addr;
+            proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+            proxy_set_header X-Forwarded-Proto $scheme;
+            proxy_read_timeout 120s;
+            client_max_body_size 50m;
+        }
+
         # Health check endpoint
         location /health {
             access_log off;

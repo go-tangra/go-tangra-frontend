@@ -141,6 +141,19 @@ function setupAccessGuard(router: Router) {
       ],
     });
 
+    // Register signing template builder (hidden route, not in backend menu)
+    router.addRoute('paperless', {
+      path: 'signing/templates/:id/builder',
+      name: 'PaperlessSigningTemplateBuilder',
+      meta: {
+        hideInMenu: true,
+        title: $t('paperless.menu.fieldBuilder'),
+        authority: ['platform:admin', 'tenant:manager'],
+      },
+      component: () =>
+        import('#/views/app/paperless/signing/builder/index.vue'),
+    });
+
     accessStore.setIsAccessChecked(true);
 
     const redirectPath = (from.query.redirect ??

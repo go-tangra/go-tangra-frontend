@@ -37,6 +37,28 @@ const paperless: RouteRecordRaw[] = [
         },
         component: () => import('#/views/app/paperless/category/index.vue'),
       },
+      {
+        path: 'signing/templates',
+        name: 'PaperlessSigningTemplates',
+        meta: {
+          icon: 'lucide:file-signature',
+          title: $t('paperless.menu.signingTemplates'),
+          authority: ['platform:admin', 'tenant:manager'],
+        },
+        component: () =>
+          import('#/views/app/paperless/signing/templates/index.vue'),
+      },
+      {
+        path: 'signing/requests',
+        name: 'PaperlessSigningRequests',
+        meta: {
+          icon: 'lucide:pen-tool',
+          title: $t('paperless.menu.signingRequests'),
+          authority: ['platform:admin', 'tenant:manager'],
+        },
+        component: () =>
+          import('#/views/app/paperless/signing/requests/index.vue'),
+      },
     ],
   },
 ];

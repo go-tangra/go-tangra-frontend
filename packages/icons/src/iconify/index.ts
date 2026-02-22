@@ -95,6 +95,17 @@ export const LucideFolderPlus = createIconifyIcon('lucide:folder-plus');
 export const LucideFolderTree = createIconifyIcon('lucide:folder-tree');
 export const LucideSearch = createIconifyIcon('lucide:search');
 
+// Signing icons
+export const LucideFileSignature = createIconifyIcon('lucide:file-signature');
+export const LucidePenTool = createIconifyIcon('lucide:pen-tool');
+export const LucideSave = createIconifyIcon('lucide:save');
+export const LucideType = createIconifyIcon('lucide:type');
+export const LucideCalendar = createIconifyIcon('lucide:calendar');
+export const LucidePenLine = createIconifyIcon('lucide:pen-line');
+export const LucideSquareCheck = createIconifyIcon('lucide:square-check');
+export const LucideGripVertical = createIconifyIcon('lucide:grip-vertical');
+export const LucideLayoutGrid = createIconifyIcon('lucide:layout-grid');
+
 // Sharing icons
 export const LucideShare2 = createIconifyIcon('lucide:share-2');
 export const LucideMailPlus = createIconifyIcon('lucide:mail-plus');
