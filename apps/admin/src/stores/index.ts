@@ -55,6 +55,8 @@ export * from './ipam-host-group.state';
 export * from './paperless-category.state';
 export * from './paperless-document.state';
 export * from './paperless-permission.state';
+export * from './paperless-signing-template.state';
+export * from './paperless-signing-request.state';
 export * from './sharing-share.state';
 export * from './sharing-template.state';
 export * from './bookmark-bookmark.state';
