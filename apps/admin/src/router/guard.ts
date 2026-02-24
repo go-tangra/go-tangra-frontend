@@ -16,6 +16,21 @@ import { useAuthStore } from '#/stores';
 import { generateAccess } from './access';
 
 /**
+ * Find the path of the first leaf menu item (no children).
+ */
+function findFirstLeafMenu(menus: any[]): string | undefined {
+  for (const menu of menus) {
+    if (menu.children?.length) {
+      const child = findFirstLeafMenu(menu.children);
+      if (child) return child;
+    } else if (menu.path) {
+      return menu.path;
+    }
+  }
+  return undefined;
+}
+
+/**
  * 通用守卫配置
  * @param router
  */
@@ -149,10 +164,24 @@ function setupAccessGuard(router: Router) {
 
     accessStore.setIsAccessChecked(true);
 
-    const redirectPath = (from.query.redirect ??
+    let redirectPath = (from.query.redirect ??
       (to.path === DEFAULT_HOME_PATH
         ? userInfo?.homePath || DEFAULT_HOME_PATH
         : to.fullPath)) as string;
+
+    // If the target path doesn't resolve to a valid route (e.g. user
+    // has no dashboard permission), fall back to the first accessible
+    // menu item so they don't land on a 404.
+    const resolved = router.resolve(decodeURIComponent(redirectPath));
+    if (
+      resolved.matched.length === 0 ||
+      resolved.matched.some((m) => m.path === '/:path(.*)*')
+    ) {
+      const firstMenu = findFirstLeafMenu(accessStore.accessMenus);
+      if (firstMenu) {
+        redirectPath = firstMenu;
+      }
+    }
 
     return {
       ...router.resolve(decodeURIComponent(redirectPath)),
