@@ -18,6 +18,7 @@ export default defineConfig(async () => {
             './vben/common-ui': '@vben/common-ui',
             './vben/icons': '@vben/icons',
             './vben/layouts': '@vben/layouts',
+            './app-layout': './src/layouts/basic.vue',
           },
           shared: {
             vue: { singleton: true },
