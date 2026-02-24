@@ -22,6 +22,7 @@ COPY package.json pnpm-lock.yaml pnpm-workspace.yaml .npmrc ./
 COPY apps/admin/package.json ./apps/admin/
 COPY packages/ ./packages/
 COPY internal/ ./internal/
+COPY scripts/ ./scripts/
 
 # Install dependencies with cache mount
 RUN --mount=type=cache,id=pnpm,target=/pnpm/store pnpm install --frozen-lockfile

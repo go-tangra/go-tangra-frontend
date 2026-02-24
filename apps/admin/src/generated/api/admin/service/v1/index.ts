@@ -8249,6 +8249,8 @@ export type RegisterModuleRequest = {
   description: string | undefined;
   // Connection info
   grpcEndpoint: string | undefined;
+  // Module Federation remoteEntry.js URL
+  frontendEntryUrl: string | undefined;
   // API definition (OpenAPI 3.0 YAML for routing - no menu extensions needed)
   openapiSpec: string | undefined;
   // Proto descriptor for gRPC transcoding (compiled FileDescriptorSet)
@@ -8309,6 +8311,8 @@ export type Module = {
   registeredAt: wellKnownTimestamp | undefined;
   lastHeartbeat: wellKnownTimestamp | undefined;
   registrationId: string | undefined;
+  // Module Federation remoteEntry.js URL
+  frontendEntryUrl: string | undefined;
   // Statistics
   menuCount: number | undefined;
   apiCount: number | undefined;

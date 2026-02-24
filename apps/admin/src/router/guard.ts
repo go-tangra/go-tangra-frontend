@@ -5,8 +5,11 @@ import { preferences } from '@vben/preferences';
 import { useAccessStore, useUserStore } from '@vben/stores';
 import { startProgress, stopProgress } from '@vben/utils';
 
+import { i18n } from '@vben/locales';
+
 import { BasicLayout } from '#/layouts';
 import { $t } from '#/locales';
+import { loadFederatedModules } from '#/module-loader';
 import { accessRoutes, coreRouteNames } from '#/router/routes';
 import { useAuthStore } from '#/stores';
 
@@ -114,6 +117,9 @@ function setupAccessGuard(router: Router) {
       routes: accessRoutes,
     });
 
+    // Load federated module frontends (routes, i18n, stores)
+    await loadFederatedModules(router, i18n as any);
+
     // 保存菜单信息和路由信息
     accessStore.setAccessMenus(accessibleMenus);
     accessStore.setAccessRoutes(accessibleRoutes);
@@ -139,19 +145,6 @@ function setupAccessGuard(router: Router) {
           component: () => import('#/views/app/profile/index.vue'),
         },
       ],
-    });
-
-    // Register signing template builder (hidden route, not in backend menu)
-    router.addRoute('paperless', {
-      path: 'signing/templates/:id/builder',
-      name: 'PaperlessSigningTemplateBuilder',
-      meta: {
-        hideInMenu: true,
-        title: $t('paperless.menu.fieldBuilder'),
-        authority: ['platform:admin', 'tenant:manager'],
-      },
-      component: () =>
-        import('#/views/app/paperless/signing/builder/index.vue'),
     });
 
     accessStore.setIsAccessChecked(true);

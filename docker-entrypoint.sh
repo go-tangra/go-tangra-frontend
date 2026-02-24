@@ -39,11 +39,32 @@ generate_locations() {
             add_header Expires "0";
         }
 
-        # Static assets with long cache
+        # Module Federation entry point — never cache (no hash in filename)
+        location = /remoteEntry.js {
+            add_header Cache-Control "no-cache, no-store, must-revalidate";
+            add_header Pragma "no-cache";
+            add_header Expires "0";
+        }
+
+        # Static assets with long cache (hashed filenames)
         location ~* \.(js|css|png|jpg|jpeg|gif|ico|svg|woff|woff2|ttf|eot)$ {
             expires 1y;
             add_header Cache-Control "public, immutable";
             access_log off;
+        }
+
+        # Module frontend assets — single proxy to admin-service which dynamically
+        # routes to the correct module's HTTP server based on its registry.
+        # Cache-Control headers are set by the admin-service ModuleAssetProxy handler.
+        location ^~ /modules/ {
+LOCATIONS
+    echo "            proxy_pass http://${BACKEND_HOST}:${BACKEND_PORT};"
+    cat << 'LOCATIONS'
+            proxy_http_version 1.1;
+            proxy_set_header Host $host;
+            proxy_set_header X-Real-IP $remote_addr;
+            proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+            proxy_set_header X-Forwarded-Proto $scheme;
         }
 
         # API proxy for dynamic module routes (preserve full path)

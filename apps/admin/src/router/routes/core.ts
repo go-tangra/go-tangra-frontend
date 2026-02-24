@@ -41,18 +41,6 @@ const coreRoutes: RouteRecordRaw[] = [
     component: () => import('#/views/app/sharing/shared/view-shared.vue'),
   },
   {
-    meta: {
-      hideInMenu: true,
-      hideInTab: true,
-      hideInBreadcrumb: true,
-      title: 'Document Signing',
-    },
-    name: 'SigningSession',
-    path: '/signing/:token',
-    component: () =>
-      import('#/views/app/paperless/signing/session/index.vue'),
-  },
-  {
     component: AuthPageLayout,
     meta: {
       hideInTab: true,
