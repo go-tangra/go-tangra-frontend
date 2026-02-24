@@ -1,6 +1,7 @@
 import { createApp, watchEffect } from 'vue';
 
 import { registerAccessDirective } from '@vben/access';
+import { i18n } from '@vben/locales';
 import { preferences } from '@vben/preferences';
 import { initStores } from '@vben/stores';
 import '@vben/styles';
@@ -12,6 +13,7 @@ import { $t, setupI18n } from '#/locales';
 
 import { initComponentAdapter } from './adapter/component';
 import App from './app.vue';
+import { initModuleFederation } from './module-loader';
 import { registerGlobComp } from './registerGlobComp';
 import { router } from './router';
 
@@ -32,6 +34,9 @@ async function bootstrap(namespace: string) {
 
   // 安装权限指令
   registerAccessDirective(app);
+
+  // Initialize Module Federation runtime (no API calls, no auth needed)
+  initModuleFederation();
 
   // 配置路由及路由守卫
   app.use(router);

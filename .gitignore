@@ -16,6 +16,7 @@ coverage
 .cache
 .turbo
 .temp
+**/.__mf__temp
 dev-dist
 .stylelintcache
 yarn.lock
