@@ -193,7 +193,31 @@
     "button": {
       "create": "Create Account",
       "editPassword": "Edit Password",
-      "banAccount": "Ban Account"
+      "banAccount": "Ban Account",
+      "ldapSync": "LDAP Sync"
+    },
+    "ldap": {
+      "title": "LDAP User Sync",
+      "fetching": "Fetching LDAP users...",
+      "syncing": "Syncing users...",
+      "totalLdap": "Total LDAP Entries",
+      "newUsers": "New",
+      "updatedUsers": "Updated",
+      "unchanged": "Unchanged",
+      "noChanges": "No changes detected from LDAP",
+      "warnings": "Warnings",
+      "action": "Action",
+      "username": "Username",
+      "realname": "Real Name",
+      "email": "Email",
+      "changedFields": "Changed Fields",
+      "sync": "Apply Sync",
+      "syncComplete": "Sync Complete",
+      "syncSuccess": "LDAP sync completed successfully",
+      "created": "Created",
+      "updated": "Updated",
+      "skipped": "Skipped",
+      "errors": "Errors"
     },
     "detail": {
       "title": "User {userId} Profile",

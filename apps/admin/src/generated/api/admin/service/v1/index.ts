@@ -7763,6 +7763,10 @@ export interface UserService {
   UserExists(request: userservicev1_UserExistsRequest): Promise<userservicev1_UserExistsResponse>;
   // Edit user password
   EditUserPassword(request: userservicev1_EditUserPasswordRequest): Promise<wellKnownEmpty>;
+  // Preview LDAP user sync changes
+  LdapSyncPreview(request: userservicev1_LdapSyncPreviewRequest): Promise<userservicev1_LdapSyncPreviewResponse>;
+  // Execute LDAP user sync
+  LdapSyncExecute(request: userservicev1_LdapSyncExecuteRequest): Promise<userservicev1_LdapSyncExecuteResponse>;
 }
 
 export function createUserServiceClient(
@@ -7977,6 +7981,40 @@ export function createUserServiceClient(
         method: "EditUserPassword",
       }) as Promise<wellKnownEmpty>;
     },
+    LdapSyncPreview(request) { // eslint-disable-line @typescript-eslint/no-unused-vars
+      const path = `admin/v1/users/ldap-sync/preview`; // eslint-disable-line quotes
+      const body = JSON.stringify(request);
+      const queryParams: string[] = [];
+      let uri = path;
+      if (queryParams.length > 0) {
+        uri += `?${queryParams.join("&")}`
+      }
+      return handler({
+        path: uri,
+        method: "POST",
+        body,
+      }, {
+        service: "UserService",
+        method: "LdapSyncPreview",
+      }) as Promise<userservicev1_LdapSyncPreviewResponse>;
+    },
+    LdapSyncExecute(request) { // eslint-disable-line @typescript-eslint/no-unused-vars
+      const path = `admin/v1/users/ldap-sync/execute`; // eslint-disable-line quotes
+      const body = JSON.stringify(request);
+      const queryParams: string[] = [];
+      let uri = path;
+      if (queryParams.length > 0) {
+        uri += `?${queryParams.join("&")}`
+      }
+      return handler({
+        path: uri,
+        method: "POST",
+        body,
+      }, {
+        service: "UserService",
+        method: "LdapSyncExecute",
+      }) as Promise<userservicev1_LdapSyncExecuteResponse>;
+    },
   };
 }
 // List users - Response
@@ -8030,6 +8068,49 @@ export type userservicev1_UserExistsResponse = {
 export type userservicev1_EditUserPasswordRequest = {
   userId: number | undefined;
   newPassword: string | undefined;
+};
+
+// LdapSyncPreviewRequest requests a preview of LDAP user sync changes
+export type userservicev1_LdapSyncPreviewRequest = {
+  tenantId?: number;
+};
+
+// LdapSyncPreviewResponse contains the preview of LDAP sync changes
+export type userservicev1_LdapSyncPreviewResponse = {
+  totalLdapEntries: number | undefined;
+  newCount: number | undefined;
+  updateCount: number | undefined;
+  unchangedCount: number | undefined;
+  changes: userservicev1_LdapSyncChange[] | undefined;
+  warnings: string[] | undefined;
+};
+
+// LdapSyncChange describes a single change from LDAP sync
+export type userservicev1_LdapSyncChange = {
+  action: userservicev1_LdapSyncChange_Action | undefined;
+  user?: userservicev1_User;
+  changedFields: string[] | undefined;
+  existingId?: number;
+  ldapDn?: string;
+};
+
+export type userservicev1_LdapSyncChange_Action =
+  | "ACTION_UNSPECIFIED"
+  | "ACTION_CREATE"
+  | "ACTION_UPDATE";
+// LdapSyncExecuteRequest executes the LDAP user sync
+export type userservicev1_LdapSyncExecuteRequest = {
+  tenantId?: number;
+  selectedDns: string[] | undefined;
+};
+
+// LdapSyncExecuteResponse contains the results of LDAP sync execution
+export type userservicev1_LdapSyncExecuteResponse = {
+  createdCount: number | undefined;
+  updatedCount: number | undefined;
+  skippedCount: number | undefined;
+  errorCount: number | undefined;
+  errors: string[] | undefined;
 };
 
 // User profile service
@@ -8249,8 +8330,8 @@ export type RegisterModuleRequest = {
   description: string | undefined;
   // Connection info
   grpcEndpoint: string | undefined;
-  // Module Federation remoteEntry.js URL
   frontendEntryUrl: string | undefined;
+  httpEndpoint: string | undefined;
   // API definition (OpenAPI 3.0 YAML for routing - no menu extensions needed)
   openapiSpec: string | undefined;
   // Proto descriptor for gRPC transcoding (compiled FileDescriptorSet)
@@ -8311,8 +8392,8 @@ export type Module = {
   registeredAt: wellKnownTimestamp | undefined;
   lastHeartbeat: wellKnownTimestamp | undefined;
   registrationId: string | undefined;
-  // Module Federation remoteEntry.js URL
   frontendEntryUrl: string | undefined;
+  httpEndpoint: string | undefined;
   // Statistics
   menuCount: number | undefined;
   apiCount: number | undefined;
