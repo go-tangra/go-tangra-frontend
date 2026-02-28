@@ -105,6 +105,20 @@ export const useUserListStore = defineStore('user-list', () => {
     });
   }
 
+  /**
+   * LDAP sync preview
+   */
+  async function ldapSyncPreview() {
+    return await service.LdapSyncPreview({});
+  }
+
+  /**
+   * LDAP sync execute
+   */
+  async function ldapSyncExecute(selectedDns?: string[]) {
+    return await service.LdapSyncExecute({ selectedDns });
+  }
+
   function $reset() {}
 
   return {
@@ -116,6 +130,8 @@ export const useUserListStore = defineStore('user-list', () => {
     deleteUser,
     editUserPassword,
     userExists,
+    ldapSyncPreview,
+    ldapSyncExecute,
   };
 });
 

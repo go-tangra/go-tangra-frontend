@@ -3,7 +3,7 @@ import type { VxeGridListeners, VxeGridProps } from '#/adapter/vxe-table';
 
 import { h, watch } from 'vue';
 
-import { useVbenDrawer, type VbenFormProps } from '@vben/common-ui';
+import { useVbenDrawer, useVbenModal, type VbenFormProps } from '@vben/common-ui';
 import { LucideFilePenLine, LucideInfo, LucideTrash2 } from '@vben/icons';
 import { isEqual } from '@vben/utils';
 
@@ -26,6 +26,7 @@ import {
 import { getRandomColor } from '#/utils/color';
 import { useUserViewStore } from '#/views/app/opm/users/user-view.state';
 
+import LdapSyncModal from './ldap-sync-modal.vue';
 import UserDrawer from './user-drawer.vue';
 
 const userListStore = useUserListStore();
@@ -260,6 +261,18 @@ const [Drawer, drawerApi] = useVbenDrawer({
   },
 });
 
+const [LdapModal, ldapModalApi] = useVbenModal({
+  connectedComponent: LdapSyncModal,
+});
+
+function handleLdapSync() {
+  ldapModalApi.open();
+}
+
+function handleLdapSyncSuccess() {
+  gridApi.query();
+}
+
 /* 打开模态窗口 */
 function openDrawer(create: boolean, row?: any) {
   drawerApi.setData({
@@ -321,6 +334,9 @@ watch(
 <template>
   <Grid :table-title="$t('menu.opm.user')">
     <template #toolbar-tools>
+      <a-button class="mr-2" @click="handleLdapSync">
+        {{ $t('page.user.button.ldapSync') }}
+      </a-button>
       <a-button type="primary" @click="handleCreate">
         {{ $t('page.user.button.create') }}
       </a-button>
@@ -410,6 +426,7 @@ watch(
     </template>
   </Grid>
   <Drawer />
+  <LdapModal @success="handleLdapSyncSuccess" />
 </template>
 
 <style scoped></style>
