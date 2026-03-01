@@ -18,8 +18,6 @@ import {
 import { useVbenForm } from '#/adapter/form';
 import { genderList, useUserProfileStore } from '#/stores';
 
-const MAX_AVATAR_SIZE = 2 * 1024 * 1024; // 2MB
-
 const userProfileStore = useUserProfileStore();
 const avatarLoading = ref(false);
 
@@ -37,7 +35,7 @@ function beforeAvatarUpload(file: File): boolean {
     notification.error({ message: $t('page.profile.avatarInvalidType') });
     return false;
   }
-  if (file.size > MAX_AVATAR_SIZE) {
+  if (file.size > 2 * 1024 * 1024) {
     notification.error({ message: $t('page.profile.avatarFileTooLarge') });
     return false;
   }
