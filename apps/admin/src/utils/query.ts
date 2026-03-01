@@ -220,3 +220,27 @@ export function makeUpdateMask(keys: string[]): string {
   }
   return keys.join(',');
 }
+/**
+ * Omit the specified key from the object, returning a new object
+ * @example Usage examples
+ * const original = { a: 1, b: 2, c: 3 };
+ * const result = omit(original, ['b', 'c']);
+ * // result The value is { a: 1 }
+ * @param obj original object
+ * @param keys Key or array of keys to be omitted
+ */
+export function omit<T extends Record<string, any>, K extends string>(
+  obj: null | T | undefined,
+  keys: K | K[],
+): Omit<T, K> {
+  if (obj === null || typeof obj !== 'object') return obj as any;
+  const result = { ...obj } as Record<string, any>;
+  const keysArr = Array.isArray(keys) ? keys : [keys];
+  for (const key of keysArr) {
+    if (Object.prototype.hasOwnProperty.call(result, key)) {
+      // eslint-disable-next-line @typescript-eslint/no-dynamic-delete
+      delete result[key];
+    }
+  }
+  return result as Omit<T, K>;
+}
