@@ -194,7 +194,17 @@
       "create": "创建账号",
       "editPassword": "修改密码",
       "banAccount": "禁用账号",
-      "ldapSync": "LDAP 同步"
+      "ldapSync": "LDAP 同步",
+      "updateUserInfo": "更新用户信息",
+      "updatePassword": "更新密码"
+    },
+    "profile": {
+      "tab": {
+        "basicSettings": "基本设置",
+        "editPassword": "修改密码",
+        "notification": "消息通知",
+        "mfaSettings": "MFA 设置"
+      }
     },
     "ldap": {
       "title": "LDAP 用户同步",
@@ -526,7 +536,11 @@
     "passwordRequired": "请输入旧密码和新密码",
     "passwordMismatch": "新密码与确认密码不一致",
     "passwordChanged": "密码修改成功",
-    "passwordChangeFailed": "密码修改失败"
+    "passwordChangeFailed": "密码修改失败",
+    "avatarUploadFailed": "头像上传失败",
+    "avatarDeleteFailed": "头像删除失败",
+    "avatarFileTooLarge": "图片大小不能超过2MB",
+    "avatarInvalidType": "仅允许上传图片文件"
   },
   "loginPolicy": {
     "moduleName": "登录策略",

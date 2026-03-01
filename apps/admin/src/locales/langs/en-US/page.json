@@ -194,7 +194,17 @@
       "create": "Create Account",
       "editPassword": "Edit Password",
       "banAccount": "Ban Account",
-      "ldapSync": "LDAP Sync"
+      "ldapSync": "LDAP Sync",
+      "updateUserInfo": "Update User Info",
+      "updatePassword": "Update Password"
+    },
+    "profile": {
+      "tab": {
+        "basicSettings": "Basic Settings",
+        "editPassword": "Change Password",
+        "notification": "Notifications",
+        "mfaSettings": "MFA Settings"
+      }
     },
     "ldap": {
       "title": "LDAP User Sync",
@@ -524,7 +534,11 @@
     "passwordRequired": "Please enter both old and new password",
     "passwordMismatch": "New password and confirmation do not match",
     "passwordChanged": "Password changed successfully",
-    "passwordChangeFailed": "Failed to change password"
+    "passwordChangeFailed": "Failed to change password",
+    "avatarUploadFailed": "Avatar upload failed",
+    "avatarDeleteFailed": "Avatar delete failed",
+    "avatarFileTooLarge": "Image must be smaller than 2MB",
+    "avatarInvalidType": "Only image files are allowed"
   },
   "loginPolicy": {
     "moduleName": "Login Policy",

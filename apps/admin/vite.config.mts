@@ -43,6 +43,11 @@ export default defineConfig(async () => {
             target: 'http://localhost:5320/api',
             ws: true,
           },
+          // Object storage proxy for public buckets (avatars, uploaded images)
+          '/images': {
+            changeOrigin: true,
+            target: 'http://localhost:9000',
+          },
         },
       },
     },
