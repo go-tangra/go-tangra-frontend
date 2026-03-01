@@ -157,7 +157,7 @@ function setupAccessGuard(router: Router) {
             icon: 'lucide:user-cog',
             title: $t('page.profile.title'),
           },
-          component: () => import('#/views/app/profile/index.vue'),
+          component: () => import('#/views/profile/index.vue'),
         },
       ],
     });
