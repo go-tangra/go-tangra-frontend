@@ -46,17 +46,16 @@ generate_locations() {
             add_header Expires "0";
         }
 
-        # Object storage proxy — serves public bucket content (avatars, images)
-        # from RustFS/MinIO. Buckets must have public-read policy set.
+        # Object storage proxy — serves avatars, images, and files via admin-service.
+        # Admin-service fetches from RustFS/MinIO with credentials, so buckets
+        # don't need public-read policies.
         # Must appear before the static assets location to avoid .png/.jpg matching the static rule.
         location ~* ^/(images|files)/ {
-            resolver 127.0.0.11 valid=30s ipv6=off;
 LOCATIONS
-    echo "            set \$storage_upstream http://${STORAGE_HOST:-rustfs}:${STORAGE_PORT:-9000};"
-    echo "            proxy_pass \$storage_upstream;"
-    echo "            proxy_http_version 1.1;"
-    echo "            proxy_set_header Host ${STORAGE_HOST:-rustfs}:${STORAGE_PORT:-9000};"
+    echo "            proxy_pass http://${BACKEND_HOST}:${BACKEND_PORT};"
     cat << 'LOCATIONS'
+            proxy_http_version 1.1;
+            proxy_set_header Host $host;
             proxy_set_header X-Real-IP $remote_addr;
             proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
             proxy_set_header X-Forwarded-Proto $scheme;
