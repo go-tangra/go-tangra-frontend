@@ -53,10 +53,10 @@ generate_locations() {
             resolver 127.0.0.11 valid=30s ipv6=off;
 LOCATIONS
     echo "            set \$storage_upstream http://${STORAGE_HOST:-rustfs}:${STORAGE_PORT:-9000};"
+    echo "            proxy_pass \$storage_upstream;"
+    echo "            proxy_http_version 1.1;"
+    echo "            proxy_set_header Host ${STORAGE_HOST:-rustfs}:${STORAGE_PORT:-9000};"
     cat << 'LOCATIONS'
-            proxy_pass $storage_upstream;
-            proxy_http_version 1.1;
-            proxy_set_header Host $host;
             proxy_set_header X-Real-IP $remote_addr;
             proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
             proxy_set_header X-Forwarded-Proto $scheme;
