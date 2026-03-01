@@ -193,7 +193,17 @@
     "button": {
       "create": "Създай акаунт",
       "editPassword": "Промени парола",
-      "banAccount": "Блокирай акаунт"
+      "banAccount": "Блокирай акаунт",
+      "updateUserInfo": "Обнови потребителска информация",
+      "updatePassword": "Обнови парола"
+    },
+    "profile": {
+      "tab": {
+        "basicSettings": "Основни настройки",
+        "editPassword": "Смяна на парола",
+        "notification": "Известия",
+        "mfaSettings": "MFA настройки"
+      }
     },
     "detail": {
       "title": "Профил на потребител {userId}",
@@ -500,7 +510,11 @@
     "passwordRequired": "Моля, въведете старата и новата парола",
     "passwordMismatch": "Новата парола и потвърждението не съвпадат",
     "passwordChanged": "Паролата е променена успешно",
-    "passwordChangeFailed": "Неуспешна промяна на паролата"
+    "passwordChangeFailed": "Неуспешна промяна на паролата",
+    "avatarUploadFailed": "Качването на аватар е неуспешно",
+    "avatarDeleteFailed": "Изтриването на аватар е неуспешно",
+    "avatarFileTooLarge": "Изображението трябва да е по-малко от 2MB",
+    "avatarInvalidType": "Позволени са само файлове с изображения"
   },
   "loginPolicy": {
     "moduleName": "Политика за вход",
