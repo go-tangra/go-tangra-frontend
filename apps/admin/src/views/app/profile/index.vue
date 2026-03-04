@@ -21,6 +21,7 @@ import {
 } from 'ant-design-vue';
 
 import { createUserProfileServiceClient } from '#/generated/api/admin/service/v1';
+import { encryptPassword } from '#/utils/encrypt';
 import { requestClientRequestHandler } from '#/utils/request';
 
 import MFASettings from './mfa-settings.vue';
@@ -65,8 +66,8 @@ async function handleChangePassword() {
   changingPassword.value = true;
   try {
     await userProfileService.ChangePassword({
-      oldPassword: passwordForm.value.oldPassword,
-      newPassword: passwordForm.value.newPassword,
+      oldPassword: encryptPassword(passwordForm.value.oldPassword),
+      newPassword: encryptPassword(passwordForm.value.newPassword),
     });
     notification.success({ message: $t('page.profile.passwordChanged') });
     passwordForm.value = { oldPassword: '', newPassword: '', confirmPassword: '' };

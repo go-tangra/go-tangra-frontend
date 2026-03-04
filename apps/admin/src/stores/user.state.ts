@@ -10,6 +10,7 @@ import {
   type userservicev1_User_Gender as User_Gender,
   type userservicev1_User_Status as User_Status,
 } from '#/generated/api/admin/service/v1';
+import { encryptPassword } from '#/utils/encrypt';
 import { makeOrderBy, makeQueryString, makeUpdateMask } from '#/utils/query';
 import { type Paging, requestClientRequestHandler } from '#/utils/request';
 
@@ -101,7 +102,7 @@ export const useUserListStore = defineStore('user-list', () => {
   async function editUserPassword(id: number, password: string) {
     return await service.EditUserPassword({
       userId: id,
-      newPassword: password,
+      newPassword: encryptPassword(password),
     });
   }
 

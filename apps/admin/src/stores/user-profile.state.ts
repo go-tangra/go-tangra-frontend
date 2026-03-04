@@ -1,6 +1,7 @@
 import { defineStore } from 'pinia';
 
 import { createUserProfileServiceClient } from '#/generated/api/admin/service/v1';
+import { encryptPassword } from '#/utils/encrypt';
 import { makeUpdateMask, omit } from '#/utils/query';
 import { requestClientRequestHandler } from '#/utils/request';
 
@@ -46,8 +47,8 @@ export const useUserProfileStore = defineStore('user-profile', () => {
    */
   async function changePassword(oldPassword: string, newPassword: string) {
     return await userProfileService.ChangePassword({
-      oldPassword,
-      newPassword,
+      oldPassword: encryptPassword(oldPassword),
+      newPassword: encryptPassword(newPassword),
     });
   }
 
