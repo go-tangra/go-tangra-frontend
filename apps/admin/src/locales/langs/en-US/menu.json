@@ -40,5 +40,11 @@
     "moduleName": "Internal Message",
     "internalMessage": "Message Management",
     "internalMessageCategory": "Message Category"
+  },
+  "notification": {
+    "moduleName": "Notification",
+    "channel": "Channel Management",
+    "template": "Template Management",
+    "log": "Notification Logs"
   }
 }

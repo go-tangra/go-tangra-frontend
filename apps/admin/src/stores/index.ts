@@ -30,6 +30,9 @@ export * from './user.state';
 export * from './dashboard.state';
 export * from './dynamic-dashboard.state';
 export * from './sharing-share.state';
+export * from './notification-channel.state';
+export * from './notification-template.state';
+export * from './notification-log.state';
 export * from './user-profile.state';
 
 export * from './module-registration.state';

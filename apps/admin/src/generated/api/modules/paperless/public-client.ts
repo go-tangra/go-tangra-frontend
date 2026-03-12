@@ -28,6 +28,7 @@ export interface SigningSessionResponse {
   fields: SigningField[];
   message: string;
   expiresAt: string;
+  isInternal: boolean;
 }
 
 export interface SubmitSigningRequest {

@@ -51,5 +51,11 @@ vite.config.ts.*
 *.sw?
 .history
 
+# Playwright
+playwright-report/
+playwright-results/
+test-results/
+blob-report/
+
 # Claude Code
 CLAUDE.md

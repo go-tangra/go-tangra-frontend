@@ -550,5 +550,49 @@
     "button": {
       "create": "Create Restriction"
     }
+  },
+  "notification": {
+    "channelType": {
+      "EMAIL": "Email",
+      "SMS": "SMS",
+      "SLACK": "Slack",
+      "SSE": "SSE"
+    },
+    "deliveryStatus": {
+      "PENDING": "Pending",
+      "SENT": "Sent",
+      "FAILED": "Failed"
+    },
+    "channel": {
+      "moduleName": "Channel",
+      "name": "Name",
+      "channelType": "Channel Type",
+      "config": "Configuration",
+      "isDefault": "Default",
+      "button": {
+        "create": "Create Channel"
+      }
+    },
+    "template": {
+      "moduleName": "Template",
+      "name": "Name",
+      "channelType": "Channel Type",
+      "subject": "Subject",
+      "body": "Body",
+      "variables": "Variables",
+      "isDefault": "Default",
+      "button": {
+        "create": "Create Template"
+      }
+    },
+    "log": {
+      "moduleName": "Notification Log",
+      "recipient": "Recipient",
+      "channelType": "Channel Type",
+      "renderedSubject": "Subject",
+      "status": "Status",
+      "errorMessage": "Error",
+      "sentAt": "Sent At"
+    }
   }
 }

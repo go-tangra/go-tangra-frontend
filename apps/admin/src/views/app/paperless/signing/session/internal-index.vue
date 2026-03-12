@@ -14,11 +14,14 @@ import {
 } from 'ant-design-vue';
 import dayjs from 'dayjs';
 
+import { useAccessStore } from '@vben/stores';
+
 import {
-  getSigningSession,
-  submitSigning,
-  type SigningSessionResponse,
-} from '#/generated/api/modules/paperless/public-client';
+  getAuthenticatedSigningSession,
+  submitAuthenticatedSigning,
+  AuthRequiredError,
+} from '#/generated/api/modules/paperless/auth-signing-client';
+import type { SigningSessionResponse } from '#/generated/api/modules/paperless/public-client';
 
 import PdfDocumentViewer from './components/PdfDocumentViewer.vue';
 import SignatureCanvas from './components/SignatureCanvas.vue';
@@ -27,6 +30,7 @@ import { useSigningFlow, type FlowField } from './composables/useSigningFlow';
 
 const route = useRoute();
 const router = useRouter();
+const accessStore = useAccessStore();
 const token = computed(() => route.params.token as string);
 
 // Page state
@@ -35,6 +39,7 @@ const submitting = ref(false);
 const session = ref<SigningSessionResponse | null>(null);
 const error = ref<string | null>(null);
 const success = ref(false);
+const needsLogin = ref(false);
 
 // Composables
 const {
@@ -68,23 +73,32 @@ onMounted(async () => {
     return;
   }
 
-  try {
-    session.value = await getSigningSession(token.value);
+  // Check if user is logged in
+  if (!accessStore.accessToken) {
+    needsLogin.value = true;
+    loading.value = false;
+    return;
+  }
 
-    // Initialize the signing flow
+  try {
+    session.value = await getAuthenticatedSigningSession(token.value);
     initializeFields(session.value.fields ?? []);
   } catch (e: any) {
-    const errMsg = e?.message || 'Failed to load signing session';
-    // If the error indicates internal signing, redirect to the internal signing page
-    if (errMsg.includes('please log in') || errMsg.includes('internal signing')) {
-      router.replace({ name: 'InternalSigningSession', params: { token: token.value } });
-      return;
+    if (e instanceof AuthRequiredError) {
+      needsLogin.value = true;
+    } else {
+      error.value = e?.message || 'Failed to load signing session';
     }
-    error.value = errMsg;
   } finally {
     loading.value = false;
   }
 });
+
+function handleLogin() {
+  // Redirect to login with return URL
+  const returnUrl = route.fullPath;
+  router.push({ name: 'Login', query: { redirect: returnUrl } });
+}
 
 function handleFieldValueUpdate(value: string) {
   setFieldValue(activeFieldIndex.value, value);
@@ -99,14 +113,12 @@ function handleFieldClick(index: number) {
 }
 
 async function handleSubmit() {
-  // Validate required fields
   for (const f of fields.value) {
     if (f.field.required && !isFieldFilled(f)) {
       notification.error({
         message: 'Required field',
         description: `Please fill in "${f.field.name}"`,
       });
-      // Jump to the unfilled required field
       const idx = fields.value.indexOf(f);
       if (idx >= 0) goToField(idx);
       return;
@@ -116,19 +128,22 @@ async function handleSubmit() {
   submitting.value = true;
   try {
     const payload = buildSubmitPayload();
-    await submitSigning(token.value, payload);
+    await submitAuthenticatedSigning(token.value, payload);
     success.value = true;
   } catch (e: any) {
-    notification.error({
-      message: 'Signing failed',
-      description: e?.message || 'Failed to submit signing',
-    });
+    if (e instanceof AuthRequiredError) {
+      needsLogin.value = true;
+    } else {
+      notification.error({
+        message: 'Signing failed',
+        description: e?.message || 'Failed to submit signing',
+      });
+    }
   } finally {
     submitting.value = false;
   }
 }
 
-// --- Sidebar fallback helpers ---
 function getFieldComponent(
   field: FlowField,
 ): 'checkbox' | 'date' | 'input' | 'signature' {
@@ -150,7 +165,7 @@ function getFieldComponent(
     >
       <div class="mx-auto flex max-w-5xl items-center justify-between">
         <h1 class="text-lg font-semibold text-gray-800 dark:text-gray-100">
-          {{ session?.requestName || 'Document Signing' }}
+          {{ session?.requestName || 'Internal Document Signing' }}
         </h1>
         <span
           v-if="session"
@@ -175,6 +190,20 @@ function getFieldComponent(
       />
     </div>
 
+    <!-- Needs Login -->
+    <Result
+      v-else-if="needsLogin"
+      status="warning"
+      title="Authentication Required"
+      sub-title="You need to be logged in to sign this document."
+    >
+      <template #extra>
+        <Button type="primary" size="large" @click="handleLogin">
+          Log In to Continue
+        </Button>
+      </template>
+    </Result>
+
     <!-- Error -->
     <Result v-else-if="error" status="error" :title="error">
       <template #subTitle>
@@ -195,7 +224,6 @@ function getFieldComponent(
     <!-- ========== OVERLAY MODE ========== -->
     <template v-else-if="session && layoutMode === 'overlay'">
       <div class="mx-auto max-w-4xl px-4 pb-[280px] pt-4">
-        <!-- Message banner -->
         <div
           v-if="session.message"
           class="mb-4 rounded-lg bg-blue-50 p-3 text-sm text-blue-700 dark:bg-blue-900/30 dark:text-blue-300"
@@ -203,7 +231,6 @@ function getFieldComponent(
           {{ session.message }}
         </div>
 
-        <!-- PDF with overlays -->
         <PdfDocumentViewer
           :document-url="session.documentUrl"
           :fields="fields"
@@ -213,7 +240,6 @@ function getFieldComponent(
         />
       </div>
 
-      <!-- Sticky bottom panel -->
       <SigningPanel
         :active-field="activeField"
         :active-index="activeFieldIndex"
@@ -233,7 +259,6 @@ function getFieldComponent(
     <!-- ========== SIDEBAR FALLBACK MODE ========== -->
     <template v-else-if="session && layoutMode === 'sidebar'">
       <div class="mx-auto flex max-w-6xl gap-6 px-4 py-4 sm:px-6">
-        <!-- Left: PDF -->
         <div class="min-w-0 flex-1">
           <div v-if="session.message" class="mb-4 rounded-lg bg-blue-50 p-3 text-sm text-blue-700 dark:bg-blue-900/30 dark:text-blue-300">
             {{ session.message }}
@@ -246,7 +271,6 @@ function getFieldComponent(
           />
         </div>
 
-        <!-- Right: Field form -->
         <div class="w-80 flex-shrink-0 lg:w-96">
           <div class="sticky top-[60px] space-y-4">
             <Card title="Fill in the fields" size="small">
@@ -262,14 +286,12 @@ function getFieldComponent(
                     >
                   </label>
 
-                  <!-- Signature -->
                   <SignatureCanvas
                     v-if="getFieldComponent(flowField) === 'signature'"
                     :model-value="flowField.signatureImage"
                     @update:model-value="setSignatureImage(idx, $event)"
                   />
 
-                  <!-- Date -->
                   <DatePicker
                     v-else-if="getFieldComponent(flowField) === 'date'"
                     :value="flowField.value ? dayjs(flowField.value) : undefined"
@@ -278,7 +300,6 @@ function getFieldComponent(
                     @change="(_date: any, dateString: any) => setFieldValue(idx, Array.isArray(dateString) ? dateString[0] ?? '' : dateString ?? '')"
                   />
 
-                  <!-- Checkbox -->
                   <Checkbox
                     v-else-if="getFieldComponent(flowField) === 'checkbox'"
                     :checked="flowField.value === 'true'"
@@ -293,7 +314,6 @@ function getFieldComponent(
                     {{ flowField.field.name }}
                   </Checkbox>
 
-                  <!-- Text -->
                   <Input
                     v-else
                     :value="flowField.value"
