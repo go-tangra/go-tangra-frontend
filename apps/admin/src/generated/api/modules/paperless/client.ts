@@ -40,10 +40,14 @@ async function request<T>(
   });
 
   if (!response.ok) {
-    const data = await response.json().catch(() => ({}));
-    throw new Error(
-      data.message || data.error || `HTTP error! status: ${response.status}`,
-    );
+    let message = `HTTP error! status: ${response.status}`;
+    try {
+      const errorBody = await response.json();
+      if (errorBody?.message) {
+        message = errorBody.message;
+      }
+    } catch { /* response body not JSON, use default message */ }
+    throw new Error(message);
   }
 
   return response.json();
