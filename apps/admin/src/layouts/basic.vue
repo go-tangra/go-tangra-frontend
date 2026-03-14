@@ -18,7 +18,7 @@ import { dateUtil } from '@vben/utils';
 
 import { notification } from 'ant-design-vue';
 
-import { type internal_messageservicev1_InternalMessageRecipient as InternalMessageRecipient } from '#/generated/api/admin/service/v1';
+import { type InternalMessageRecipient } from '#/stores/internal-message.state';
 import { LucideShieldCheck } from '@vben/icons';
 
 import { $t } from '#/locales';

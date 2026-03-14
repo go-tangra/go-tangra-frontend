@@ -10,7 +10,8 @@ NGINX_CONF_DIR="/etc/nginx/conf.d"
 # Set default values for backend proxy
 export BACKEND_HOST="${BACKEND_HOST:-admin}"
 export BACKEND_PORT="${BACKEND_PORT:-7788}"
-export SSE_PORT="${SSE_PORT:-7789}"
+export SSE_HOST="${SSE_HOST:-${BACKEND_HOST}}"
+export SSE_PORT="${SSE_PORT:-10302}"
 
 # SSL configuration
 export SSL_CERT_PATH="${SSL_CERT_PATH:-/app/certs/frontend/server.crt}"
@@ -119,10 +120,10 @@ LOCATIONS
             proxy_connect_timeout 75s;
         }
 
-        # SSE proxy for real-time events
+        # SSE proxy for real-time events (notification-service)
         location /sse/ {
 LOCATIONS
-    echo "            proxy_pass http://${BACKEND_HOST}:${SSE_PORT}/;"
+    echo "            proxy_pass http://${SSE_HOST}:${SSE_PORT}/;"
     cat << 'LOCATIONS'
             proxy_http_version 1.1;
             proxy_set_header Connection '';
@@ -250,6 +251,7 @@ HTTPEOF
     echo "Nginx HTTP config generated:"
     echo "  BACKEND_HOST: ${BACKEND_HOST}"
     echo "  BACKEND_PORT: ${BACKEND_PORT}"
+    echo "  SSE_HOST: ${SSE_HOST}"
     echo "  SSE_PORT: ${SSE_PORT}"
 fi
 

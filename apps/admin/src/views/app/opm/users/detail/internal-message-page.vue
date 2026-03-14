@@ -6,7 +6,7 @@ import { Page, type VbenFormProps } from '@vben/common-ui';
 import dayjs from 'dayjs';
 
 import { useVbenVxeGrid } from '#/adapter/vxe-table';
-import { type internal_messageservicev1_InternalMessageRecipient as InternalMessageRecipient } from '#/generated/api/admin/service/v1';
+import { type InternalMessageRecipient } from '#/stores/internal-message.state';
 import { $t } from '#/locales';
 import {
   internalMessageRecipientStatusColor,

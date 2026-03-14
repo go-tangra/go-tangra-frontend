@@ -1,83 +1,103 @@
-import { useUserStore } from '@vben/stores';
+import { useAccessStore } from '@vben/stores';
 
 import { defineStore } from 'pinia';
 
-import { createInternalMessageCategoryServiceClient } from '#/generated/api/admin/service/v1';
-import { makeOrderBy, makeQueryString, makeUpdateMask } from '#/utils/query';
-import { type Paging, requestClientRequestHandler } from '#/utils/request';
+const MODULE_BASE_URL = '/admin/v1/modules/notification';
+
+async function moduleRequest(
+  path: string,
+  method: string,
+  body?: unknown,
+): Promise<unknown> {
+  const accessStore = useAccessStore();
+  const token = (accessStore as any).accessToken;
+
+  const response = await fetch(`${MODULE_BASE_URL}/${path}`, {
+    method,
+    headers: {
+      'Content-Type': 'application/json',
+      ...(token ? { Authorization: `Bearer ${token}` } : {}),
+    },
+    body: body ? JSON.stringify(body) : null,
+  });
+
+  if (!response.ok) {
+    let message = `HTTP error! status: ${response.status}`;
+    try {
+      const errorBody = await response.json();
+      if (errorBody?.message) {
+        message = errorBody.message;
+      }
+    } catch {}
+    throw new Error(message);
+  }
+
+  const text = await response.text();
+  return text ? JSON.parse(text) : {};
+}
 
 export const useInternalMessageCategoryStore = defineStore(
   'internal_message_category',
   () => {
-    const service = createInternalMessageCategoryServiceClient(
-      requestClientRequestHandler,
-    );
-
-    const userStore = useUserStore();
-
-    /**
-     * 查询通知消息列表
-     */
     async function listInternalMessageCategory(
-      paging?: Paging,
+      paging?: { page?: number; pageSize?: number },
       formValues?: null | object,
-      fieldMask?: null | string,
-      orderBy?: null | string[],
     ) {
-      const noPaging =
-        paging?.page === undefined && paging?.pageSize === undefined;
-      return await service.List({
-        // @ts-ignore proto generated code is error.
-        fieldMask,
-        orderBy: makeOrderBy(orderBy),
-        query: makeQueryString(formValues, userStore.isTenantUser()),
-        page: paging?.page,
-        pageSize: paging?.pageSize,
-        noPaging,
-      });
+      const queryParts: string[] = [];
+      if (paging?.page)
+        queryParts.push(`page=${paging.page}`);
+      if (paging?.pageSize)
+        queryParts.push(`pageSize=${paging.pageSize}`);
+      if (formValues) {
+        const filterParts: string[] = [];
+        for (const [key, val] of Object.entries(formValues)) {
+          if (val !== undefined && val !== null && val !== '') {
+            filterParts.push(`${key}=${val}`);
+          }
+        }
+        if (filterParts.length > 0) {
+          queryParts.push(`query=${encodeURIComponent(filterParts.join('&'))}`);
+        }
+      }
+      const qs = queryParts.length > 0 ? `?${queryParts.join('&')}` : '';
+      return (await moduleRequest(
+        `v1/internal-message/categories${qs}`,
+        'GET',
+      )) as any;
     }
 
-    /**
-     * 获取通知消息
-     */
     async function getInternalMessageCategory(id: number) {
-      return await service.Get({ id });
+      return (await moduleRequest(
+        `v1/internal-message/categories/${id}`,
+        'GET',
+      )) as any;
     }
 
-    /**
-     * 创建通知消息
-     */
     async function createInternalMessageCategory(values: object) {
-      return await service.Create({
-        // @ts-ignore proto generated code is error.
-        data: {
-          ...values,
-        },
-      });
+      return await moduleRequest(
+        'v1/internal-message/categories',
+        'POST',
+        { data: { ...values } },
+      );
     }
 
-    /**
-     * 更新通知消息
-     */
     async function updateInternalMessageCategory(id: number, values: object) {
-      return await service.Update({
-        id,
-        // @ts-ignore proto generated code is error.
-        data: {
-          ...values,
+      return await moduleRequest(
+        `v1/internal-message/categories/${id}`,
+        'PUT',
+        {
+          id,
+          data: { ...values },
+          updateMask: { paths: Object.keys(values ?? {}) },
         },
-        // @ts-ignore proto generated code is error.
-        updateMask: makeUpdateMask(Object.keys(values ?? [])),
-      });
+      );
     }
 
-    /**
-     * 删除通知消息
-     */
     async function deleteInternalMessageCategory(id: number) {
-      return await service.Delete({
-        id,
-      });
+      return await moduleRequest(
+        `v1/internal-message/categories/${id}`,
+        'DELETE',
+      );
     }
 
     function $reset() {}
