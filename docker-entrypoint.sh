@@ -134,6 +134,7 @@ LOCATIONS
             proxy_buffering off;
             proxy_cache off;
             proxy_read_timeout 86400s;
+            proxy_send_timeout 86400s;
             chunked_transfer_encoding off;
             gzip off;
         }
