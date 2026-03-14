@@ -92,10 +92,14 @@ export const useInternalMessageStore = defineStore('internal_message', () => {
     if (paging?.pageSize)
       queryParts.push(`pageSize=${paging.pageSize}`);
     if (formValues) {
+      const filterObj: Record<string, unknown> = {};
       for (const [key, val] of Object.entries(formValues)) {
         if (val !== undefined && val !== null && val !== '') {
-          queryParts.push(`query=${encodeURIComponent(`${key}=${val}`)}`);
+          filterObj[key] = val;
         }
+      }
+      if (Object.keys(filterObj).length > 0) {
+        queryParts.push(`query=${encodeURIComponent(JSON.stringify(filterObj))}`);
       }
     }
     const qs = queryParts.length > 0 ? `?${queryParts.join('&')}` : '';
@@ -142,17 +146,26 @@ export const useInternalMessageStore = defineStore('internal_message', () => {
       queryParts.push(`page=${paging.page}`);
     if (paging?.pageSize)
       queryParts.push(`pageSize=${paging.pageSize}`);
-    if (orderBy)
-      queryParts.push(`orderBy=${encodeURIComponent(orderBy.join(','))}`);
+    if (orderBy) {
+      // Convert "-field" prefix notation to AIP format "field desc"
+      const aipParts = orderBy.map((field) => {
+        if (field.startsWith('-')) {
+          return `${field.slice(1)} desc`;
+        }
+        return `${field} asc`;
+      });
+      queryParts.push(`orderBy=${encodeURIComponent(aipParts.join(','))}`);
+    }
     if (formValues) {
-      const filterParts: string[] = [];
+      // Query filter expects JSON format
+      const filterObj: Record<string, unknown> = {};
       for (const [key, val] of Object.entries(formValues)) {
         if (val !== undefined && val !== null && val !== '') {
-          filterParts.push(`${key}=${val}`);
+          filterObj[key] = val;
         }
       }
-      if (filterParts.length > 0) {
-        queryParts.push(`query=${encodeURIComponent(filterParts.join('&'))}`);
+      if (Object.keys(filterObj).length > 0) {
+        queryParts.push(`query=${encodeURIComponent(JSON.stringify(filterObj))}`);
       }
     }
     const qs = queryParts.length > 0 ? `?${queryParts.join('&')}` : '';

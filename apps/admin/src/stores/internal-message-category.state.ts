@@ -49,14 +49,14 @@ export const useInternalMessageCategoryStore = defineStore(
       if (paging?.pageSize)
         queryParts.push(`pageSize=${paging.pageSize}`);
       if (formValues) {
-        const filterParts: string[] = [];
+        const filterObj: Record<string, unknown> = {};
         for (const [key, val] of Object.entries(formValues)) {
           if (val !== undefined && val !== null && val !== '') {
-            filterParts.push(`${key}=${val}`);
+            filterObj[key] = val;
           }
         }
-        if (filterParts.length > 0) {
-          queryParts.push(`query=${encodeURIComponent(filterParts.join('&'))}`);
+        if (Object.keys(filterObj).length > 0) {
+          queryParts.push(`query=${encodeURIComponent(JSON.stringify(filterObj))}`);
         }
       }
       const qs = queryParts.length > 0 ? `?${queryParts.join('&')}` : '';
