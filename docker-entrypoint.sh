@@ -135,6 +135,7 @@ LOCATIONS
             proxy_cache off;
             proxy_read_timeout 86400s;
             chunked_transfer_encoding off;
+            gzip off;
         }
 
         # Public sharing endpoint (no auth, proxied to sharing-service HTTP)
