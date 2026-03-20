@@ -352,10 +352,23 @@ export const useAuthStore = defineStore('auth', () => {
       return await processLoginResponse(verifyResp.login_response);
     } catch (error) {
       if (error instanceof Error) {
-        notification.error({
-          message: $t('page.auth.mfa.webauthnVerifyFailed'),
-          description: error.message,
-        });
+        const msg = error.message || '';
+        // Detect expired MFA session — prompt user to re-login
+        if (msg.includes('expired') || msg.includes('MFA_TOKEN_EXPIRED') || msg.includes('not found')) {
+          mfaPending.value = false;
+          mfaToken.value = null;
+          mfaMethods.value = [];
+          notification.error({
+            message: $t('page.auth.mfa.sessionExpired', 'Session Expired'),
+            description: $t('page.auth.mfa.sessionExpiredDescription', 'Your login session has expired. Please enter your credentials again.'),
+            duration: 6,
+          });
+        } else {
+          notification.error({
+            message: $t('page.auth.mfa.webauthnVerifyFailed'),
+            description: msg,
+          });
+        }
       }
       return null;
     } finally {
