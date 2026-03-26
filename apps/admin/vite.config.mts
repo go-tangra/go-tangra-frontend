@@ -43,6 +43,26 @@ export default defineConfig(async () => {
             target: 'http://localhost:5320/api',
             ws: true,
           },
+          // Local module development: proxy specific modules to their Vite dev server.
+          // Set LOCAL_MODULE=signing (single module) to enable.
+          ...(process.env.LOCAL_MODULE
+            ? {
+                [`/modules/${process.env.LOCAL_MODULE}`]: {
+                  changeOrigin: true,
+                  target: `http://localhost:${process.env.LOCAL_MODULE_PORT || '3012'}`,
+                  rewrite: (path: string) =>
+                    path.replace(
+                      new RegExp(`^/modules/${process.env.LOCAL_MODULE}`),
+                      '',
+                    ),
+                },
+              }
+            : {}),
+          // Module federation assets — proxied via admin-service ModuleAssetProxy
+          '/modules': {
+            changeOrigin: true,
+            target: 'http://localhost:7788',
+          },
           // Object storage proxy — served via admin-service storage proxy
           '/images': {
             changeOrigin: true,

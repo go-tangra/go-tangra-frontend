@@ -105,4 +105,21 @@ const coreRoutes: RouteRecordRaw[] = [
   },
 ];
 
-export { coreRoutes, fallbackNotFoundRoute };
+/** Routes that require authentication but must be registered early (before module federation). */
+const earlyAuthRoutes: RouteRecordRaw[] = [
+  {
+    path: '/signing/session/:token',
+    name: 'SigningSession',
+    meta: {
+      hideInMenu: true,
+      hideInTab: true,
+      hideInBreadcrumb: true,
+      title: 'Sign Document',
+    },
+    // Lazy-loaded from the signing federated module after login.
+    // This stub ensures the guard redirects to login with ?redirect= intact.
+    component: () => import('#/views/_core/fallback/not-found.vue'),
+  },
+];
+
+export { coreRoutes, earlyAuthRoutes, fallbackNotFoundRoute };
