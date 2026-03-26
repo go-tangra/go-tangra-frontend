@@ -67,6 +67,17 @@ function createRequestClient(baseURL: string) {
     fulfilled: async (config) => {
       const accessStore = useAccessStore();
 
+      // Proactively refresh expired access token before sending the request
+      if (
+        accessStore.accessToken &&
+        accessStore.checkAccessTokenExpired() &&
+        accessStore.refreshToken &&
+        !accessStore.checkRefreshTokenExpired()
+      ) {
+        const authStore = useAuthStore();
+        await authStore.refreshToken();
+      }
+
       const requestId = config.headers['X-Request-ID'] || defaultIdGenerator();
       (config as any)._requestId = requestId;
 

@@ -557,15 +557,25 @@ export const useAuthStore = defineStore('auth', () => {
       return;
     }
 
-    let refreshInterval = ACCESS_TOKEN_REFRESH_INTERVAL;
-    // 如果有 refresh token 过期时间，则调整刷新间隔为过期时间的 80%
-    if (accessStore.refreshTokenExpireTime) {
-      const now = Date.now();
-      const timeToExpire =
-        accessStore.refreshTokenExpireTime - now - 5 * 60 * 1000; // 提前 5 分钟刷新
-      if (timeToExpire > 0) {
-        refreshInterval = Math.floor(timeToExpire * 0.8);
+    /**
+     * Calculate the next refresh interval based on access token expiry.
+     * Refreshes at 80% of the remaining lifetime, with a 5-minute safety
+     * buffer. Falls back to ACCESS_TOKEN_REFRESH_INTERVAL if no expiry is set.
+     * Minimum interval is 3 seconds to prevent refresh storms.
+     */
+    function calcInterval(): number {
+      const MIN_INTERVAL = 3_000;
+      if (accessStore.accessTokenExpireTime) {
+        const now = Date.now();
+        const timeToExpire =
+          accessStore.accessTokenExpireTime - now - 5 * 60 * 1000; // 5-min safety buffer
+        if (timeToExpire > 0) {
+          return Math.max(Math.floor(timeToExpire * 0.8), MIN_INTERVAL);
+        }
+        // Token is already expired or about to — refresh immediately
+        return MIN_INTERVAL;
       }
+      return ACCESS_TOKEN_REFRESH_INTERVAL;
     }
 
     // 使用 self-scheduling 的 setTimeout，避免并发刷新
@@ -583,14 +593,15 @@ export const useAuthStore = defineStore('auth', () => {
         // 刷新失败通常会触发 reauthenticate()，无需额外处理
       } finally {
         // 只有在回调仍然存在时才继续调度
+        // Recalculate interval after each refresh since token expiry has changed
         if (refreshCallback) {
-          refreshTimer = globalThis.setTimeout(schedule, refreshInterval);
+          refreshTimer = globalThis.setTimeout(schedule, calcInterval());
         }
       }
     };
 
     // 首次在间隔后执行（不立即执行）
-    refreshTimer = globalThis.setTimeout(schedule, refreshInterval);
+    refreshTimer = globalThis.setTimeout(schedule, calcInterval());
   }
 
   /**
