@@ -63,19 +63,29 @@ function createRequestClient(baseURL: string) {
   }
 
   // 请求头处理
+  let isRefreshingProactively = false;
+
   client.addRequestInterceptor({
     fulfilled: async (config) => {
       const accessStore = useAccessStore();
 
-      // Proactively refresh expired access token before sending the request
+      // Proactively refresh expired access token before sending the request.
+      // Skip if already refreshing (prevents infinite recursion since the
+      // refresh API call itself goes through this interceptor).
       if (
+        !isRefreshingProactively &&
         accessStore.accessToken &&
         accessStore.checkAccessTokenExpired() &&
         accessStore.refreshToken &&
         !accessStore.checkRefreshTokenExpired()
       ) {
-        const authStore = useAuthStore();
-        await authStore.refreshToken();
+        isRefreshingProactively = true;
+        try {
+          const authStore = useAuthStore();
+          await authStore.refreshToken();
+        } finally {
+          isRefreshingProactively = false;
+        }
       }
 
       const requestId = config.headers['X-Request-ID'] || defaultIdGenerator();
