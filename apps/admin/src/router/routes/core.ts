@@ -85,6 +85,15 @@ const coreRoutes: RouteRecordRaw[] = [
         },
       },
       {
+        name: 'Activate',
+        path: 'activate',
+        component: () =>
+          import('#/views/_core/authentication/activate.vue'),
+        meta: {
+          title: $t('page.auth.activate'),
+        },
+      },
+      {
         name: 'Register',
         path: 'register',
         component: () => import('#/views/_core/authentication/register.vue'),
