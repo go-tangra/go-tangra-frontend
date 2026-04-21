@@ -5,6 +5,7 @@
     "codeLogin": "Code Login",
     "qrcodeLogin": "Qr Code Login",
     "forgetPassword": "Forget Password",
+    "activate": "Activate Account",
     "mfa": {
       "title": "Two-Factor Authentication",
       "description": "Enter the verification code from your authenticator app or a backup code.",
@@ -594,5 +595,16 @@
       "errorMessage": "Error",
       "sentAt": "Sent At"
     }
+  },
+  "activate": {
+    "title": "Set your password",
+    "intro": "Welcome! Choose a strong password to finish activating your account.",
+    "newPassword": "New password",
+    "confirmPassword": "Confirm password",
+    "mustMatch": "Both passwords match",
+    "submit": "Set password",
+    "submitting": "Setting…",
+    "success": "Password set. You can now sign in.",
+    "missingToken": "This activation link is missing the token. Please use the link from your activation email."
   }
 }

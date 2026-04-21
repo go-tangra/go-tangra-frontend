@@ -5,6 +5,7 @@
     "codeLogin": "验证码登录",
     "qrcodeLogin": "二维码登录",
     "forgetPassword": "忘记密码",
+    "activate": "激活账户",
     "mfa": {
       "title": "两步验证",
       "description": "请输入您的身份验证器应用中的验证码或备用验证码。",
