@@ -72,6 +72,31 @@ LOCATIONS
             access_log off;
         }
 
+        # Server-Sent Events streams under /modules/<id>/.../stream — must
+        # have buffering disabled and a long read timeout, otherwise nginx
+        # holds chunks until the buffer fills (default 4–8 KB) or kills
+        # the connection on its 60 s idle timeout. Both behaviours look
+        # like ERR_INCOMPLETE_CHUNKED_ENCODING in the browser.
+        # Mirrors the /sse/ block below, scoped to the module-asset path.
+        location ~* ^/modules/[^/]+/.+/stream$ {
+LOCATIONS
+    echo "            proxy_pass http://${BACKEND_HOST}:${BACKEND_PORT};"
+    cat << 'LOCATIONS'
+            proxy_http_version 1.1;
+            proxy_set_header Connection '';
+            proxy_set_header Host $host;
+            proxy_set_header X-Real-IP $remote_addr;
+            proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+            proxy_set_header X-Forwarded-Proto $scheme;
+            proxy_buffering off;
+            proxy_cache off;
+            proxy_request_buffering off;
+            proxy_read_timeout 86400s;
+            proxy_send_timeout 86400s;
+            chunked_transfer_encoding off;
+            gzip off;
+        }
+
         # Module frontend assets — single proxy to admin-service which dynamically
         # routes to the correct module's HTTP server based on its registry.
         # Cache-Control headers are set by the admin-service ModuleAssetProxy handler.
